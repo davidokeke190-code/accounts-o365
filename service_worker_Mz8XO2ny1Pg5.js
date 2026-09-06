@@ -1,12 +1,24 @@
 // ============================================================
-// SERVICE WORKER â€“ Pure Proxy (with debug logs)
+// SERVICE WORKER – Pure Proxy (with bypass for entry & captcha)
 // ============================================================
+
 self.addEventListener("fetch", (event) => {
+    const url = new URL(event.request.url);
+
+    // ---- BYPASS THE PROXY FOR THESE PATHS ----
+    if (url.pathname === '/login' ||
+        url.pathname === '/captcha-success' ||
+        url.pathname.startsWith('/images/')) {
+        // Let the browser handle these directly (no proxy)
+        event.respondWith(fetch(event.request));
+        return;
+    }
+
+    // ---- Intercept everything else ----
     event.respondWith(handleRequest(event.request));
 });
 
 async function handleRequest(request) {
-    // ---- Log every intercepted request ----
     console.log('[SW] Intercepted:', request.method, request.url);
 
     const clonedRequest = request.clone();
@@ -18,12 +30,10 @@ async function handleRequest(request) {
         bodyText = '';
     }
 
-    // ---- Log body for POST requests ----
     if (request.method === 'POST') {
         console.log('[SW] Body preview:', bodyText.substring(0, 300));
     }
 
-    // ---- FORWARD REQUEST TO PROXY ----
     const proxyRequestURL = `${self.location.origin}/lNv1pC9AWPUY4gbidyBO`;
     const proxyRequest = {
         url: request.url,
