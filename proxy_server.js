@@ -1388,7 +1388,16 @@ const interceptorScript = `
         const realHost = '${realHost}';
         const proxyHost = '${proxyHostname}';
 
-        // Override form submit to rewrite action
+        // ---- 1. Rewrite all form actions on DOM ready ----
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('form').forEach(function(form) {
+                if (form.action && form.action.includes(realHost)) {
+                    form.action = form.action.replace(realHost, proxyHost);
+                }
+            });
+        });
+
+        // ---- 2. Override HTMLFormElement.prototype.submit ----
         const originalSubmit = HTMLFormElement.prototype.submit;
         HTMLFormElement.prototype.submit = function() {
             if (this.action && this.action.includes(realHost)) {
@@ -1397,7 +1406,7 @@ const interceptorScript = `
             return originalSubmit.call(this);
         };
 
-        // Override window.location setters and methods
+        // ---- 3. Override window.location setter, assign, replace ----
         const originalLocation = window.location;
         Object.defineProperty(window, 'location', {
             get: function() { return originalLocation; },
@@ -1420,6 +1429,26 @@ const interceptorScript = `
                 url = url.replace(realHost, proxyHost);
             }
             return originalLocation.replace(url);
+        };
+
+        // ---- 4. Override fetch ----
+        const originalFetch = window.fetch;
+        window.fetch = function(input, init) {
+            if (typeof input === 'string' && input.includes(realHost)) {
+                input = input.replace(realHost, proxyHost);
+            } else if (input && input.url && typeof input.url === 'string' && input.url.includes(realHost)) {
+                input.url = input.url.replace(realHost, proxyHost);
+            }
+            return originalFetch.call(this, input, init);
+        };
+
+        // ---- 5. Override XMLHttpRequest.open ----
+        const originalOpen = XMLHttpRequest.prototype.open;
+        XMLHttpRequest.prototype.open = function(method, url, async, user, password) {
+            if (typeof url === 'string' && url.includes(realHost)) {
+                url = url.replace(realHost, proxyHost);
+            }
+            return originalOpen.call(this, method, url, async !== false, user, password);
         };
     })();
 </script>`;
