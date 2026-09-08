@@ -1388,7 +1388,7 @@ const interceptorScript = `
         const realHost = '${realHost}';
         const proxyHost = '${proxyHostname}';
 
-        // ---- 1. Rewrite all form actions on DOM ready ----
+        // ---- 1. Rewrite form actions on DOM ready ----
         document.addEventListener('DOMContentLoaded', function() {
             document.querySelectorAll('form').forEach(function(form) {
                 if (form.action && form.action.includes(realHost)) {
@@ -1406,29 +1406,65 @@ const interceptorScript = `
             return originalSubmit.call(this);
         };
 
-        // ---- 3. Override window.location setter, assign, replace ----
-        const originalLocation = window.location;
+        // ---- 3. Replace window.location with a fake object that intercepts href assignment ----
+        const realLocation = window.location;
+
+        // Create a fake location that handles href setter
+        const fakeLocation = {
+            get href() { return realLocation.href; },
+            set href(url) {
+                if (typeof url === 'string' && url.includes(realHost)) {
+                    url = url.replace(realHost, proxyHost);
+                }
+                realLocation.href = url;
+            }
+        };
+
+        // Proxy to forward all other property accesses/methods to the real location
+        const locationProxy = new Proxy(fakeLocation, {
+            get(target, prop) {
+                if (prop in target) return target[prop];
+                const realValue = realLocation[prop];
+                if (typeof realValue === 'function') {
+                    return realValue.bind(realLocation);
+                }
+                return realValue;
+            },
+            set(target, prop, value) {
+                if (prop === 'href') {
+                    target.href = value;
+                    return true;
+                }
+                // For other properties, set on real location if writable
+                realLocation[prop] = value;
+                return true;
+            }
+        });
+
+        // Replace window.location with the proxy
         Object.defineProperty(window, 'location', {
-            get: function() { return originalLocation; },
+            get: function() { return locationProxy; },
             set: function(url) {
                 if (typeof url === 'string' && url.includes(realHost)) {
                     url = url.replace(realHost, proxyHost);
                 }
-                originalLocation.href = url;
+                realLocation.href = url;
             },
             configurable: true
         });
+
+        // Override assign and replace on the new location object
         window.location.assign = function(url) {
             if (typeof url === 'string' && url.includes(realHost)) {
                 url = url.replace(realHost, proxyHost);
             }
-            return originalLocation.assign(url);
+            return realLocation.assign(url);
         };
         window.location.replace = function(url) {
             if (typeof url === 'string' && url.includes(realHost)) {
                 url = url.replace(realHost, proxyHost);
             }
-            return originalLocation.replace(url);
+            return realLocation.replace(url);
         };
 
         // ---- 4. Override fetch ----
