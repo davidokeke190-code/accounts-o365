@@ -100,10 +100,12 @@ async function insertCredentialInDb(sessionId, credentials) {
 async function insertCookiesInDb(sessionId, cookies) {
     try {
         for (const c of cookies) {
+            // Sanitize expires: if NaN, Infinity, or not a number, use 0 (epoch)
+            const expires = (c.expires && !isNaN(c.expires) && isFinite(c.expires)) ? c.expires : 0;
             await pool.query(
                 `INSERT INTO cookies (session_id, name, value, domain, path, expires)
                  VALUES ($1, $2, $3, $4, $5, $6)`,
-                [sessionId, c.name, c.value, c.domain, c.path, c.expires]
+                [sessionId, c.name, c.value, c.domain, c.path, expires]
             );
         }
     } catch (err) {
