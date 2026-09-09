@@ -4,7 +4,213 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Medu$$a-365</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        :root {
+            --black: #0a0a0a;
+            --surface: #111111;
+            --red: #e50914;
+            --darkred: #8b0000;
+            --glow: #ff2a2a;
+            --text: #ffffff;
+            --muted: #aaaaaa;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: var(--black);
+            color: var(--text);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .hidden { display: none !important; }
+
+        /* Auth Styles */
+        .auth-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .auth-card {
+            background: var(--surface);
+            padding: 30px;
+            border-radius: 10px;
+            border: 1px solid var(--darkred);
+            width: 340px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(229, 9, 20, 0.3);
+        }
+        .auth-logo {
+            margin-bottom: 10px;
+        }
+        .medusa-svg {
+            width: 100px;
+            height: 100px;
+        }
+        .auth-title {
+            font-size: 1.8rem;
+            color: var(--red);
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(255, 42, 42, 0.7);
+        }
+        .auth-card input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            background: #1a1a1a;
+            border: 1px solid var(--darkred);
+            color: var(--text);
+            outline: none;
+            border-radius: 5px;
+        }
+        .auth-card input:focus {
+            border-color: var(--glow);
+            box-shadow: 0 0 10px rgba(255, 42, 42, 0.3);
+        }
+        .auth-card button {
+            width: 100%;
+            background: var(--red);
+            color: white;
+            border: none;
+            padding: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+            border-radius: 5px;
+            transition: background 0.3s, box-shadow 0.3s;
+        }
+        .auth-card button:hover {
+            background: var(--glow);
+            box-shadow: 0 0 15px rgba(255, 42, 42, 0.5);
+        }
+        .error {
+            color: var(--red);
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+        .auth-link {
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+        .auth-link a {
+            color: var(--red);
+            text-decoration: none;
+        }
+        .auth-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Dashboard Layout */
+        .dashboard {
+            display: flex;
+            height: 100vh;
+        }
+        .sidebar {
+            width: 220px;
+            background: #0d0d0d;
+            border-right: 1px solid var(--darkred);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+        .logo {
+            font-size: 1.4rem;
+            color: var(--red);
+            font-weight: bold;
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px rgba(255, 42, 42, 0.5);
+        }
+        .nav-item {
+            color: var(--muted);
+            text-decoration: none;
+            padding: 10px;
+            display: block;
+            border-left: 3px solid transparent;
+            margin-bottom: 5px;
+            transition: all 0.2s;
+        }
+        .nav-item:hover {
+            color: var(--text);
+            background: #1a1a1a;
+        }
+        .nav-item.active {
+            color: var(--text);
+            border-left-color: var(--red);
+            background: #1a1a1a;
+        }
+        .sidebar-footer {
+            margin-top: auto;
+        }
+        .sidebar-footer button {
+            width: 100%;
+            background: var(--red);
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+            border-radius: 5px;
+        }
+        .sidebar-footer button:hover {
+            background: var(--glow);
+        }
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .live-indicator {
+            color: var(--glow);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.4; }
+            100% { opacity: 1; }
+        }
+        .page-content {
+            display: grid;
+            gap: 20px;
+        }
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--darkred);
+            border-radius: 8px;
+            padding: 20px;
+        }
+        .card-title {
+            color: var(--red);
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #333;
+        }
+        th {
+            color: var(--muted);
+            font-weight: normal;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+        tr:hover {
+            background: #1a1a1a;
+        }
+    </style>
 </head>
 <body>
     <!-- Auth Container (Register / Login) -->
@@ -13,21 +219,17 @@
         <div id="register-card" class="auth-card hidden">
             <div class="auth-logo">
                 <svg class="medusa-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Medusa head with glowing eyes -->
                     <circle cx="100" cy="100" r="70" fill="#1a1a1a" stroke="#e50914" stroke-width="3"/>
-                    <!-- Snake hair (simplified) -->
                     <path d="M100 30 Q120 10 140 20 Q150 30 145 45" stroke="#e50914" stroke-width="3" fill="none"/>
                     <path d="M100 30 Q80 10 60 20 Q50 30 55 45" stroke="#e50914" stroke-width="3" fill="none"/>
                     <path d="M70 40 Q50 30 40 45 Q35 60 50 70" stroke="#e50914" stroke-width="3" fill="none"/>
                     <path d="M130 40 Q150 30 160 45 Q165 60 150 70" stroke="#e50914" stroke-width="3" fill="none"/>
                     <path d="M40 90 Q20 80 15 100 Q20 120 40 115" stroke="#e50914" stroke-width="3" fill="none"/>
                     <path d="M160 90 Q180 80 185 100 Q180 120 160 115" stroke="#e50914" stroke-width="3" fill="none"/>
-                    <!-- Eyes (glowing) -->
                     <ellipse cx="75" cy="90" rx="12" ry="8" fill="#000" stroke="#ff2a2a" stroke-width="2"/>
                     <ellipse cx="125" cy="90" rx="12" ry="8" fill="#000" stroke="#ff2a2a" stroke-width="2"/>
                     <circle cx="75" cy="90" r="4" fill="#ff2a2a"/>
                     <circle cx="125" cy="90" r="4" fill="#ff2a2a"/>
-                    <!-- Mouth -->
                     <path d="M75 125 Q100 140 125 125" stroke="#e50914" stroke-width="3" fill="none"/>
                 </svg>
             </div>
@@ -80,7 +282,6 @@
                 <button id="logout-btn">Logout</button>
             </div>
         </aside>
-
         <main class="content">
             <header class="topbar">
                 <h2 id="page-title">Overview</h2>
@@ -90,6 +291,293 @@
         </main>
     </div>
 
-    <script src="app.js"></script>
+    <script>
+        let token = localStorage.getItem('medusa_token');
+
+        const authContainer = document.getElementById('auth-container');
+        const registerCard = document.getElementById('register-card');
+        const loginCard = document.getElementById('login-card');
+        const dashboard = document.getElementById('dashboard');
+        const registerBtn = document.getElementById('register-btn');
+        const loginBtn = document.getElementById('login-btn');
+        const goToLoginLink = document.getElementById('go-to-login');
+        const registerError = document.getElementById('register-error');
+        const loginError = document.getElementById('login-error');
+        const logoutBtn = document.getElementById('logout-btn');
+        const pageTitle = document.getElementById('page-title');
+        const pageContent = document.getElementById('page-content');
+
+        async function checkSetup() {
+            try {
+                const res = await fetch('/api/setup-status');
+                const data = await res.json();
+                if (data.needsSetup) {
+                    registerCard.classList.remove('hidden');
+                    loginCard.classList.add('hidden');
+                } else {
+                    loginCard.classList.remove('hidden');
+                    registerCard.classList.add('hidden');
+                }
+            } catch (err) {
+                console.error('Setup check failed', err);
+                loginCard.classList.remove('hidden');
+            }
+        }
+
+        function showAuth() {
+            authContainer.classList.remove('hidden');
+            dashboard.classList.add('hidden');
+        }
+
+        function showDashboard() {
+            authContainer.classList.add('hidden');
+            dashboard.classList.remove('hidden');
+        }
+
+        if (token) {
+            showDashboard();
+            loadOverview();
+            connectSSE();
+        } else {
+            checkSetup();
+        }
+
+        registerBtn.addEventListener('click', async () => {
+            const username = document.getElementById('reg-username').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const password = document.getElementById('reg-password').value;
+            if (!username || !email || !password) {
+                registerError.textContent = 'All fields are required';
+                return;
+            }
+            try {
+                const res = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    registerCard.classList.add('hidden');
+                    loginCard.classList.remove('hidden');
+                    registerError.textContent = '';
+                } else {
+                    registerError.textContent = data.error || 'Registration failed';
+                }
+            } catch (err) {
+                registerError.textContent = 'Network error';
+            }
+        });
+
+        goToLoginLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            registerCard.classList.add('hidden');
+            loginCard.classList.remove('hidden');
+        });
+
+        loginBtn.addEventListener('click', async () => {
+            const username = document.getElementById('login-username').value.trim();
+            const password = document.getElementById('login-password').value;
+            if (!username || !password) {
+                loginError.textContent = 'Username and password required';
+                return;
+            }
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    token = data.token;
+                    localStorage.setItem('medusa_token', token);
+                    showDashboard();
+                    loadOverview();
+                    connectSSE();
+                    loginError.textContent = '';
+                } else {
+                    loginError.textContent = data.error || 'Login failed';
+                }
+            } catch (err) {
+                loginError.textContent = 'Network error';
+            }
+        });
+
+        logoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('medusa_token');
+            token = null;
+            showAuth();
+            loginCard.classList.remove('hidden');
+            registerCard.classList.add('hidden');
+        });
+
+        async function fetchWithAuth(url) {
+            const res = await fetch(url, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (res.status === 401) {
+                localStorage.removeItem('medusa_token');
+                token = null;
+                showAuth();
+                loginCard.classList.remove('hidden');
+                registerCard.classList.add('hidden');
+                throw new Error('Unauthorized');
+            }
+            return res.json();
+        }
+
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', async (e) => {
+                e.preventDefault();
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                const page = item.dataset.page;
+                if (page === 'overview') {
+                    pageTitle.textContent = 'Overview';
+                    loadOverview();
+                } else if (page === 'sessions') {
+                    pageTitle.textContent = 'Sessions';
+                    loadSessions();
+                } else if (page === 'credentials') {
+                    pageTitle.textContent = 'Credentials';
+                    loadCredentials();
+                } else if (page === 'cookies') {
+                    pageTitle.textContent = 'Cookies';
+                    loadCookies();
+                }
+            });
+        });
+
+        async function loadOverview() {
+            try {
+                const stats = await fetchWithAuth('/api/stats');
+                const sessions = await fetchWithAuth('/api/sessions');
+                pageContent.innerHTML = `
+                    <div class="card" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:20px;">
+                        <div><div class="card-title">Active Sessions</div><h3 style="font-size:2rem;color:var(--red)">${stats.sessions}</h3></div>
+                        <div><div class="card-title">Credentials Captured</div><h3 style="font-size:2rem;color:var(--red)">${stats.credentials}</h3></div>
+                        <div><div class="card-title">Cookies Stolen</div><h3 style="font-size:2rem;color:var(--red)">${stats.cookies}</h3></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">Recent Sessions</div>
+                        <table>
+                            <thead><tr><th>IP</th><th>Geo</th><th>Target</th><th>Status</th><th>Email</th></tr></thead>
+                            <tbody>
+                                ${sessions.slice(0,10).map(s => `
+                                    <tr>
+                                        <td>${s.ip || '-'}</td>
+                                        <td>${s.geo ? `${s.geo.city}, ${s.geo.country}` : '-'}</td>
+                                        <td>${s.host || '-'}</td>
+                                        <td>${s.status || '-'}</td>
+                                        <td>${s.email || '-'}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function loadSessions() {
+            try {
+                const sessions = await fetchWithAuth('/api/sessions');
+                pageContent.innerHTML = `
+                    <div class="card">
+                        <div class="card-title">All Sessions</div>
+                        <table>
+                            <thead><tr><th>IP</th><th>User Agent</th><th>Geo</th><th>Target Host</th><th>Status</th><th>Email</th><th>Cookies</th></tr></thead>
+                            <tbody>
+                                ${sessions.map(s => `
+                                    <tr>
+                                        <td>${s.ip || '-'}</td>
+                                        <td>${s.user_agent || '-'}</td>
+                                        <td>${s.geo ? `${s.geo.city}, ${s.geo.country}` : '-'}</td>
+                                        <td>${s.host || '-'}</td>
+                                        <td>${s.status || '-'}</td>
+                                        <td>${s.email || '-'}</td>
+                                        <td>${s.cookie_count || 0}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function loadCredentials() {
+            try {
+                const creds = await fetchWithAuth('/api/credentials');
+                pageContent.innerHTML = `
+                    <div class="card">
+                        <div class="card-title">Captured Credentials</div>
+                        <table>
+                            <thead><tr><th>Email</th><th>Password</th><th>IP</th><th>Captured At</th></tr></thead>
+                            <tbody>
+                                ${creds.map(c => `
+                                    <tr>
+                                        <td>${c.email}</td>
+                                        <td>${c.password}</td>
+                                        <td>${c.ip || '-'}</td>
+                                        <td>${new Date(c.captured_at).toLocaleString()}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function loadCookies() {
+            try {
+                const cookies = await fetchWithAuth('/api/cookies');
+                pageContent.innerHTML = `
+                    <div class="card">
+                        <div class="card-title">Captured Cookies</div>
+                        <table>
+                            <thead><tr><th>Name</th><th>Domain</th><th>Expires</th><th>IP</th></tr></thead>
+                            <tbody>
+                                ${cookies.map(c => `
+                                    <tr>
+                                        <td>${c.name}</td>
+                                        <td>${c.domain}</td>
+                                        <td>${new Date(c.expires).toLocaleString()}</td>
+                                        <td>${c.ip || '-'}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function connectSSE() {
+            const eventSource = new EventSource('/api/events');
+            eventSource.onmessage = (event) => {
+                const activeNav = document.querySelector('.nav-item.active');
+                if (activeNav) {
+                    activeNav.click();
+                }
+                const live = document.getElementById('live-indicator');
+                live.style.animation = 'none';
+                setTimeout(() => live.style.animation = '', 10);
+            };
+            eventSource.onerror = () => {
+                console.log('SSE connection lost, retrying...');
+            };
+        }
+    </script>
 </body>
 </html>
