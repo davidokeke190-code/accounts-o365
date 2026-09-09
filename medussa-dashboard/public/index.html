@@ -7,15 +7,66 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="login-container" class="login-container">
-        <div class="login-card">
-            <h1 class="title">Medu$$a-365</h1>
-            <input type="password" id="password" placeholder="Admin Password" autofocus>
+    <!-- Auth Container (Register / Login) -->
+    <div id="auth-container" class="auth-container">
+        <!-- Registration Card -->
+        <div id="register-card" class="auth-card hidden">
+            <div class="auth-logo">
+                <svg class="medusa-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Medusa head with glowing eyes -->
+                    <circle cx="100" cy="100" r="70" fill="#1a1a1a" stroke="#e50914" stroke-width="3"/>
+                    <!-- Snake hair (simplified) -->
+                    <path d="M100 30 Q120 10 140 20 Q150 30 145 45" stroke="#e50914" stroke-width="3" fill="none"/>
+                    <path d="M100 30 Q80 10 60 20 Q50 30 55 45" stroke="#e50914" stroke-width="3" fill="none"/>
+                    <path d="M70 40 Q50 30 40 45 Q35 60 50 70" stroke="#e50914" stroke-width="3" fill="none"/>
+                    <path d="M130 40 Q150 30 160 45 Q165 60 150 70" stroke="#e50914" stroke-width="3" fill="none"/>
+                    <path d="M40 90 Q20 80 15 100 Q20 120 40 115" stroke="#e50914" stroke-width="3" fill="none"/>
+                    <path d="M160 90 Q180 80 185 100 Q180 120 160 115" stroke="#e50914" stroke-width="3" fill="none"/>
+                    <!-- Eyes (glowing) -->
+                    <ellipse cx="75" cy="90" rx="12" ry="8" fill="#000" stroke="#ff2a2a" stroke-width="2"/>
+                    <ellipse cx="125" cy="90" rx="12" ry="8" fill="#000" stroke="#ff2a2a" stroke-width="2"/>
+                    <circle cx="75" cy="90" r="4" fill="#ff2a2a"/>
+                    <circle cx="125" cy="90" r="4" fill="#ff2a2a"/>
+                    <!-- Mouth -->
+                    <path d="M75 125 Q100 140 125 125" stroke="#e50914" stroke-width="3" fill="none"/>
+                </svg>
+            </div>
+            <h1 class="auth-title">Medu$$a-365</h1>
+            <input type="text" id="reg-username" placeholder="Username" autofocus>
+            <input type="email" id="reg-email" placeholder="Email">
+            <input type="password" id="reg-password" placeholder="Password">
+            <button id="register-btn">Register</button>
+            <p id="register-error" class="error"></p>
+            <p class="auth-link"><a href="#" id="go-to-login">Already have an account? Login</a></p>
+        </div>
+
+        <!-- Login Card -->
+        <div id="login-card" class="auth-card hidden">
+            <div class="auth-logo">
+                <svg class="medusa-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="100" cy="100" r="70" fill="#1a1a1a" stroke="#e50914" stroke-width="3"/>
+                    <path d="M100 30 Q120 10 140 20 Q150 30 145 45" stroke="#e50914" stroke-width="3" fill="none"/>
+                    <path d="M100 30 Q80 10 60 20 Q50 30 55 45" stroke="#e50914" stroke-width="3" fill="none"/>
+                    <path d="M70 40 Q50 30 40 45 Q35 60 50 70" stroke="#e50914" stroke-width="3" fill="none"/>
+                    <path d="M130 40 Q150 30 160 45 Q165 60 150 70" stroke="#e50914" stroke-width="3" fill="none"/>
+                    <path d="M40 90 Q20 80 15 100 Q20 120 40 115" stroke="#e50914" stroke-width="3" fill="none"/>
+                    <path d="M160 90 Q180 80 185 100 Q180 120 160 115" stroke="#e50914" stroke-width="3" fill="none"/>
+                    <ellipse cx="75" cy="90" rx="12" ry="8" fill="#000" stroke="#ff2a2a" stroke-width="2"/>
+                    <ellipse cx="125" cy="90" rx="12" ry="8" fill="#000" stroke="#ff2a2a" stroke-width="2"/>
+                    <circle cx="75" cy="90" r="4" fill="#ff2a2a"/>
+                    <circle cx="125" cy="90" r="4" fill="#ff2a2a"/>
+                    <path d="M75 125 Q100 140 125 125" stroke="#e50914" stroke-width="3" fill="none"/>
+                </svg>
+            </div>
+            <h1 class="auth-title">Medu$$a-365</h1>
+            <input type="text" id="login-username" placeholder="Username" autofocus>
+            <input type="password" id="login-password" placeholder="Password">
             <button id="login-btn">Login</button>
             <p id="login-error" class="error"></p>
         </div>
     </div>
 
+    <!-- Dashboard -->
     <div id="dashboard" class="dashboard hidden">
         <aside class="sidebar">
             <div class="logo">Medu$$a-365</div>
